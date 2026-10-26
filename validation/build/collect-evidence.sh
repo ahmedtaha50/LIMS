@@ -29,8 +29,12 @@ if ! skip desktop; then
   # Electron under xvfb; each script prints "PASS <text>" lines. tests/desktop-smoke.cjs is not used: it does not supply the first administrator
   # that the first-run screen now requires and stops there (DEV-2026-10-25-08).
   : > $E/desktop-run-$D.txt
-  for script in desktop-shell desktop-upgrade; do
+  for script in desktop-shell desktop-upgrade desktop-embedded; do
     timeout 300 xvfb-run -a node tests/$script.cjs 2>&1 | sed -n "s/^\(PASS\|FAIL\) \(.*\)$/\1 $script \2/p" >> $E/desktop-run-$D.txt
+  done
+  # node:test checks of the installer and release integrity (release R3): one "PASS|FAIL <name> <title>" line per test
+  for f in tests/installer/*.test.cjs; do b=$(basename $f .test.cjs)
+    node --test --test-reporter=tap $f 2>&1 | sed -n "s/^\(ok\|not ok\) [0-9]* - \(.*\)$/\1 $b \2/p" | sed 's/^ok /PASS /; s/^not ok /FAIL /' >> $E/desktop-run-$D.txt
   done
   grep -c '^PASS' $E/desktop-run-$D.txt; grep '^FAIL' $E/desktop-run-$D.txt
 fi

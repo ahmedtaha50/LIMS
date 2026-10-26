@@ -1,0 +1,15 @@
+# Evidence copied from the job log of GitHub Actions run 40313586015 (build #5, commit 8fe69ea368b5a5b8bb46d5eba6ef1ad9ef941723),
+# job 'Windows installer (.exe)' on windows-latest, step 'Installed application starts (silent install, real application, integrity check)'.
+# https://github.com/ahmedtaha50/LIMS/actions/runs/40313586015  -- NOT produced by the validation package; a copy of the CI log, run on a hosted runner, not a validation PC.
+[36;1mpwsh -File tests\installer\gui-smoke.ps1 -Installer $exe -TimeoutSeconds 60[0m
+shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+##[endgroup]
+=== silent install to D:\a\_temp\lims-gui
+manifest: version 0.2.0, git 8fe69ea368b5a5b8bb46d5eba6ef1ad9ef941723, 158 files
+=== start the installed application (user data in D:\a\_temp\lims-gui-userdata)
+--- release-events.jsonl
+{"at":"2026-10-26T11:19:13.368Z","type":"SERVER_START","version":"0.2.0","gitSha":"8fe69ea368b5a5b8bb46d5eba6ef1ad9ef941723","schemaVersion":"0350_i18n_preferences","integrity":"ok-unsigned"}
+=== silent uninstall
+PASS the installed application passed its integrity check and started
+##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+with:

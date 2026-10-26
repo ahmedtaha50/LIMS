@@ -1,0 +1,244 @@
+INFO bundle http://127.0.0.1:33367 database lims_e2e_7800 2026-10-26T12:22:02.010Z
+PASS client-shell A1 an Analyst signs in and reaches the application
+PASS client-shell A2 the token is in sessionStorage as a real JWT, and not in localStorage
+PASS client-shell A3 the user shown is the server's (GET /auth/me)
+PASS client-shell A4 no static "Validated" or "Compliant" badge anywhere on the screen
+KNOWN client-shell A5 the header shows the page title ("Test Specifications"), not the view id ("specs") :: undefined (DEV-2026-10-25-07)
+PASS client-shell A6 a reload keeps the session (sessionStorage) and shows the application, not the sign-in
+PASS client-shell A7 no uncaught exception
+PASS client-shell A8 Sign Out returns to the sign-in screen
+PASS client-shell A9 and the session is ended on the server (the old call carried no Authorization header)
+PASS client-shell A10 the token is gone from sessionStorage
+PASS client-shell B1 an Arabic name is shown correctly after a reload (atob of the token payload turned it into mojibake)
+PASS client-shell C1 mid-edit, the idle session shows the re-authentication dialog (the page is not replaced)
+PASS client-shell C2 the typed values are still in the form behind the dialog
+PASS client-shell C3 the page behind the dialog cannot be used while it is locked (inert: nothing behind it can take the focus)
+PASS client-shell C4 the dialog says unlocking signs nothing
+PASS client-shell C5 a wrong password is refused inline and the page stays locked
+PASS client-shell C6 after unlocking, the save succeeds without typing it again
+PASS client-shell C7 exactly one sample was created (not lost, not duplicated)
+PASS client-shell C8 the dialog is gone and the form was reset by the successful save
+PASS client-shell C9 the same server session continues (re-authentication does not start a new one)
+PASS client-shell C10 the unlock is in the security log
+KNOWN client-shell C: scenario completed :: page.waitForSelector: Timeout 7000ms exceeded. (DEV-2026-10-25-07)
+PASS client-shell D1 one minute before the limit a warning with a countdown appears
+PASS client-shell D2 the countdown is a number of seconds up to 60
+PASS client-shell D3 "Stay signed in" closes the warning
+PASS client-shell D4 with no activity until the limit, the screen locks and asks for the password
+PASS client-shell D5 the locked dialog names inactivity as the reason
+PASS client-shell D6 unlocking brings the same page back
+PASS client-shell D7 no uncaught exception
+PASS client-shell E1a Dashboard: a dead token shows an inline "Session expired" state
+PASS client-shell E1b Dashboard: never a white screen (the page still has content and the shell)
+PASS client-shell E1c Dashboard: no uncaught exception
+PASS client-shell E1d Dashboard: "Sign in again" leads to the sign-in screen
+PASS client-shell E1e Dashboard: the dead token is no longer stored
+PASS client-shell E2a Reagents: a dead token shows an inline "Session expired" state
+PASS client-shell E2b Reagents: never a white screen (the page still has content and the shell)
+PASS client-shell E2c Reagents: no uncaught exception
+PASS client-shell E2d Reagents: "Sign in again" leads to the sign-in screen
+PASS client-shell E2e Reagents: the dead token is no longer stored
+PASS client-shell E3a a view that throws while rendering shows a message and a retry, inside the shell
+PASS client-shell E3b it is not reported as an ended session
+PASS client-shell E3c opening another page gives a fresh start (the boundary resets with the view)
+PASS client-shell E3d no uncaught exception escaped the boundary
+PASS client-shell F1 a TOTP user is asked for the authenticator code
+PASS client-shell F2 a wrong code is shown as an error on the screen, not silently
+PASS client-shell F3 the right code reaches the application
+PASS client-shell F4 with a real token (not the string "undefined")
+PASS client-shell F5 no uncaught exception
+PASS client-shell G1 a temporary password leads to the change-password screen, not to the application
+PASS client-shell G2 a password the policy refuses is explained on the screen
+PASS client-shell G3 a confirmation that does not match is refused before anything is sent
+PASS client-shell G4 a good new password continues into the application
+PASS client-shell G5 the flag is cleared in the database
+PASS client-shell G6 no uncaught exception
+PASS client-shell H1 the sign-in screen claims no compliance or validation state
+PASS client-shell H2 a token an older build left in localStorage is removed and never used
+PASS client-shell H3 a stored token the server refuses ends at the sign-in screen with a notice
+PASS client-shell H4 no uncaught exception
+PASS ui-foundation D1 a pasted #/samples/<id> opens that sample (after signing in)
+PASS ui-foundation D2 a reload keeps the sample open
+PASS ui-foundation D3 the navigation changes the address
+PASS ui-foundation D4 a row opens the sample at its own address
+PASS ui-foundation D5 Back returns to the list with the search it had
+PASS ui-foundation D6 Forward opens the sample again
+PASS ui-foundation D7 the detail page's own back button returns to the same list address
+PASS ui-foundation D8 an unknown address says so inside the shell (no blank page)
+PASS ui-foundation D9 no uncaught exception
+PASS ui-foundation G1 the search is the server's: it finds a sample that is not on the first page
+PASS ui-foundation G2 page 2, sorted by material, filtered to Testing, is the database's page 2
+PASS ui-foundation G3 sort, filter, page size and page survive a reload
+PASS ui-foundation G4 the controls show the state from the address after the reload
+PASS ui-foundation G5 Previous returns to page 1
+PASS ui-foundation G6 an empty result says that nothing matches (not "no samples")
+PASS ui-foundation G7 Clear filters returns to the whole list
+PASS ui-foundation G8 a 200-row page renders only the rows in view (virtual window)
+PASS ui-foundation G9 scrolling to the end shows the last row of the page
+PASS ui-foundation G10 no uncaught exception
+PASS ui-foundation P1 with 50000 samples, page 1 of the list renders in under 1 s (855, 121, 117 ms)
+PASS ui-foundation P2 re-sorting 50 000 rows by batch answers in under 1 s (90 ms)
+PASS ui-foundation M1 the dialog takes the focus when it opens
+PASS ui-foundation M2 Tab and Shift+Tab stay inside the dialog (focus trap)
+PASS ui-foundation M3 the dialog is named by its title
+PASS ui-foundation M4 Esc closes it
+PASS ui-foundation M5 and the focus returns to the button that opened it
+PASS ui-foundation M6 the export dialog takes the focus
+PASS ui-foundation M7 Esc closes it and the focus returns to Export
+PASS ui-foundation X1 an export without a reason is refused with the reason shown under the field
+PASS ui-foundation X2 the file has every matching row
+PASS ui-foundation X3 the sha256 of the downloaded file is the one the dialog shows
+PASS ui-foundation X4 the audit trail records the user, the filter, the row count and the same sha256
+PASS ui-foundation R1 below lg the sidebar is hidden and a menu button is shown
+PASS ui-foundation R2 no horizontal page scroll at 820 px
+PASS ui-foundation R3 the drawer is a modal dialog with the navigation, and takes the focus
+PASS ui-foundation R4 Esc closes the drawer and the focus returns to the menu button
+PASS ui-foundation R5 choosing a page closes the drawer and opens the page
+PASS ui-foundation R6 bench mode makes every visible control at least 44 px high
+PASS ui-foundation R7 the switch says it is on (aria-pressed)
+PASS ui-foundation R8 bench mode is remembered on this computer after a reload
+PASS ui-foundation I1 the QA inbox offers the sample an analyst entered
+PASS ui-foundation I2 and leaves out the sample the QA officer entered results for
+PASS ui-foundation I3 it says the order it uses (oldest first), not "urgency"
+PASS ui-foundation I4 an inbox item opens the record at its address
+PASS ui-foundation A sign-in: no serious or critical axe violation
+PASS ui-foundation A inbox: no serious or critical axe violation
+PASS ui-foundation A samples list: no serious or critical axe violation
+KNOWN ui-foundation A sample detail: no serious or critical axe violation :: [{"id":"button-name","impact":"critical","n":1,"where":[".p-2"]},{"id":"color-contrast","impact":"serious","n":1,"where":[".mb-4"]}] (DEV-2026-10-25-06)
+PASS ui-foundation A specifications: no serious or critical axe violation
+KNOWN ui-foundation A OOS investigations: no serious or critical axe violation :: [{"id":"button-name","impact":"critical","n":1,"where":[".p-1\\.5"]}] (DEV-2026-10-25-06)
+KNOWN ui-foundation A dashboard: no serious or critical axe violation :: [{"id":"aria-allowed-attr","impact":"critical","n":9,"where":[".border-emerald-200.bg-emerald-50\\/50.text-emerald-900:nth-child(1)",".border-emerald-200.bg-emerald-50\\/50.text-emerald-900:nth-child(2)",".border-amber-300"]}] (DEV-2026-10-25-06)
+KNOWN ui-foundation A audit trail: no serious or critical axe violation :: [{"id":"color-contrast","impact":"serious","n":1,"where":[".border-slate-100.align-top:nth-child(1) > .font-mono.text-slate-400.truncate"]}] (DEV-2026-10-25-06)
+PASS ui-foundation A bulk import dialog: no serious or critical axe violation
+PASS login L1 a user with an authenticator is asked for the code after the password
+PASS login L2 no session exists before the code is given
+PASS login L3 a wrong code is refused with a message on the screen, not silently
+PASS login L4 and still no session exists
+PASS login L5 the right code reaches the application
+PASS login L6 with a real signed token (three parts), not the text "undefined"
+PASS login L7 the server has one active session for the user
+PASS login L8 no uncaught exception
+INFO workbench sample SMP-2026-00005 (Amoxicillin 250mg/5mL Oral Suspension): pH Determination RANGE 5..7.5; Total Aerobic Microbial Count (CFU/g) RANGE 0..100; Deliverable Volume (mL) RANGE 100..110; HPLC Assay (% Label Claim) RANGE 90..120
+PASS workbench W1 one value input per parameter of the specification
+PASS workbench W2 the instrument 3 days overdue is disabled in the list and shows its due date
+PASS workbench W3 Enter moves the focus to the next row
+PASS workbench W4 a value outside the limits shows OOS at once, marked advisory (the server decides on save)
+PASS workbench W5 nothing is saved by itself: no value is written before the save
+PASS workbench W6 Ctrl+S saves every row at once, with one audit row per value
+PASS workbench W7 overwriting a value shows the reason field of that row only
+PASS workbench W8 an overwrite without its reason is held back on the screen and names the reason
+PASS workbench W9 a stale row blocks the whole save, is highlighted, and the screen says who changed it
+PASS workbench W10 the refused save wrote nothing
+PASS workbench W11 no uncaught exception
+PASS oos O1 saving one out-of-limit value opens exactly one investigation, in the same save
+PASS oos O2 the screen says that an investigation was opened (no silent consequence)
+PASS oos O3 the saved row shows OOS as the server judged it
+PASS oos O4 the values are stored as typed and the result carries the OOS flag
+PASS oos O5 the audit trail holds the result entry and the investigation
+PASS oos O6 QA finds the investigation of that sample in the OOS register
+PASS oos O7 it is in Phase I with a due date the server worked out
+PASS oos O8 no uncaught exception
+PASS qms Q1 an Analyst raises a deviation: the screen confirms it and shows the record number
+PASS qms Q2 the Analyst can send it to triage but is not offered the quality unit's next step
+PASS qms Q3 a link the server refuses shows the server's message
+PASS qms Q4 approving without a root cause is refused by the server and the reason is shown in the signature dialog
+PASS qms Q5 the refused approval left no signature behind
+PASS qms Q6 with the root cause recorded, QA's signature is accepted and stored for the record
+PASS qms Q7 the record has moved on in the database after the signed approval
+PASS qms Q8 QA closes the approved record with a second signature, and the database says Closed
+PASS qms Q9 a closed record offers no further move
+PASS qms Q10 a change control offers its change type and the emergency flag
+PASS qms Q11 no uncaught exception
+PASS coa C1 the sample screen of an Approved sample has no browser-made certificate button
+PASS coa C2 the signature dialog shows the catalogue meaning of the certificate and the issue is signed
+PASS coa C3 the screen reports the certificate number it was given
+PASS coa C4 the original PDF is made by the job and reported ready
+PASS coa C5 the register holds the issued certificate, and the hash of its stored PDF is the one recorded with it
+PASS coa C6 verifying the original reports the document intact
+PASS coa C7 a controlled copy downloads as a PDF
+PASS coa C8 re-issue is offered for the current certificate
+PASS coa C9 a sample still in Testing has no certificate panel
+PASS coa C10 an Analyst sees the panel but is offered no signing action
+PASS coa C11 no uncaught exception
+PASS calibrate K1 an Analyst sees the instrument but is not offered the calibration
+PASS calibrate K2 a wrong password is refused on the screen with the server's message and nothing is recorded
+PASS calibrate K3 the signed calibration is recorded: the new due date is stored and the screen says so
+PASS calibrate K4 one signature with the CALIBRATION meaning by QA, bound to the new record version
+PASS calibrate K5 the audit trail has the calibration, in the same step
+PASS calibrate K6 no uncaught exception
+PASS audit U1 the trail lists entries, newest first
+PASS audit U2 filtering by record id shows only that record's entries, as many as the database holds
+PASS audit U3 Reset brings the whole trail back
+PASS audit U4 verification states that the chain is validated
+PASS audit U5 the security events tab opens inside the screen
+PASS audit U6 an Analyst is refused the trail by the server (403)
+PASS audit U7 the screen tells the Analyst they may not read it, instead of an empty list
+PASS audit U8 no uncaught exception
+PASS scope V1 an Analyst reads the register but is not offered the declaration
+PASS scope V2 a module nobody has declared is shown as not declared, changes allowed
+PASS scope V3 the signed declaration is accepted and the screen says so
+PASS scope V4 the row now says read-only in words
+PASS scope V5 one QA signature with the MODULE_QUALIFICATION meaning is bound to version 1
+PASS scope V6 a write to the module is refused by the server with MODULE_NOT_QUALIFIED
+PASS scope V7 and the refusal is a security event
+PASS scope V8 the module's records are still readable
+PASS scope V9 once declared Qualified again, the same write reaches the module (it is refused for its own reasons, not for the scope)
+PASS scope V10 no uncaught exception
+PASS scan S1 a scanned sample id opens that sample from another screen, though no list there has loaded it
+PASS scan S2 and the screen says what was scanned
+PASS scan S3 an unknown code is reported to the user, with the code in the message (no silent failure)
+PASS scan S4 and the screen did not move
+PASS scan S5 the same text typed slowly is not taken for a scan
+PASS scan S6 sign-in works with the keyboard alone (Tab to the password, Enter submits)
+PASS scan S7 the first Tab lands on a control (a skip link or the navigation), not nowhere
+PASS scan S8 Tab reaches the navigation entry "Test Specifications" (within 60 presses, in page order)
+PASS scan S9 Enter on a navigation entry opens that page
+PASS scan S10 a record opens from the list with Enter on its link
+PASS scan S11 no uncaught exception
+INFO a11y axe dashboard: aria-allowed-attr (critical) x9 at .border-emerald-200.bg-emerald-50\/50.text-emerald-900:nth-child(1) | .border-emerald-200.bg-emerald-50\/50.text-emerald-900:nth-child(2) | .border-amber-300 [known, DEV-2026-10-25-06]
+PASS a11y A dashboard: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+PASS a11y A samples: no new serious or critical axe violation
+PASS a11y A inbox: no new serious or critical axe violation
+INFO a11y axe lab notebook: color-contrast (serious) x2 at .bg-blue-50\/80 > .mt-2.text-\[11px\].text-slate-500 > .max-w-\[140px\].text-\[10px\].truncate | .bg-blue-50\/80 > .mt-2.text-\[11px\].text-slate-500 > .font-mono.text-\[10px\] [known, DEV-2026-10-25-06]
+PASS a11y A lab notebook: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+INFO a11y axe batch traceability: color-contrast (serious) x2 at .text-slate-400.font-medium | .text-slate-400:nth-child(2) [known, DEV-2026-10-25-06]
+PASS a11y A batch traceability: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+INFO a11y axe OOS investigations: button-name (critical) x2 at .md\:flex-row.rounded-xl.shadow-sm:nth-child(1) > .md\:border-b-0.md\:border-e.md\:w-1\/3 > div > .mb-2.justify-between.items-center > .gap-2.items-center.flex:nth-child(2) > .p-1\.5.bg-blue-50.hover\:bg-blue-100 | .md\:flex-row.rounded-xl.shadow-sm:nth-child(2) > .md\:border-b-0.md\:border-e.md\:w-1\/3 > div > .mb-2.justify-between.items-center > .gap-2.items-center.flex:nth-child(2) > .p-1\.5.bg-blue-50.hover\:bg-blue-100 [known, DEV-2026-10-25-06]
+PASS a11y A OOS investigations: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+PASS a11y A stability studies: no new serious or critical axe violation
+INFO a11y axe environmental monitoring: select-name (critical) x3 at select:nth-child(2) | form > select:nth-child(3) | select:nth-child(4) [known, DEV-2026-10-25-06]
+PASS a11y A environmental monitoring: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+PASS a11y A test specifications: no new serious or critical axe violation
+PASS a11y A equipment and calibration: no new serious or critical axe violation
+PASS a11y A reagents and standards: no new serious or critical axe violation
+PASS a11y A SOP training matrix: no new serious or critical axe violation
+INFO a11y axe audit trail: color-contrast (serious) x1 at .border-slate-100.align-top:nth-child(3) > .truncate.text-slate-400.font-mono [known, DEV-2026-10-25-06]
+PASS a11y A audit trail: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+INFO a11y axe reports: select-name (critical) x3 at select:nth-child(1) | .gap-4.items-center.flex > select:nth-child(2) | .focus\:outline-none [known, DEV-2026-10-25-06]
+PASS a11y A reports: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+INFO a11y axe system administration: color-contrast (serious) x7 at tr:nth-child(1) > td:nth-child(2) > .font-mono.text-slate-400 | tr:nth-child(2) > td:nth-child(2) > .font-mono.text-slate-400 | tr:nth-child(3) > td:nth-child(2) > .font-mono.text-slate-400 [known, DEV-2026-10-25-06]
+INFO a11y axe system administration: label-title-only (serious) x1 at tr:nth-child(12) > td:nth-child(3) > .px-2 [known, DEV-2026-10-25-06]
+INFO a11y axe system administration: select-name (critical) x18 at tr:nth-child(1) > td:nth-child(3) > .px-2 | tr:nth-child(2) > td:nth-child(3) > .px-2 | tr:nth-child(3) > td:nth-child(3) > .px-2 [known, DEV-2026-10-25-06]
+PASS a11y A system administration: no new serious or critical axe violation (3 known rule(s) in baseline.json)
+INFO a11y axe master data: color-contrast (serious) x7 at section[aria-label="Products"] > table > thead > tr > th:nth-child(1) | section[aria-label="Products"] > table > thead > tr > th:nth-child(2) | section[aria-label="Products"] > table > thead > tr > th:nth-child(3) [known, DEV-2026-10-25-06]
+PASS a11y A master data: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+INFO a11y axe methods and calculations: definition-list (serious) x4 at div[data-record-id="MTH-SEED-CU"] > .text-slate-700.flex-1.p-4 > dl | div[data-record-id="MTH-SEED-DISS"] > .text-slate-700.flex-1.p-4 > dl | div[data-record-id="MTH-SEED-HPLC"] > .text-slate-700.flex-1.p-4 > dl [known, DEV-2026-10-25-06]
+PASS a11y A methods and calculations: no new serious or critical axe violation (1 known rule(s) in baseline.json)
+PASS a11y A controlled documents: no new serious or critical axe violation
+INFO a11y axe quality management: color-contrast (serious) x6 at th:nth-child(1) | th:nth-child(2) | th:nth-child(3)
+FAIL a11y A quality management: no new serious or critical axe violation :: [{"id":"color-contrast","impact":"serious","n":6,"where":["th:nth-child(1)","th:nth-child(2)","th:nth-child(3)"]}]
+PASS a11y A custody and storage: no new serious or critical axe violation
+PASS a11y A worklists: no new serious or critical axe violation
+PASS a11y A instrument imports: no new serious or critical axe violation
+PASS a11y A API clients: no new serious or critical axe violation
+PASS a11y A event subscriptions: no new serious or critical axe violation
+PASS a11y A audit review: no new serious or critical axe violation
+PASS a11y A module qualification: no new serious or critical axe violation
+INFO a11y axe sample in Testing (result workbench): button-name (critical) x1 at .p-2 [known, DEV-2026-10-25-06]
+INFO a11y axe sample in Testing (result workbench): color-contrast (serious) x1 at .mb-4 [known, DEV-2026-10-25-06]
+PASS a11y A sample in Testing (result workbench): no new serious or critical axe violation (2 known rule(s) in baseline.json)
+INFO a11y axe approved sample (certificate panel): button-name (critical) x1 at .p-2 [known, DEV-2026-10-25-06]
+INFO a11y axe approved sample (certificate panel): color-contrast (serious) x1 at .mb-4 [known, DEV-2026-10-25-06]
+INFO a11y axe approved sample (certificate panel): scrollable-region-focusable (serious) x1 at .overflow-auto [known, DEV-2026-10-25-06]
+PASS a11y A approved sample (certificate panel): no new serious or critical axe violation (3 known rule(s) in baseline.json)
+SUMMARY 216 PASS, 1 FAIL, 6 KNOWN (open deviations)

@@ -1,0 +1,85 @@
+PASS desktop-shell setup window has the database bridge
+PASS desktop-shell setup bridge answers from the setup window
+PASS desktop-shell IPC from another page is refused
+PASS desktop-shell application window has no bridge
+PASS desktop-shell renderer is sandboxed
+PASS desktop-shell port chosen once and stored
+PASS desktop-shell server answers /api/ready
+PASS desktop-shell navigation to a look-alike origin is blocked
+PASS desktop-shell navigation to another site is blocked
+PASS desktop-shell geolocation is denied
+PASS desktop-shell notifications are denied
+PASS desktop-shell microphone request is not blocked by policy (no device here, so NotFoundError)
+PASS desktop-shell server log is written under the user-data folder
+PASS desktop-shell killed server is back within 10 seconds
+PASS desktop-shell restart is logged as SERVER_RESTART
+PASS desktop-shell the new server process has another pid and the same port
+PASS desktop-shell second start uses the same origin
+PASS desktop-upgrade upgrade without a backup passphrase is refused with a clear message
+PASS desktop-upgrade nothing was migrated after the refusal
+PASS desktop-upgrade mismatched passphrases are refused in the form
+PASS desktop-upgrade upgrade with a passphrase opens the application
+PASS desktop-upgrade a pre-migration backup was written to the backups folder
+PASS desktop-upgrade every existing user kept unchanged (id, e-mail, role)
+PASS desktop-upgrade backup passphrase is stored, not in clear text
+PASS desktop-upgrade second start opens the application without the setup screen
+PASS desktop-embedded the built-in database is the default choice, "existing PostgreSQL" is an option
+PASS desktop-embedded no database fields are asked for in built-in mode
+PASS desktop-embedded not enough free disk space is refused with a clear message
+PASS desktop-embedded nothing was created after the refusal
+PASS desktop-embedded server answers /api/ready
+PASS desktop-embedded config records the built-in mode and a port other than 5432
+PASS desktop-embedded owner and app passwords are random, different, and not in the config in clear
+PASS desktop-embedded data lives in the user data folder
+PASS desktop-embedded timezone is UTC
+PASS desktop-embedded the application runs as lims_app (it holds connections)
+PASS desktop-embedded lims_app cannot create tables
+PASS desktop-embedded lims_app cannot change the audit trail
+PASS desktop-embedded lims_app is not a superuser and has a statement timeout
+PASS desktop-embedded lims_owner is a different login from lims_app
+PASS desktop-embedded the first administrator exists
+PASS desktop-embedded the running server wrote through lims_app (its service principal exists)
+PASS desktop-embedded a backup taken by the running server (as lims_app + owner pool) verifies
+PASS desktop-embedded a wrong password is refused
+PASS desktop-embedded after kill -9 the database is back within 15 s with its data
+PASS desktop-embedded and the application server still answers
+PASS desktop-embedded quitting leaves no postgres process
+PASS desktop-embedded second start opens the application without the setup screen
+PASS desktop-embedded the data survived the restart
+PASS desktop-embedded the same port is used again
+PASS after-pack a manifest staged from the source tree does not match the packaged application (the bug)
+PASS after-pack a package without any manifest is refused (what build.yml produced)
+PASS after-pack afterPack writes the manifest from the packaged files, so the application starts
+PASS after-pack afterPack replaces a manifest that was staged earlier (release.yml stages one before packaging)
+PASS after-pack after packaging, any changed, missing or extra file is still detected
+PASS after-pack afterPack signs the manifest when RELEASE_SIGNING_KEY is set, and the signature is checked
+PASS after-pack on macOS the application folder is inside the .app bundle
+PASS after-pack afterPack fails loudly when the application folder is not where it expects it
+PASS after-pack package.json registers the hook
+PASS integrity the manifest lists every file under the covered folders with its hash, the version, the git sha and the schema version
+PASS integrity an untouched installation verifies; one changed byte in dist-server/server.cjs is refused and the file is named
+PASS integrity a missing file and a file added to a covered folder are both refused
+PASS integrity a packaged build without a manifest is refused; an unpackaged tree may run without one
+PASS integrity signed manifest: verifies with the public key; a changed manifest, a wrong key or a stripped signature is refused
+PASS integrity the installer is added to the published manifest with its size and hash, and an update package is checked against it
+PASS integrity the SBOM is CycloneDX 1.5 with one component per locked package, a purl and the lock file hash
+PASS integrity the audit gate fails on an unwaived high advisory, passes with a current waiver and rejects an expired waiver
+PASS pg-supervisor provision: a private cluster on loopback, UTC, scram-sha-256, checksums, no trust rule
+PASS pg-supervisor a started cluster listens on loopback only, answers in UTC and refuses a wrong password
+PASS pg-supervisor an existing PostgreSQL on its own port does not conflict (the embedded one uses its own port)
+PASS pg-supervisor bootstrap: database owned by lims_owner; lims_app is a separate, unprivileged login
+PASS pg-supervisor killing the postmaster recovers within 15 s with the committed data intact
+PASS pg-supervisor stop leaves no postgres process and no listener; a second stop is harmless
+PASS pg-supervisor a postgres left running by a crashed application is stopped cleanly and replaced, not duplicated
+PASS pg-supervisor start fails with a clear message when the port is taken by something else
+PASS pg-supervisor free-disk guard: refuses when less than the required space is free, accepts when enough
+PASS pg-supervisor findBinDir: packaged builds use only the bundled folder; the override and the system folder are for development trees
+PASS pg-supervisor verifyBinaries: the bundled executables are checked against the recorded SHA-256
+PASS pg-supervisor the spawn environment drops inherited PG* variables and carries no secret
+PASS updater sign-in, verified backup, then the signature: in that order, with the same bearer token and the package facts
+PASS updater a backup that did not verify stops the update before any signature is recorded
+PASS updater a backup answering verified:false without a problem list also stops the update
+PASS updater a server without the software-update route, a refused signature and a failed sign-in each stop the update with a clear message
+PASS updater an account with an authenticator needs its code; the code goes to the second login step
+PASS updater missing change reference, e-mail or password is refused without calling the server
+PASS updater findPackage locates the installer next to the manifest and refuses a manifest naming a path

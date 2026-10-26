@@ -6,8 +6,8 @@ Status: **DRAFT, conditional**. Not approved; not released for GxP use (see VSR 
 |---|---|
 | `docs/*.docx` | VP, URS, GRA, FRS, RTM, IQ, OQ, PQ, DIA, VSR (`node validation/build/build.cjs` regenerates them) |
 | `docs/RTM.csv`, `docs/deviations.csv` | Machine-readable traceability (with the executed test ids) and deviation register |
-| `evidence/` | Raw execution output the documents are generated from: `oq-run-*.txt` and `backup-run-*.txt` (shell OQ against the built bundle), `junit-*.xml` (the whole Vitest suite against PostgreSQL 16), `e2e-run-*.txt` (browser flows), `desktop-smoke-*.txt`, `iq-sandbox-*.txt` |
-| `build/content.cjs`, `build/content-r2.cjs` | Single source for requirements, mechanisms, risk scores, deviations and OQ steps (release R1 and release R2) |
+| `evidence/` | Raw execution output the documents are generated from: `oq-run-*.txt` and `backup-run-*.txt` (shell OQ against the built bundle), `junit-*.xml` (the whole Vitest suite against PostgreSQL 16), `e2e-run-*.txt` (browser flows), `desktop-run-*.txt` (Electron shell, upgrade, built-in database and the node:test checks of the installer), `iq-sandbox-*.txt`, `windows-smoke-*.txt` (a copy of the CI job log of the Windows runner, not produced by this package) |
+| `build/content.cjs`, `build/content-r2.cjs`, `build/content-r3.cjs` | Single source for requirements, mechanisms, risk scores, deviations and OQ steps (release R1, R2 and R3) |
 | `build/results.cjs` | Reads the newest evidence files; a test reference that is not found is `NOT RUN`, never `Pass` |
 | `build/check.cjs` | The gate: fails when a Critical/High requirement has no passed test and no open deviation, when a referenced test failed or vanished, or when a mechanism names a file that does not exist |
 

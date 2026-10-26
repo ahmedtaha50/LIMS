@@ -176,12 +176,13 @@ OQ.push(['OQ-09', 'Backup, verification and restore', 'Server running; dist/back
 
 // Release R2 (roadmap M17 to M37): requirements, mechanisms, risk rows, deviations and OQ protocols from content-r2.cjs.
 const R2 = require('./content-r2.cjs');
-URS.push(...R2.URS); FRS.push(...R2.FRS); GRA.push(...R2.GRA); DEVIATIONS.push(...R2.DEVIATIONS);
+const R3 = require('./content-r3.cjs');
+URS.push(...R2.URS, ...R3.URS); FRS.push(...R2.FRS, ...R3.FRS); GRA.push(...R2.GRA, ...R3.GRA); DEVIATIONS.push(...R2.DEVIATIONS, ...R3.DEVIATIONS);
 DEVIATIONS.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
-Object.assign(VERIF, R2.VERIF);
+Object.assign(VERIF, R2.VERIF, R3.VERIF);
 for (const [id, v] of Object.entries(R2.VERIF_UPGRADE)) VERIF[id] = { ...VERIF[id], ...v };
 for (const [id, v] of Object.entries(R2.VERIF_REPLACE)) VERIF[id] = v;
 // A Critical or High requirement without a passed test is allowed only when an open deviation carries it (URS-041, in VERIF_REPLACE).
-const EXEC_DATE = '2026-10-25';
+const EXEC_DATE = '2026-10-26';
 
-module.exports = { SYSTEM, DATE, EXEC_DATE, URS, FRS, VERIF, GRA, DEVIATIONS, OQ, OQ_R2: R2.OQ_R2 };
+module.exports = { SYSTEM, DATE, EXEC_DATE, URS, FRS, VERIF, GRA, DEVIATIONS, OQ, OQ_R2: [...R2.OQ_R2, ...R3.OQ_R3] };

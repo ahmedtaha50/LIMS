@@ -274,6 +274,8 @@ export async function runDrill(a: { db: Db; pool?: pg.Pool; settings: BackupSett
     try { await admin.query(`CREATE DATABASE "${scratchName}"`); }
     catch (e) { throw new Error(`The scratch database could not be created (the database role needs CREATEDB): ${errorText(e)}`); }
     scratch = new pg.Pool({ host: base.host, port: base.port, user: base.user, password: base.password, database: scratchName, max: 2 });
+    // the scratch database is dropped WITH (FORCE) at the end: a connection the server terminates must not become an unhandled 'error' event
+    scratch.on('error', () => undefined);
 
     const r = await restoreBackup(full, a.settings.passphrase, scratch);
     Object.assign(res, { chainIntact: r.chainIntact, countsMatch: r.countsMatch, hashesMatch: r.hashesMatch, timestampsMatch: r.timestampsMatch, tablesCompared: r.tablesCompared });
