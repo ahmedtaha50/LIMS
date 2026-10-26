@@ -104,6 +104,7 @@
       "output": "release"
     },
     "asar": false,
+    "afterPack": "scripts/release/after-pack.cjs",
     "extraResources": [
       { "from": "build/pgsql", "to": "pgsql" }
     ],
