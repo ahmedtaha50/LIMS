@@ -1,0 +1,11 @@
+{
+  "comment": "Browser checks of scripts this track does not own that fail on the combined R2 tree, measured 2026-10-25. Each is tied to an open deviation (validation/build/content-r2.cjs) and is printed as KNOWN, not PASS. The list can only shrink: tests/e2e/run.cjs fails when a listed check passes (remove the entry) and on any failure that is not listed.",
+  "known": [
+    { "flow": "client-shell", "startsWith": "A5 ", "deviation": "DEV-2026-10-25-07", "reason": "reads the header title immediately after the click; with the hash router the title changes one tick later (a race in the script, not the application)" },
+    { "flow": "client-shell", "startsWith": "C: scenario completed", "deviation": "DEV-2026-10-25-07", "reason": "C11 to C14 drive the result correction form that the result workbench (M19) replaced; result-workbench.cjs covers the lock and the stale row" },
+    { "flow": "ui-foundation", "startsWith": "A sample detail:", "deviation": "DEV-2026-10-25-06", "reason": "axe: button-name (critical), color-contrast (serious); same elements as tests/a11y/baseline.json" },
+    { "flow": "ui-foundation", "startsWith": "A OOS investigations:", "deviation": "DEV-2026-10-25-06", "reason": "axe: button-name (critical)" },
+    { "flow": "ui-foundation", "startsWith": "A dashboard:", "deviation": "DEV-2026-10-25-06", "reason": "axe: aria-allowed-attr (critical) on 9 tiles" },
+    { "flow": "ui-foundation", "startsWith": "A audit trail:", "deviation": "DEV-2026-10-25-06", "reason": "axe: color-contrast (serious)" }
+  ]
+}

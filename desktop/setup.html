@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"><title>B-Pharma LIMS – First-time setup</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-t8M/HXdk1NAYRkH+1f6yhl/fCcanU2gHeNT/LvvNkfQ='; style-src 'sha256-ZxHhOMRGXdiZpUi+g3qtf5vX/PPIsK3FXDOT0heGD4Q='; base-uri 'none'; form-action 'none'">
+<style>body{font:14px system-ui;margin:0;background:#f4f6f8;color:#1b2733}main{max-width:520px;margin:32px auto;background:#fff;padding:24px;border-radius:8px;box-shadow:0 1px 4px #0002}
+label{display:block;margin-top:12px;font-weight:600}input[type=text],input[type=password],input:not([type]){width:100%;box-sizing:border-box;padding:8px;margin-top:4px}button{margin-top:20px;padding:10px 16px}
+.choice{display:flex;gap:8px;align-items:flex-start;font-weight:600;margin-top:10px}.choice input{margin-top:3px}.hint{font-weight:400;color:#47586a;display:block}
+#msg{margin-top:12px;white-space:pre-wrap}.err{color:#b00020}[hidden]{display:none!important}</style></head><body><main>
+<h2>B-Pharma LIMS – database</h2>
+<label class="choice"><input type="radio" name="mode" id="mode-builtin" checked><span>Built-in database (recommended)<span class="hint">Nothing to install or configure. The database runs inside this application and stops when it is closed.</span></span></label>
+<label class="choice"><input type="radio" name="mode" id="mode-external"><span>Connect to an existing PostgreSQL<span class="hint">For a server your IT department runs.</span></span></label>
+<p id="lead"></p>
+<div id="ext" hidden><label>Host<input id="host" value="127.0.0.1"></label><label>Database<input id="db" value="lims"></label>
+<label>User<input id="user"></label><label>Password<input id="pw" type="password"></label></div>
+<h3>Backup passphrase</h3>
+<p id="bphint">Encrypts every backup, including the automatic backup taken before a database upgrade. At least 12 characters. Without it a backup cannot be restored: write it down and give it to QA/IT. It is stored encrypted with your Windows account.</p>
+<label>Backup passphrase<input id="bp" type="password"></label><label>Repeat backup passphrase<input id="bp2" type="password"></label>
+<h3>First administrator (only used if the database has no users)</h3>
+<label>Name<input id="an"></label><label>E-mail<input id="ae"></label><label>Password (min 12 characters)<input id="ap" type="password"></label>
+<button id="go">Save and start</button><div id="msg"></div></main>
+<script>
+const $=id=>document.getElementById(id);
+const mode=()=>$('mode-external').checked?'external':'embedded';
+const sync=()=>{$('ext').hidden=mode()!=='external';$('lead').textContent=mode()==='external'?'Enter the PostgreSQL connection for this PC. The password is stored encrypted with your Windows account (DPAPI).':'The application creates and runs its own database on this PC (loopback only, in your user data folder). Random passwords are generated and stored encrypted with your Windows account (DPAPI). Nothing needs to be installed.'};
+$('mode-builtin').onchange=sync;$('mode-external').onchange=sync;
+window.lims.getConfig().then(c=>{if(c){if(c.mode==='external')$('mode-external').checked=true;$('host').value=c.host||$('host').value;$('db').value=c.database||$('db').value;$('user').value=c.user||'';if(c.hasBackupPassphrase)$('bphint').textContent='A backup passphrase is already stored. Leave both fields empty to keep it, or enter a new one (at least 12 characters).'}sync()});
+sync();
+$('go').onclick=async()=>{$('msg').className='';
+ if($('bp').value!==$('bp2').value){$('msg').className='err';$('msg').textContent='The two backup passphrases do not match.';return}
+ $('msg').textContent='Working… (the first start of the built-in database and a database upgrade can take a minute; an upgrade starts with a verified backup)';
+ const f={mode:mode(),backupPassphrase:$('bp').value,adminName:$('an').value,adminEmail:$('ae').value,adminPassword:$('ap').value};
+ if(f.mode==='external')Object.assign(f,{host:$('host').value,database:$('db').value,user:$('user').value,password:$('pw').value});
+ const r=await window.lims.saveAndStart(f);
+ if(r&&r.error){$('msg').className='err';$('msg').textContent=r.error}};
+</script></body></html>

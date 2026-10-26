@@ -1,0 +1,15 @@
+# IQ evidence 2026-10-25T17:27:59Z - development sandbox, NOT the target PC
+node v22.22.0
+electron 43.8.3
+os Linux 6.18.44-fc-v153
+postgres psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
+tables 120
+triggers 79
+migrations 30 (last 0300_qualified_modules)
+adf469dec769ec6527390f9fcd243e742adf8786994f53136bf7837ab01bed03  dist-server/server.cjs
+ad11f3c64808bab694a33adecb96c071156cad242d0a2c573521051fb166c8e9  dist-server/init-db.cjs
+8a0a95e52188baccc81679378f999da9a0f3704b053cbe57a0a56dfa58eab773  dist-server/backup-cli.cjs
+78042b839dcae1ccf61bad754e995d5d7248185c33036983a7fec7d0e72d1439  desktop/main.cjs
+3dac9e24129fac6ebe5ba79b7f56639e742f945e62357c7910da082945663246  desktop/preload.cjs
+fe0954e11a4c95079a66d7979ba8f3da94c63992df60104c0f35eeaafd2bf9c6  desktop/schema.sql
+git 3793d2fc6d36c54d96f13cd702ab7943a221a7da + r2-validation gate patch

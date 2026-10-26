@@ -1,0 +1,27 @@
+/* Noto Sans Arabic (SIL Open Font License 1.1, see OFL-Noto-Sans-Arabic.txt; from @fontsource/noto-sans-arabic 5.3.0, the "arabic" subset).
+   Bundled so the application draws Arabic with no request leaving the PC. The browser fetches a file only when a character in the
+   Arabic ranges is shown, so an English session never loads it. */
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url(./noto-sans-arabic-arabic-400-normal.woff2) format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url(./noto-sans-arabic-arabic-600-normal.woff2) format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+@font-face {
+  font-family: 'Noto Sans Arabic';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url(./noto-sans-arabic-arabic-700-normal.woff2) format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}

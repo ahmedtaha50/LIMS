@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8"><title>B-Pharma LIMS – Backup</title>
+<style>body{font:14px system-ui;background:#f4f6f8;margin:0}main{max-width:620px;margin:24px auto;background:#fff;padding:24px;border-radius:8px;box-shadow:0 1px 4px #0002}
+h2{margin-top:0}h3{margin:20px 0 6px}label{display:block;margin-top:12px;font-weight:600}input{width:100%;box-sizing:border-box;padding:8px;margin-top:4px}button{margin:16px 8px 0 0;padding:10px 16px}pre{white-space:pre-wrap;background:#f0f2f4;padding:8px}
+.banner{padding:8px 10px;margin:6px 0;border-radius:4px;border-left:4px solid}.banner.error{background:#fdecec;border-color:#c62828}.banner.warning{background:#fff6e0;border-color:#e08a00}.banner.info{background:#eaf3fb;border-color:#2b7bb9}.ok{color:#2e7d32}.bad{color:#c62828;font-weight:600}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:2px 12px;margin:6px 0}dt{color:#555}dd{margin:0}</style></head>
+<body><main><h2>Encrypted backup</h2>
+<p>Administrator only. Backups are made automatically every night (see the status below) and are copied to a second location when one is configured. The passphrase encrypts the file; <b>without it a backup cannot be restored</b>. Store it with QA/IT, not on this PC. A monthly restore drill proves that a backup can be restored.</p>
+<label>Administrator e-mail<input id="e"></label><label>Administrator password<input id="p" type="password"></label>
+<label>Backup passphrase (min 12 characters; leave empty to use the configured key)<input id="k" type="password"></label>
+<button id="s">Show status</button><button id="b">Create backup now</button><button id="v">Verify latest backup</button><button id="d">Run restore drill</button>
+<h3>Status</h3><div id="st">Press "Show status".</div>
+<h3>Result</h3><pre id="o"></pre></main>
+<script>
+const $=id=>document.getElementById(id);let last=null;
+async function login(){
+  const l=await fetch('/api/auth/login-local',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:$('e').value,password:$('p').value})}).then(r=>r.json());
+  if(!l.token) throw new Error(l.error||'Login failed (MFA users: use the main application)');
+  return l.token;}
+async function call(path,body){
+  const token=await login();
+  const k=$('k').value;
+  const r=await fetch(path,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({password:$('p').value,...(k?{passphrase:k}:{}),...body})});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error||r.status); return j;}
+async function status(){
+  const token=await login();
+  const r=await fetch('/api/admin/backup/status',{headers:{authorization:'Bearer '+token}});
+  const j=await r.json(); if(!r.ok) throw new Error(j.error||r.status); return j;}
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function show(s){
+  const when=t=>t?new Date(t).toLocaleString():'never';
+  const banners=s.banners.map(b=>'<div class="banner '+esc(b.level)+'"><b>'+esc(b.code)+'</b>: '+esc(b.message)+'</div>').join('')||'<div class="banner info">No warnings.</div>';
+  const mirror=!s.mirror.configured?'<span class="bad">not configured</span>':s.mirror.ok===false?'<span class="bad">FAILED: '+esc(s.mirror.error)+'</span>':s.mirror.ok?'<span class="ok">ok</span>':'no run yet';
+  const drill=s.lastDrill?(s.lastDrill.passed?'<span class="ok">passed</span>':'<span class="bad">FAILED</span>')+' ('+esc(when(s.lastDrill.finishedAt))+')':'never';
+  $('st').innerHTML=banners+'<dl><dt>Last good backup</dt><dd>'+esc(when(s.lastSuccessfulBackupAt))+'</dd><dt>Last attempt</dt><dd>'+(s.lastRun?esc(s.lastRun.status)+' ('+esc(s.lastRun.kind)+', '+esc(when(s.lastRun.finishedAt))+')':'none')+'</dd><dt>Second copy</dt><dd>'+mirror+'</dd><dt>Last restore drill</dt><dd>'+drill+'</dd></dl>';}
+const run=f=>async()=>{$('o').textContent='Working…';try{$('o').textContent=JSON.stringify(await f(),null,2)}catch(e){$('o').textContent='ERROR: '+e.message}};
+const refresh=async()=>{try{show(await status())}catch(e){$('st').textContent='ERROR: '+e.message}};
+$('s').onclick=refresh;
+$('b').onclick=run(async()=>{const j=await call('/api/admin/backup',{});last=j.file;await refresh();return j});
+$('v').onclick=run(async()=>{if(!last){const s=await status();last=s.lastRun&&s.lastRun.file;} if(!last)throw new Error('There is no backup to verify yet');return call('/api/admin/backup/verify',{file:last})});
+$('d').onclick=run(async()=>{const j=await call('/api/admin/backup/drill',{});return {queued:true,jobId:j.jobId,note:'The drill runs in the background; press "Show status" in a minute.'}});
+</script></body></html>

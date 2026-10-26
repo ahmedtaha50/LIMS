@@ -1,0 +1,20 @@
+{
+  "_note": "Waivers for scripts/release/audit-gate.cjs. approvedBy must be a named person from QA; the track that wrote this file left it blank on purpose, so the gate fails until QA records the decision. The reasons are the engineering assessment, not an approval.",
+  "waivers": [
+    { "id": "GHSA-4r6h-8v6p-xvw6", "package": "xlsx", "reason": "SheetJS 0.18.5 is the last version on the npm registry; the fix ships only from cdn.sheetjs.com. xlsx reads no uploaded workbooks (reports are written, not parsed). Replace with the vendor tarball or exceljs in a later release.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-5pgg-2g8v-p4x9", "package": "xlsx", "reason": "As above (ReDoS on parsing input); only generated workbooks are written.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-5gmw-xhrv-c9v3", "package": "tinypool (vitest 3.2.7)", "reason": "Test runner only, never installed on a validated PC or bundled into the installer; fix needs vitest 5 (major), owned by the test-harness track.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-85c8-ppgw-ccpr", "package": "tinypool (vitest 3.2.7)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-7g7r-gx96-252g", "package": "app-builder-lib (electron-builder 25)", "reason": "Build-time tool on the CI runner, building from this repository only; affects AppImage output, which is not shipped. Fix needs electron-builder 26 (major), to be done together with a Windows installer re-test.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-p2f4-r6v6-j797", "package": "builder-util-runtime (electron-builder 25)", "reason": "Build-time tool; electron-updater is not used (updates are installed from a verified file, desktop/updater.cjs).", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-34x7-hfp2-rc4v", "package": "tar (electron-builder 25)", "reason": "Build-time tool extracting archives it downloaded from its own pinned sources on the CI runner; not part of the installed product.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-8qq5-rm4j-mr97", "package": "tar (electron-builder 25)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-83g3-92jg-28cx", "package": "tar (electron-builder 25)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-qffp-2rhf-9h96", "package": "tar (electron-builder 25)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-9ppj-qmqm-q256", "package": "tar (electron-builder 25)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-r6q2-hw4h-h46w", "package": "tar (electron-builder 25)", "reason": "As above (macOS only).", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-23hp-3jrh-7fpw", "package": "tar (electron-builder 25)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-8x88-c5mf-7j5w", "package": "tar (electron-builder 25)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" },
+    { "id": "GHSA-r292-9mhp-454m", "package": "tar (electron-builder 25)", "reason": "As above.", "approvedBy": "", "expires": "2027-03-31" }
+  ]
+}

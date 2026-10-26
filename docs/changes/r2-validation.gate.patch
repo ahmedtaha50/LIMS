@@ -1,0 +1,205 @@
+diff --git a/desktop/schema.sql b/desktop/schema.sql
+index a6a3504..2020379 100644
+--- a/desktop/schema.sql
++++ b/desktop/schema.sql
+@@ -4661,3 +4661,54 @@ CREATE INDEX "business_holidays_created_by_idx" ON "business_holidays" USING btr
+ CREATE INDEX "sample_tat_due_at_idx" ON "sample_tat" USING btree ("due_at");
+ CREATE INDEX "sample_tat_set_by_idx" ON "sample_tat" USING btree ("set_by");
+ CREATE INDEX "tat_sla_rules_updated_by_idx" ON "tat_sla_rules" USING btree ("updated_by");
++
++-- ===== 0300_qualified_modules (sha256 a61ef43b50cc2aef8ebec93c56892117ed111dae55bde4d7f98ab8b8a14b4eda) =====
++-- 0300_qualified_modules: the validated-scope register (roadmap M37, r2-validation).
++--
++-- What this adds, and why:
++--   qualified_modules   one row per functional module whose scope QA has declared: 'Qualified' (its operational qualification is
++--                       executed and accepted) or 'NotQualified' (writes to the module are refused with 403 MODULE_NOT_QUALIFIED).
++--                       A module without a row is undeclared and behaves as before. No row is written here: a declaration is a
++--                       decision of QA, made with an e-signature (meaning MODULE_QUALIFICATION), audited in the same transaction.
++--   signature_meanings  + MODULE_QUALIFICATION (QA only).
++--   permissions         + validation.view (every role) and validation.scope (QA, Admin).
++-- The history of the flag is the audit trail and the signatures; the row holds only the current state.
++
++CREATE TABLE "qualified_modules" (
++	"id" text PRIMARY KEY NOT NULL,
++	"status" text NOT NULL,
++	"reason" text NOT NULL,
++	"evidence_ref" text,
++	"updated_by" text NOT NULL,
++	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
++	"version" integer DEFAULT 1 NOT NULL,
++	CONSTRAINT "qualified_modules_status_check" CHECK ("qualified_modules"."status" IN ('Qualified', 'NotQualified')),
++	CONSTRAINT "qualified_modules_reason_check" CHECK (length(btrim("qualified_modules"."reason")) >= 5)
++);
++
++ALTER TABLE "qualified_modules" ADD CONSTRAINT "qualified_modules_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
++CREATE INDEX "qualified_modules_updated_by_idx" ON "qualified_modules" USING btree ("updated_by");
++
++-- ---- constants (only under the migration runner) ------------------------------------------------------------------------------
++
++INSERT INTO "signature_meanings" ("code", "text", "allowed_roles", "requires_reason", "training_exempt")
++SELECT v.* FROM (VALUES
++	('MODULE_QUALIFICATION', 'Module qualification decision: I have reviewed the qualification evidence of this module and declare whether it is qualified for GxP use.', ARRAY['QA'], true, false)
++) AS v(code, text, allowed_roles, requires_reason, training_exempt)
++WHERE EXISTS (SELECT 1 FROM "schema_migrations");
++
++INSERT INTO "permissions" ("code", "category", "description", "position")
++SELECT v.* FROM (VALUES
++	('validation.view', 'Validation', 'Read the validated-scope register (which modules are qualified)', 300),
++	('validation.scope', 'Validation', 'Declare a module Qualified or NotQualified with an e-signature', 301)
++) AS v("code", "category", "description", "position")
++WHERE EXISTS (SELECT 1 FROM "schema_migrations");
++
++INSERT INTO "role_permissions" ("id", "role_id", "permission_code")
++SELECT v."role_id" || ':' || v."permission_code", v."role_id", v."permission_code" FROM (VALUES
++	('role-admin', 'validation.view'), ('role-admin', 'validation.scope'),
++	('role-qa', 'validation.view'), ('role-qa', 'validation.scope'),
++	('role-reviewer', 'validation.view'),
++	('role-analyst', 'validation.view')
++) AS v("role_id", "permission_code")
++WHERE EXISTS (SELECT 1 FROM "schema_migrations");
+diff --git a/docs/permission-matrix.csv b/docs/permission-matrix.csv
+index b099e30..2595d7b 100644
+--- a/docs/permission-matrix.csv
++++ b/docs/permission-matrix.csv
+@@ -99,3 +99,5 @@ custody.approve,Custody,Acknowledge a receipt deviation and dispose of a retaine
+ label.print,Custody,"Print sample, container and location labels (a reprint needs a reason)",X,X,X,X,POST /custody/labels
+ worklist.view,Worklists,"Read worklists, the workload view and the run-sequence export",X,X,X,X,GET /worklists; GET /worklists/workload; GET /worklists/candidates; GET /worklists/bench-sheets/:jobId; GET /worklists/:id; GET /worklists/:id/run-sequence.csv
+ worklist.manage,Worklists,"Plan, release, change, complete and cancel worklists; assign analysts; request the bench sheet",X,X,,X,POST /worklists; PUT /worklists/:id; POST /worklists/:id/items; PUT /worklists/:id/items/:itemId; POST /worklists/:id/items/:itemId/remove; POST /worklists/:id/reorder; POST /worklists/:id/release; POST /worklists/:id/complete; POST /worklists/:id/cancel; POST /worklists/:id/bench-sheet
++validation.view,Validation,Read the validated-scope register (which modules are qualified),X,X,X,X,GET /validation/modules
++validation.scope,Validation,Declare a module Qualified or NotQualified with an e-signature,X,X,,,POST /validation/modules/:module/status
+diff --git a/src/db/schema/index.ts b/src/db/schema/index.ts
+index 0784b16..0c0f821 100644
+--- a/src/db/schema/index.ts
++++ b/src/db/schema/index.ts
+@@ -31,3 +31,4 @@ export * from './custody';
+ export * from './tat';
+ export * from './worklists';
+ export * from './instrument-data';
++export * from './qualified';
+diff --git a/src/lib/permissions.ts b/src/lib/permissions.ts
+index d1bbc6d..5d1ec5c 100644
+--- a/src/lib/permissions.ts
++++ b/src/lib/permissions.ts
+@@ -169,6 +169,9 @@ export const PERMISSIONS = [
+   // r2-worklists (migration 0270_worklists, positions 270-271)
+   { code: 'worklist.view', category: 'Worklists', description: 'Read worklists, the workload view and the run-sequence export' },
+   { code: 'worklist.manage', category: 'Worklists', description: 'Plan, release, change, complete and cancel worklists; assign analysts; request the bench sheet' },
++  // r2-validation (migration 0300_qualified_modules, positions 300-301)
++  { code: 'validation.view', category: 'Validation', description: 'Read the validated-scope register (which modules are qualified)' },
++  { code: 'validation.scope', category: 'Validation', description: 'Declare a module Qualified or NotQualified with an e-signature' },
+ ] as const satisfies readonly P[];
+ 
+ export type PermissionCode = (typeof PERMISSIONS)[number]['code'];
+@@ -191,6 +194,7 @@ const EVERYONE: readonly PermissionCode[] = [
+   'doc.view', 'doc.author', 'doc.print', 'training.acknowledge',
+   'custody.view', 'custody.handle', 'label.print',
+   'worklist.view',
++  'validation.view',
+ ];
+ 
+ /** Admin and QA only: approvals, release, audit review. Closing, releasing and certifying were already limited to them. */
+@@ -209,6 +213,7 @@ const SUPERVISORY: readonly PermissionCode[] = [
+   'custody.locations', 'custody.approve',
+   'reagent.approve',
+   'instrument.profile.approve',
++  'validation.scope',
+ ];
+ 
+ /** The default matrix: role name to the permission codes it holds. Admin holds every code. */
+diff --git a/src/server/app.ts b/src/server/app.ts
+index 9b2c799..17da5ef 100644
+--- a/src/server/app.ts
++++ b/src/server/app.ts
+@@ -12,6 +12,7 @@ import { createRequireAuth } from './core/auth';
+ import { errorHandler, notFoundHandler, requestContext } from './http/errors';
+ import { applySecurity } from './http/security';
+ import { requireStringCredentials } from './http/validate';
++import { moduleQualificationGuard } from './qualified';
+ import { createApiRouter } from './routes';
+ import { mountApiV1 } from './v1';
+ 
+@@ -42,6 +43,8 @@ export function createApp({ db, io, rateLimit }: AppDeps): Express {
+ 
+   // One table says who may call what (src/server/authz/routeTable.ts); it runs in front of every route module.
+   app.use('/api', authorize({ db }));
++  // The validated-scope register (r2-validation): writes to a module that QA declared NotQualified are refused (403 MODULE_NOT_QUALIFIED).
++  app.use('/api', moduleQualificationGuard(db));
+   app.use('/api', createApiRouter({ db, requireAuth: createRequireAuth(db) }));
+   app.use('/api', notFoundHandler);
+ 
+diff --git a/src/server/authz/routeTable.ts b/src/server/authz/routeTable.ts
+index 75f9240..94efdda 100644
+--- a/src/server/authz/routeTable.ts
++++ b/src/server/authz/routeTable.ts
+@@ -76,6 +76,7 @@ import { sampleExportSchema } from '../routes/lookup';
+ import { reintegrationSignSchema, reviewChecklistSchema } from '../routes/review';
+ import { apiClientCreateSchema, apiClientRevokeSchema } from '../routes/api-clients';
+ import { deliveryRetrySchema, subscriptionCreateSchema, subscriptionStatusSchema } from '../routes/subscriptions';
++import { qualifiedStatusSchema } from '../qualified';
+ import { calendarSchema, holidayCreateSchema, holidayRemoveSchema, sampleTatSchema, slaSchema } from '../routes/metrics';
+ import type { BodySpec, RouteRule } from './types';
+ 
+@@ -493,6 +494,9 @@ export const ROUTE_RULES: Readonly<Record<string, RouteRule>> = {
+   'GET /custody/labels': perm('custody.view'),
+   'GET /custody/verify': perm('record.verify'),
+ 
++  // r2-validation (roadmap M37, src/server/qualified.ts): the validated-scope register; declaring a status is QA-signed (MODULE_QUALIFICATION).
++  'GET /validation/modules': perm('validation.view'),
++  'POST /validation/modules/:module/status': perm('validation.scope', { body: qualifiedStatusSchema }),
+   // r2-worklists (roadmap M33, src/server/routes/worklists.ts): worklists by method and instrument, assignment, run sequence, workload.
+   'GET /worklists': perm('worklist.view'),
+   'GET /worklists/workload': perm('worklist.view'),
+diff --git a/src/server/routes/index.ts b/src/server/routes/index.ts
+index ce29803..5666846 100644
+--- a/src/server/routes/index.ts
++++ b/src/server/routes/index.ts
+@@ -28,6 +28,7 @@ import { notebookTemplatesRoutes } from './notebook-templates';
+ import { oosRoutes } from './oos';
+ import { oosWorkflowRoutes } from '../oos/routes';
+ import { productsRoutes } from './products';
++import { qualifiedRoutes } from '../qualified';
+ import { qmsRoutes } from './qms';
+ import { reagentInventoryRoutes, reagentsRoutes } from './reagents';
+ import { releaseRoutes } from './release';
+@@ -81,6 +82,7 @@ const modules = [
+   oosRoutes,
+   oosWorkflowRoutes,
+   productsRoutes,
++  qualifiedRoutes,
+   qmsRoutes,
+   reagentsRoutes,
+   reagentInventoryRoutes,
+diff --git a/tests/route-table.json b/tests/route-table.json
+index c858bba..33324e2 100644
+--- a/tests/route-table.json
++++ b/tests/route-table.json
+@@ -1670,6 +1670,16 @@
+       "path": "/api/transcribe",
+       "auth": true
+     },
++    {
++      "method": "GET",
++      "path": "/api/validation/modules",
++      "auth": true
++    },
++    {
++      "method": "POST",
++      "path": "/api/validation/modules/:module/status",
++      "auth": true
++    },
+     {
+       "method": "GET",
+       "path": "/api/worklists",
+diff --git a/tests/upgrade/upgrade-v0.1.0.test.ts b/tests/upgrade/upgrade-v0.1.0.test.ts
+index bef0eb0..7da080d 100644
+--- a/tests/upgrade/upgrade-v0.1.0.test.ts
++++ b/tests/upgrade/upgrade-v0.1.0.test.ts
+@@ -179,7 +179,7 @@ describe('installer on a v0.1.0 installation', () => {
+       // 0250_em (r2-em) adds EM_LIMIT_APPROVAL (46) and 25 Draft limit profiles: a copy of each of the 14 active env_limits rows and the
+       // 11 example particle limits. Its other tables start empty.
+       const specParameters = before.specifications.reduce((n, j) => n + (Array.isArray(JSON.parse(j).parameters) ? JSON.parse(j).parameters.length : 0), 0);
+-      const expected = added === 'password_history' ? before.users.filter(j => JSON.parse(j).password_hash).length : added === 'signature_meanings' ? 47
++      const expected = added === 'password_history' ? before.users.filter(j => JSON.parse(j).password_hash).length : added === 'signature_meanings' ? 48
+         : added === 'env_limits' ? 14 : added === 'spec_parameters' ? specParameters : added === 'qms_settings' || added === 'audit_review_settings' || added === 'oos_settings' || added === 'training_curricula' ? 1 : added === 'oos_checklist_templates' ? 2 : added === 'stability_conditions' ? 7 : added === 'em_limit_profiles' ? 25 : added === 'result_versions' ? before.results.filter(j => ![null, ''].includes(JSON.parse(j).value)).length : (MASTER_DATA_ROWS(before)[added] ?? AUTHZ_CATALOG_ROWS[added] ?? 0);
+       expect(after[added], added).toHaveLength(expected);
+     }

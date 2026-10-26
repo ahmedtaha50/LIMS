@@ -1,0 +1,22 @@
+--- a/.github/workflows/build.yml
++++ b/.github/workflows/build.yml
+@@ -79,6 +79,8 @@
+       - name: Add Windows-only native packages missing from the Linux lockfile
+         run: node scripts/install-win-natives.cjs
+       - run: npm run build
++      - name: Bundle the built-in PostgreSQL (needs the pinned sha256 in desktop/pg-bundle.json)
++        run: npm run fetch:pg
+       - run: npx electron-builder --win nsis --publish never
+       - name: Checksums
+         shell: pwsh
+--- a/.github/workflows/release.yml
++++ b/.github/workflows/release.yml
+@@ -45,6 +45,8 @@
+       - name: Release manifest for the packaged application
+         env: { RELEASE_SIGNING_KEY: '${{ secrets.RELEASE_SIGNING_KEY }}' }
+         run: node scripts/make-release-manifest.cjs --git-sha "$env:GITHUB_SHA"
++      - name: Bundle the built-in PostgreSQL (needs the pinned sha256 in desktop/pg-bundle.json)
++        run: npm run fetch:pg
+       - name: Installer (Authenticode-signed when CSC_LINK is set)
+         env: { CSC_LINK: '${{ secrets.CSC_LINK }}', CSC_KEY_PASSWORD: '${{ secrets.CSC_KEY_PASSWORD }}' }
+         run: npx electron-builder --win nsis --publish never

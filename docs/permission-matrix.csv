@@ -1,0 +1,114 @@
+permission,category,description,Admin,QA,Reviewer,Analyst,routes
+sample.view,Samples,"Read samples, their results, signatures and notebook",X,X,X,X,GET /samples; GET /samples/:id; GET /samples/:id/attachments; GET /attachments/:id/content; GET /samples/:id/result-versions; GET /samples/:id/review-checklist; GET /calc/samples/:id; GET /samples/:id/result-sources; GET /samples/:id/materials; GET /tat/samples/:id; GET /lookup/samples; GET /lookup/results; GET /lists/samples; POST /lists/samples/export; GET /resolve
+sample.register,Samples,"Register a sample, or import several",X,,,X,POST /samples; POST /samples/bulk-import; POST /batches/:id/samples; POST /stability/timepoints/:id/pull
+sample.transition,Samples,"Move a sample through submit, review, approve or reject (the allowed roles of each step are enforced by the workflow)",X,X,X,X,POST /samples/:id/transition; POST /samples/:id/review-checklist; PUT /tat/samples/:id
+sample.notebook.add,Samples,Add a signed observation to a sample notebook,X,X,X,X,POST /samples/:id/notebook
+result.enter,Samples,Enter or correct a result value,X,X,X,X,PUT /samples/:id/results/:resultId; PUT /samples/:id/results-batch; POST /samples/:id/attachments; POST /calc/samples/:id/results/:resultId; POST /calc/samples/:id/sst; POST /instrument-files; POST /instrument-imports/:id/accept; POST /instrument-imports/:id/reject; POST /samples/:id/results/:resultId/materials; POST /result-materials/:id/withdraw; PUT /worklists/:id/grid
+oos.view,OOS,Read OOS investigations,X,X,X,X,GET /oos; GET /oos/overdue; GET /oos/settings; GET /oos/checklist-templates; GET /oos/:id
+oos.open,OOS,Open an OOS investigation,X,X,X,X,POST /oos
+oos.edit,OOS,"Edit an open OOS investigation (root cause, assignee)",X,X,X,X,PUT /oos/:id; POST /oos/:id/tasks; PUT /oos/:id/tasks/:taskId; PUT /oos/:id/assignable-cause; POST /oos/:id/retests
+oos.close,OOS,Close an OOS investigation with an e-signature,X,X,,,POST /oos/:id/close
+spec.view,Specifications,Read specifications,X,X,X,X,GET /specifications; GET /lookup/specifications
+spec.create,Specifications,Create a draft specification,X,X,X,X,POST /specifications
+spec.edit,Specifications,Edit the parameters of a draft specification,X,X,X,X,PUT /specifications/:id
+spec.approve,Specifications,Approve a specification for use (master data approval; never the author),X,X,,,POST /specifications/:id/approve
+trace.view,Batch records,Read batch traceability dossiers,X,X,X,X,GET /traceability/batches; GET /traceability/batch/:batch
+trace.dispense,Batch records,Record a dispensed raw material on a batch,X,X,X,X,POST /traceability/batch/:batch/material
+batch.release,Batch records,Authorise batch release with an e-signature,X,X,,,POST /traceability/batch/:batch/release
+record.verify,Batch records,Verify signatures and the audit chain of a record,X,X,X,X,GET /traceability/batch/:batch/verify-chain; GET /signatures/verify/:id; GET /signatures/meanings; GET /signatures/entity/:type/:id; GET /eln/:id/verify; GET /reports/runs/:id/verify; GET /custody/verify
+eln.view,Notebook,Read notebook worksheets and templates,X,X,X,X,GET /eln; GET /eln/:id; GET /notebook-templates
+eln.create,Notebook,Create a worksheet or a template,X,X,X,X,POST /eln; POST /notebook-templates
+eln.edit,Notebook,Edit an unsigned worksheet,X,X,X,X,PUT /eln/:id
+eln.sign,Notebook,Sign and lock a worksheet,X,X,X,X,POST /eln/:id/sign
+instrument.view,Equipment,Read instruments,X,X,X,X,GET /instruments; GET /instrument-parsers; GET /instrument-profiles; GET /instrument-files; GET /instrument-files/:id; GET /instrument-files/:id/content; GET /instrument-imports; GET /instruments/:id/usage-log; GET /lookup/instruments
+instrument.register,Equipment,Register an instrument,X,X,X,X,POST /instruments
+instrument.calibrate,Equipment,Record a calibration,X,X,X,X,POST /instruments/:id/calibrate
+reagent.view,Equipment,Read reagents,X,X,X,X,GET /reagents; GET /reagent-items; GET /reagent-lots; GET /reagent-lots/:id; GET /reagent-lots/:id/traceback; GET /prepared-solutions; GET /prepared-solutions/:id; GET /prepared-solutions/:id/traceback; GET /reagent-materials
+reagent.receive,Equipment,Receive a reagent into stock,X,X,X,X,POST /reagents; POST /reagent-lots
+env.view,Environmental,Read environmental monitoring records,X,X,X,X,GET /env-records; GET /em/points; GET /em/limit-profiles; GET /em/results; GET /em/excursions; GET /em/batch-impact/:batch; GET /em/batch-rooms; GET /em/trends; GET /em/heatmap
+env.record,Environmental,Record an environmental monitoring result,X,X,X,X,POST /env-records; POST /em/results; POST /em/results/:id/identification
+env.edit,Environmental,Correct an environmental monitoring record,X,X,X,X,PUT /env-records/:id
+stability.view,Stability,Read stability studies,X,X,X,X,GET /stability; GET /stability/studies/:id; GET /stability/timepoints; GET /stability/protocols; GET /stability/conditions; GET /stability/chambers
+stability.create,Stability,Create a stability study,X,X,X,X,POST /stability
+stability.edit,Stability,Edit a stability study,X,X,X,X,PUT /stability/:id
+report.view,Reports,"Read the dashboard, batch reports, trends and metrics",X,X,X,X,GET /dashboard; GET /metrics/tat; GET /metrics/kpi; GET /metrics/kpi/:key; GET /tat/settings; GET /reports/batch/:batch; GET /reports/filters; GET /reports/metrics; GET /reports/trends; GET /coa/documents; GET /coa/documents/:id; GET /coa/:sampleId; GET /reports/runs/:id
+report.generate,Reports,"Request a results preview or a controlled copy of an issued certificate, and collect it",X,X,X,X,POST /reports/generate; GET /reports/status/:jobId; GET /reports/artifact/:jobId; POST /coa/documents/:id/copies; GET /reports/runs/:id/pdf
+training.view,Training,Read the training matrix,X,X,X,X,GET /training; GET /training/curricula; GET /training/assignments; GET /training/qualifications; GET /lookup/users
+training.certify,Training,Certify another user as trained in the software,X,X,,,POST /training/:userId/certify; POST /training/assignments/:id/certify
+ai.use,AI,Use the AI assistance (off unless an Administrator enabled it),X,X,X,X,POST /transcribe; POST /ai/capa-analysis; POST /ai/eln-protocol
+audit.view,Audit,Read the audit trail and its head,X,X,,,GET /audit; GET /audit/head; GET /audit/exceptions; GET /audit/reviews; GET /audit/review-settings; GET /audit/anchors; GET /audit/clock
+audit.verify,Audit,Verify the audit chain,X,X,,,POST /audit/verify; POST /audit/anchors; POST /audit/anchors/verify
+audit.export,Audit,Export the audit trail,X,X,,,POST /audit/export
+audit.history.view,Audit,Read the change history of a record,X,X,X,,GET /audit/history
+security.view,Audit,Read security events,X,X,,,GET /security-events; GET /security-events/types
+security.verify,Audit,Verify the security-event chain,X,X,,,POST /security-events/verify
+admin.users.view,Administration,List user accounts,X,X,,,GET /admin/users
+admin.users.manage,Administration,"Create, deactivate and reset accounts",X,,,,POST /admin/users; PUT /admin/users/:id; POST /admin/users/:id/reset-password; POST /admin/users/:id/reset-mfa; POST /admin/users/:id/unlock
+admin.settings.view,Administration,Read the security policies,X,,,,GET /admin/settings
+admin.settings.manage,Administration,Change the security policies,X,,,,PUT /admin/settings
+admin.integrations.view,Administration,Read the external integration settings,X,,,,GET /admin/integrations; GET /api-clients; GET /event-subscriptions; GET /event-subscriptions/:id/deliveries
+admin.integrations.manage,Administration,Change the external integration settings,X,,,,PUT /admin/integrations/ai; POST /api-clients; POST /api-clients/:id/revoke; POST /event-subscriptions; POST /event-subscriptions/:id/status; POST /event-deliveries/:id/retry
+admin.broadcast,Administration,Send a system-wide alert,X,,,,POST /admin/broadcast
+admin.activity.view,Administration,Read the usage heat-map,X,,,,GET /admin/activity-heatmap
+admin.backup.run,Administration,"Make, verify and drill backups",X,,,,POST /admin/backup; POST /admin/backup/verify; POST /admin/backup/drill
+admin.backup.view,Administration,Read the backup status,X,X,,,GET /admin/backup/status
+admin.jobs.view,Administration,Read the job queue and the scheduler,X,X,,,GET /admin/jobs
+system.info.view,Administration,Read the version and schema information,X,X,X,X,GET /system/info
+authz.view,Authorisation,Read the permission matrix and the role-change requests,X,X,,,GET /permissions/matrix; GET /permissions/role-changes
+authz.role.request,Authorisation,Request a change of a user role (first signature),X,,,,POST /permissions/role-changes; POST /permissions/role-changes/:id/cancel
+authz.role.approve,Authorisation,"Approve or reject a requested role change (second, independent signature)",X,X,,,POST /permissions/role-changes/:id/approve; POST /permissions/role-changes/:id/reject
+master.view,Master data,"Read products, batches and customers",X,X,X,X,GET /products; GET /products/:id; GET /batches; GET /batches/:id; GET /customers
+master.manage,Master data,"Create and edit products, batches and customers",X,X,,,POST /products; PUT /products/:id; POST /batches; PUT /batches/:id; POST /customers; PUT /customers/:id; POST /customers/:id/status; PUT /tat/calendar; POST /tat/holidays; POST /tat/holidays/:id/remove; PUT /tat/sla/:priority
+master.status,Master data,Change the status of a product or a batch with an e-signature,X,X,,,POST /products/:id/status; POST /batches/:id/status
+method.view,Methods,"Read methods, calculation formulas, test plans and system suitability runs",X,X,X,X,GET /methods; GET /calc/formulas; POST /calc/evaluate; GET /test-plans
+method.manage,Methods,"Draft and edit methods, calculation formulas and test plans",X,X,X,,POST /methods; PUT /methods/:id; POST /methods/:id/revise; POST /calc/formulas; PUT /calc/formulas/:id; POST /calc/formulas/:id/revise; POST /test-plans; PUT /test-plans/:id; POST /test-plans/:id/revise
+method.approve,Methods,"Approve a method, a calculation formula or a test plan for use (never the author)",X,X,,,POST /methods/:id/approve; POST /calc/formulas/:id/approve; POST /test-plans/:id/approve
+audit.review,Audit,Sign an audit trail review of a batch or of a range of entries,X,X,,,POST /audit/reviews
+audit.review.settings,Audit,Switch the audit-trail-review-before-release requirement on or off with an e-signature,X,X,,,PUT /audit/review-settings
+clock.acknowledge,Audit,"Acknowledge a clock anomaly with an e-signature, which lifts the signing block",X,,,,POST /audit/clock-anomalies/:id/acknowledge
+qms.view,Quality management,"Read deviations, CAPA, change controls and audit findings",X,X,X,X,GET /qms/records; GET /qms/records/:id; GET /qms/actions; GET /qms/settings
+qms.create,Quality management,"Raise a deviation, CAPA, change control or audit finding",X,X,X,X,POST /qms/records
+qms.edit,Quality management,"Edit an open quality record, move it through its unsigned steps, add actions, links and comments",X,X,X,X,PUT /qms/records/:id; POST /qms/records/:id/transition; POST /qms/records/:id/links; POST /qms/records/:id/comments; POST /qms/records/:id/actions; PUT /qms/actions/:id; POST /qms/actions/:id/complete
+qms.approve,Quality management,"Triage, approve, close or reject a quality record with an e-signature; verify effectiveness",X,X,,,POST /qms/records/:id/sign; POST /qms/records/:id/effectiveness; POST /qms/actions/:id/cancel
+qms.settings,Quality management,Switch the change-control requirement on or off with an e-signature,X,X,,,PUT /qms/settings
+coa.issue,Reports,"Issue, re-issue or void a Certificate of Analysis with an e-signature (never someone who tested the sample)",X,X,,,POST /coa/documents/:id/reissue; POST /coa/documents/:id/void; POST /coa/:sampleId
+result.reintegration.approve,Samples,Approve a reintegrated result with an e-signature (never the person who reintegrated it),X,X,,,POST /result-versions/:id/sign
+doc.view,Documents,"Read controlled documents, their versions and files",X,X,X,X,GET /documents; GET /documents/:id; GET /document-versions/:id/content; GET /document-versions/:id/prints
+doc.author,Documents,"Draft a controlled document or a new revision, and submit it for review with an authorship signature",X,X,X,X,POST /documents; POST /documents/:id/revise; PUT /document-versions/:id; PUT /document-versions/:id/file; POST /document-versions/:id/submit
+doc.review,Documents,"Review a submitted document version with an e-signature, or return it to Draft",X,X,X,,POST /document-versions/:id/review; POST /document-versions/:id/return
+doc.approve,Documents,"Approve a reviewed document version, make it effective (QA) or withdraw it, with an e-signature",X,X,,,POST /document-versions/:id/approve; POST /document-versions/:id/effective; POST /document-versions/:id/obsolete
+doc.print,Documents,Print a numbered controlled copy of an effective document (print log),X,X,X,X,POST /document-versions/:id/print
+training.manage,Training,Define curricula and assign training,X,X,,,POST /training/curricula; PUT /training/curricula/:id; POST /training/assignments
+training.acknowledge,Training,Sign one's own training assignment as read and understood,X,X,X,X,POST /training/assignments/:id/acknowledge
+training.override,Training,Authorise a time-limited qualification override for an analyst with an e-signature,X,X,,,POST /training/qualifications/override; POST /training/qualifications/:id/revoke
+oos.approve,OOS,Confirm an assignable cause (invalidate an OOS result) and authorise retests with an e-signature,X,X,,,POST /oos/:id/assignable-cause/confirm; POST /oos/:id/retest-plan
+oos.settings,OOS,Change the OOS retest and due-date rules with an e-signature; add checklist templates,X,X,,,POST /oos/settings; POST /oos/checklist-templates
+env.manage,Environmental,"Maintain sampling points, batch room windows and limit profiles (approval with an e-signature); acknowledge adverse trends",X,X,,,POST /em/points; PUT /em/points/:id; POST /em/points/:id/retire; POST /em/limit-profiles; PUT /em/limit-profiles/:id; POST /em/limit-profiles/:id/approve; POST /em/batch-rooms; PUT /em/batch-rooms/:id; POST /em/trends/evaluate; POST /em/trends/:id/acknowledge
+env.correct,Environmental,"Correct a recorded environmental monitoring result, with a reason",X,X,,,PUT /em/results/:id
+stability.manage,Stability,Draft and revise stability protocols; maintain storage conditions and chambers,X,X,X,,POST /stability/protocols; PUT /stability/protocols/:id; POST /stability/protocols/:id/revise; POST /stability/conditions; PUT /stability/conditions/:id; POST /stability/chambers; PUT /stability/chambers/:id
+stability.approve,Stability,Approve a stability protocol revision with an e-signature,X,X,,,POST /stability/protocols/:id/approve
+instrument.profile.manage,Equipment,"Define and edit the capture profiles of instruments (folder, parser, mapping); an edit of an approved profile needs a new approval",X,X,,,POST /instrument-profiles; POST /instrument-profiles/dry-run; PUT /instrument-profiles/:id; POST /instrument-profiles/:id/retire
+instrument.profile.approve,Equipment,Approve a capture profile with an e-signature (never the person who wrote or last edited it),X,X,,,POST /instrument-profiles/:id/approve
+reagent.manage,Equipment,Define and edit reagent and reference standard items (the item master),X,X,X,,POST /reagent-items; PUT /reagent-items/:id
+reagent.use,Equipment,"Open a released lot, record consumption, prepare and discard solutions, and record the lots used for a result",X,X,X,X,POST /reagent-lots/:id/open; POST /reagent-lots/:id/consume; POST /reagent-lots/:id/dispose; POST /prepared-solutions; POST /prepared-solutions/:id/consume; POST /prepared-solutions/:id/discard
+reagent.approve,Equipment,"Release a received lot from quarantine, reject it or record its retest, with an e-signature (never the receiver)",X,X,,,POST /reagent-lots/:id/release; POST /reagent-lots/:id/reject; POST /reagent-lots/:id/retest
+custody.view,Custody,"Read sample receipts, containers, the custody ledger, storage locations, the retain register and the label log",X,X,X,X,GET /custody/samples/:id; GET /custody/retains; GET /custody/locations; GET /custody/labels
+custody.handle,Custody,"Record a sample receipt, make aliquots, transfer, consume and register retains",X,X,X,X,POST /custody/samples/:id/receipt; POST /custody/containers/:id/aliquots; POST /custody/containers/:id/consume; POST /custody/containers/:id/transfer; POST /custody/containers/:id/retain
+custody.locations,Custody,Define and change storage locations,X,X,,,POST /custody/locations; PUT /custody/locations/:id
+custody.approve,Custody,Acknowledge a receipt deviation and dispose of a retained sample with an e-signature,X,X,,,POST /custody/samples/:id/receipt/acknowledge; POST /custody/retains/:id/dispose
+label.print,Custody,"Print sample, container and location labels (a reprint needs a reason)",X,X,X,X,POST /custody/labels
+worklist.view,Worklists,"Read worklists, the workload view and the run-sequence export",X,X,X,X,GET /worklists; GET /worklists/workload; GET /worklists/candidates; GET /worklists/bench-sheets/:jobId; GET /worklists/:id; GET /worklists/:id/run-sequence.csv
+worklist.manage,Worklists,"Plan, release, change, complete and cancel worklists; assign analysts; request the bench sheet",X,X,,X,POST /worklists; PUT /worklists/:id; POST /worklists/:id/items; PUT /worklists/:id/items/:itemId; POST /worklists/:id/items/:itemId/remove; POST /worklists/:id/reorder; POST /worklists/:id/release; POST /worklists/:id/complete; POST /worklists/:id/cancel; POST /worklists/:id/bench-sheet
+validation.view,Validation,Read the validated-scope register (which modules are qualified),X,X,X,X,GET /validation/modules
+validation.scope,Validation,Declare a module Qualified or NotQualified with an e-signature,X,X,,,POST /validation/modules/:module/status
+directory.view,Directory,"Read the directory sign-on settings, group mappings and directory accounts",X,X,,,GET /directory/settings; GET /directory/mappings; GET /directory/accounts
+directory.manage,Directory,"Change the directory connection, propose group mappings, flag break-glass accounts and test the connection",X,,,,PUT /directory/settings; POST /directory/test; POST /directory/mappings; POST /directory/accounts/:userId/break-glass
+directory.approve,Directory,Approve or retire a directory group to role mapping with an e-signature,X,X,,,POST /directory/mappings/:id/approve; POST /directory/mappings/:id/retire
+spc.view,Trending,"Read control charts, baselines, out-of-trend alerts and shelf-life estimates",X,X,X,X,GET /trending/parameters; GET /trending/series; GET /trending/baselines; GET /trending/alerts; GET /stability-trend
+spc.manage,Trending,"Set a control-limit baseline (e-signed), evaluate and acknowledge out-of-trend alerts",X,X,,,POST /trending/baselines; POST /trending/alerts/evaluate; POST /trending/alerts/:id/acknowledge
+periodic.view,Periodic review,"Read periodic review plans, reviews and their evidence",X,X,X,,GET /periodic-reviews/plans; GET /periodic-reviews/due; GET /periodic-reviews; GET /periodic-reviews/:id
+periodic.manage,Periodic review,"Create review plans, open reviews and record findings",X,X,,,POST /periodic-reviews/plans; PUT /periodic-reviews/plans/:id; POST /periodic-reviews/plans/:id/open; PUT /periodic-reviews/:id; POST /periodic-reviews/:id/cancel
+periodic.sign,Periodic review,Complete a periodic review with an e-signature,X,X,,,POST /periodic-reviews/:id/complete
+archive.view,Archive,"Read the archive register, retention policies and legal holds",X,X,X,,GET /retention/policies; GET /retention/holds; GET /retention/candidates; GET /retention/flags; GET /archive/bundles; GET /archive/bundles/:id; GET /archive/records/:entityType/:entityId
+archive.manage,Archive,"Build, verify and restore-test archive bundles; decide the archive with an e-signature",X,X,,,POST /archive/bundles; POST /archive/bundles/:id/verify; POST /archive/bundles/:id/restore-check; POST /archive/bundles/:id/decision
+retention.manage,Archive,"Set retention periods, place and release legal holds, flag archived records for disposal review",X,X,,,PUT /retention/policies/:recordClass; POST /retention/holds; POST /retention/holds/:id/release; POST /retention/flags; POST /retention/flags/:id/withdraw

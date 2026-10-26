@@ -1,0 +1,25 @@
+PASS desktop-shell setup window has the database bridge
+PASS desktop-shell setup bridge answers from the setup window
+PASS desktop-shell IPC from another page is refused
+PASS desktop-shell application window has no bridge
+PASS desktop-shell renderer is sandboxed
+PASS desktop-shell port chosen once and stored
+PASS desktop-shell server answers /api/ready
+PASS desktop-shell navigation to a look-alike origin is blocked
+PASS desktop-shell navigation to another site is blocked
+PASS desktop-shell geolocation is denied
+PASS desktop-shell notifications are denied
+PASS desktop-shell microphone request is not blocked by policy (no device here, so NotFoundError)
+PASS desktop-shell server log is written under the user-data folder
+PASS desktop-shell killed server is back within 10 seconds
+PASS desktop-shell restart is logged as SERVER_RESTART
+PASS desktop-shell the new server process has another pid and the same port
+PASS desktop-shell second start uses the same origin
+PASS desktop-upgrade upgrade without a backup passphrase is refused with a clear message
+PASS desktop-upgrade nothing was migrated after the refusal
+PASS desktop-upgrade mismatched passphrases are refused in the form
+PASS desktop-upgrade upgrade with a passphrase opens the application
+PASS desktop-upgrade a pre-migration backup was written to the backups folder
+PASS desktop-upgrade every existing user kept unchanged (id, e-mail, role)
+PASS desktop-upgrade backup passphrase is stored, not in clear text
+PASS desktop-upgrade second start opens the application without the setup screen

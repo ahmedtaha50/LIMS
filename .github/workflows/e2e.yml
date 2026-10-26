@@ -1,0 +1,52 @@
+name: e2e
+
+# Validation automation (roadmap M37, r2-validation): the browser flows against the BUILT application, the accessibility gate, and the
+# traceability gate that fails when a Critical or High requirement of the validation package has no passed test.
+# Manual only (workflow_dispatch): this workflow has not run on a GitHub runner yet (Chromium download, Playwright dependencies), so it must
+# not fail pushes for infrastructure reasons. continue-on-error keeps a failed manual run from marking the branch red; read the job log.
+on:
+  workflow_dispatch:
+
+jobs:
+  flows-and-traceability:
+    name: Browser flows, axe, traceability
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    continue-on-error: true
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: lims, POSTGRES_PASSWORD: lims, POSTGRES_DB: lims }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U lims" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      SQL_HOST: 127.0.0.1
+      SQL_USER: lims
+      SQL_PASSWORD: lims
+      SQL_DB_NAME: lims_test
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Unit and API tests, with JUnit output (the executed test ids the RTM is generated from)
+        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=validation/evidence/junit-ci.xml
+      - name: Build the application
+        run: npm run build
+      # playwright and axe-core are exact-version devDependencies (installed by npm ci); only the browser binary is fetched here.
+      - name: Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Browser flows against the built bundle (throwaway database, free loopback port)
+        run: node tests/e2e/run.cjs --out validation/evidence/e2e-run-ci.txt
+      - name: Traceability gate (every Critical/High requirement has a passed test or an open deviation)
+        if: always()
+        run: node validation/build/check.cjs
+      - name: Evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: validation-evidence
+          path: |
+            validation/evidence/junit-ci.xml
+            validation/evidence/e2e-run-ci.txt

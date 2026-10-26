@@ -1,0 +1,138 @@
+{
+  "comment": "Known serious or critical axe violations measured on 2026-10-25 on the combined R2 tree (HEAD 3793d2f), each tied to the open deviation DEV-2026-10-25-06 (validation/build/content-r2.cjs). The gate fails on a violation that is not listed and on an entry that no longer occurs, so the list can only shrink. The owners of the screens fix them; this file is edited only to remove entries.",
+  "screens": {
+    "dashboard": {
+      "rules": [
+        {
+          "id": "aria-allowed-attr",
+          "impact": "critical",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "lab notebook": {
+      "rules": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "batch traceability": {
+      "rules": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "OOS investigations": {
+      "rules": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "environmental monitoring": {
+      "rules": [
+        {
+          "id": "select-name",
+          "impact": "critical",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "audit trail": {
+      "rules": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "reports": {
+      "rules": [
+        {
+          "id": "select-name",
+          "impact": "critical",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "system administration": {
+      "rules": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        },
+        {
+          "id": "label-title-only",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        },
+        {
+          "id": "select-name",
+          "impact": "critical",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "master data": {
+      "rules": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "methods and calculations": {
+      "rules": [
+        {
+          "id": "definition-list",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "sample in Testing (result workbench)": {
+      "rules": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "deviation": "DEV-2026-10-25-06"
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    },
+    "approved sample (certificate panel)": {
+      "rules": [
+        {
+          "id": "button-name",
+          "impact": "critical",
+          "deviation": "DEV-2026-10-25-06"
+        },
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "deviation": "DEV-2026-10-25-06"
+        }
+      ]
+    }
+  }
+}

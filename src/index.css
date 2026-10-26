@@ -1,0 +1,157 @@
+@import "tailwindcss";
+/* Arabic glyphs (Noto Sans Arabic, SIL OFL 1.1, bundled: no request leaves the PC). Fetched only when Arabic text is shown. */
+@import "./i18n/fonts/noto-sans-arabic.css";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-display: "Outfit", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Elevate standard colors to a more clinical/laboratory palette */
+  --color-slate-50: #F8FAFC;
+  --color-slate-100: #F1F5F9;
+  --color-slate-200: #E2E8F0;
+  --color-slate-300: #CBD5E1;
+  --color-slate-400: #94A3B8;
+  --color-slate-500: #64748B;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1E293B;
+  --color-slate-900: #0F172A;
+
+  /* Clinical Action Blue */
+  --color-blue-50: #F0F7FF;
+  --color-blue-100: #E0EFFF;
+  --color-blue-200: #BAE0FF;
+  --color-blue-300: #7CC4FA;
+  --color-blue-400: #36A7F4;
+  --color-blue-500: #0B8AE2;
+  --color-blue-600: #006DBE;
+  --color-blue-700: #015697;
+  --color-blue-800: #05487B;
+  --color-blue-900: #0A3C64;
+  
+  /* Primary Indigo Accent */
+  --color-indigo-50: #F5F7FF;
+  --color-indigo-100: #EBEDFF;
+  --color-indigo-200: #CED6FF;
+  --color-indigo-300: #A3B4FF;
+  --color-indigo-400: #748BFF;
+  --color-indigo-500: #495CFF;
+  --color-indigo-600: #2934E5;
+  --color-indigo-700: #2024B6;
+  --color-indigo-800: #191E92;
+  --color-indigo-900: #171C74;
+
+  /* Status colours one step darker than Tailwind's defaults, so that white text on them and they as text on white reach
+     WCAG AA contrast (4.5:1): emerald-600 #059669 was 3.8:1, amber-600 #d97706 3.2:1 and rose-600 #e11d48 on rose-50 4.3:1
+     (axe "color-contrast", roadmap M24). */
+  --color-emerald-600: #047857;
+  --color-amber-600: #b45309;
+  --color-rose-600: #be123c;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  --shadow-sm: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 0 3px rgba(15, 23, 42, 0.02);
+  --shadow-md: 0 10px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+  --shadow-clinical: var(--shadow-sm);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900 leading-relaxed;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply tracking-tight font-semibold text-slate-900;
+  }
+  
+  /* Elevate tables for clinical data representation */
+  table {
+    @apply w-full text-sm text-start text-slate-600;
+  }
+  
+  thead {
+    @apply text-xs uppercase bg-slate-100/80 text-slate-600 font-bold tracking-wider;
+  }
+  
+  th {
+    @apply px-4 py-3 font-display border-b border-slate-200/80;
+  }
+  
+  td {
+    @apply px-4 py-3 border-b border-slate-100 font-sans align-middle transition-colors;
+  }
+  
+  tr:hover td {
+    @apply bg-slate-50/60;
+  }
+  
+  /* Modern accessible focus states */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-50;
+  }
+
+  /* Base buttons typography & inputs */
+  button, input, select, textarea {
+    @apply font-sans;
+  }
+
+  /* Form Elements Base Elevate */
+  input[type="text"], input[type="password"], input[type="date"], select {
+    @apply border-slate-300 shadow-sm transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500;
+  }
+}
+
+
+@layer utilities {
+  .border-clinical {
+    @apply border border-slate-200/80;
+  }
+}
+
+/* The page behind the lock screen or a modal dialog is made inert (the attribute does the work); this keeps its text from being selected or copied. */
+[inert] {
+  user-select: none;
+}
+
+/* Bench mode (src/components/shell/density.ts): every control, option and list row is at least 44 px high (WCAG 2.5.5 target
+   size) and the text one step larger, for touch screens and gloved hands at the bench. */
+[data-density="bench"] {
+  font-size: 17px;
+}
+[data-density="bench"] button,
+[data-density="bench"] select,
+[data-density="bench"] input:not([type="checkbox"]):not([type="radio"]),
+[data-density="bench"] .ui-control,
+[data-density="bench"] .ui-option,
+[data-density="bench"] [role="option"] {
+  min-height: 44px;
+}
+[data-density="bench"] input[type="checkbox"],
+[data-density="bench"] input[type="radio"] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+[data-density="bench"] .ui-row,
+[data-density="bench"] tbody tr {
+  height: 48px;
+}
+[data-density="bench"] .text-xs {
+  font-size: 0.875rem;
+}
+
+/* Arabic and right-to-left (roadmap M38). The layout itself is made of logical utilities (ms-, pe-, text-start, border-s ...), so dir="rtl"
+   on <html> (set by src/i18n/store.ts) mirrors it without a second stylesheet. What logical utilities cannot do is here:
+   - letter-spacing breaks the joining of Arabic letters, so it is switched off for Arabic text;
+   - identifiers, hashes, timestamps and numbers with units are marked <bdi dir="ltr"> or dir="ltr" in the screens, so they read
+     left-to-right inside Arabic text; code and monospace blocks keep their direction;
+   - charts and instrument traces stay left-to-right (time runs left to right on every chart), see dir="ltr" on their containers. */
+:lang(ar) * {
+  letter-spacing: 0 !important;
+}

@@ -1,0 +1,14 @@
+# IQ evidence 2026-10-13T08:57:32Z - development sandbox, NOT the target PC
+node v22.22.0
+electron 33.4.11
+os Linux 6.18.44-fc-v114
+postgres psql (PostgreSQL) 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
+tables 18
+triggers 4
+08764e181c12c9f9dfa0c0e5470218f8f3e6a0626eaa6710fb96dd202d011310  dist/server.cjs
+9ecf9fefc6794b2abc552cbb217bcaacebe1e7c675095ad86b6f916ff33e3990  dist/init-db.cjs
+1eaca3b3690d730f04286d2ec1d0eab431fb63e5dee5bb72760b1f0033e32b36  dist/backup-cli.cjs
+6d0735c915d660a7815092499d238b305132accef3823b89222d7dbad4f6f0af  desktop/main.cjs
+e8038fd4cb73916bbbb86a23078de1a429b31719c13243622ee39facb233611e  desktop/preload.cjs
+bff5d654877f11881bc421f3a26d6e3c3fed05dfa30862b09c07840bddbd0848  desktop/schema.sql
+git 29a65ce8b6bb798f054714d0e4353a3197d2063e

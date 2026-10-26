@@ -1,0 +1,1999 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/admin/activity-heatmap",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/backup",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/backup/drill",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/backup/status",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/backup/verify",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/broadcast",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/integrations",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/integrations/ai",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/jobs",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/settings",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/settings",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/admin/users",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/users",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/admin/users/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/users/:id/reset-mfa",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/users/:id/reset-password",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/admin/users/:id/unlock",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/capa-analysis",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/eln-protocol",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/api-clients",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/api-clients",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/api-clients/:id/revoke",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/archive/bundles",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/archive/bundles",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/archive/bundles/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/archive/bundles/:id/decision",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/archive/bundles/:id/restore-check",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/archive/bundles/:id/verify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/archive/records/:entityType/:entityId",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/attachments/:id/content",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit/anchors",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit/anchors",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit/anchors/verify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit/clock",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit/clock-anomalies/:id/acknowledge",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit/exceptions",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit/export",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit/head",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit/history",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit/review-settings",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/audit/review-settings",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit/reviews",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit/reviews",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit/verify",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login-local",
+      "auth": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reauth",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/recovery-codes",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp-confirm",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp-enroll",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp-setup",
+      "auth": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/totp-verify",
+      "auth": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/batches",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/batches",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/batches/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/batches/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/batches/:id/samples",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/batches/:id/status",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/calc/evaluate",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/calc/formulas",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/calc/formulas",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/calc/formulas/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/calc/formulas/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/calc/formulas/:id/revise",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/calc/samples/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/calc/samples/:id/results/:resultId",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/calc/samples/:id/sst",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coa/:sampleId",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/coa/:sampleId",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coa/documents",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coa/documents/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/coa/documents/:id/copies",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/coa/documents/:id/reissue",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/coa/documents/:id/void",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/containers/:id/aliquots",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/containers/:id/consume",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/containers/:id/retain",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/containers/:id/transfer",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/custody/labels",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/labels",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/custody/locations",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/locations",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/custody/locations/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/custody/retains",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/retains/:id/dispose",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/custody/samples/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/samples/:id/receipt",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/custody/samples/:id/receipt/acknowledge",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/custody/verify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/customers",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/customers",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/customers/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/customers/:id/status",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/directory/accounts",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/directory/accounts/:userId/break-glass",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/directory/mappings",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/directory/mappings",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/directory/mappings/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/directory/mappings/:id/retire",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/directory/settings",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/directory/settings",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/directory/test",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/document-versions/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/document-versions/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/document-versions/:id/content",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/document-versions/:id/effective",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/document-versions/:id/file",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/document-versions/:id/obsolete",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/document-versions/:id/print",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/document-versions/:id/prints",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/document-versions/:id/return",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/document-versions/:id/review",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/document-versions/:id/submit",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/documents",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/documents",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/documents/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/documents/:id/revise",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/eln",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/eln",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/eln/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/eln/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/eln/:id/sign",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/eln/:id/verify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/batch-impact/:batch",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/batch-rooms",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/batch-rooms",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/em/batch-rooms/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/excursions",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/heatmap",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/limit-profiles",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/limit-profiles",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/em/limit-profiles/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/limit-profiles/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/points",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/points",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/em/points/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/points/:id/retire",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/results",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/results",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/em/results/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/results/:id/identification",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/em/trends",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/trends/:id/acknowledge",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/em/trends/evaluate",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/env-records",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/env-records",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/env-records/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/event-deliveries/:id/retry",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/event-subscriptions",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/event-subscriptions",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/event-subscriptions/:id/deliveries",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/event-subscriptions/:id/status",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "auth": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/inbox",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instrument-files",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instrument-files",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instrument-files/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instrument-files/:id/content",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instrument-imports",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instrument-imports/:id/accept",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instrument-imports/:id/reject",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instrument-parsers",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instrument-profiles",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instrument-profiles",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/instrument-profiles/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instrument-profiles/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instrument-profiles/:id/retire",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instrument-profiles/dry-run",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instruments",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instruments",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/instruments/:id/calibrate",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/instruments/:id/usage-log",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/lists/samples",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/lists/samples/export",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/lookup/instruments",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/lookup/results",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/lookup/samples",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/lookup/specifications",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/lookup/users",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/me/preferences",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/me/preferences",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/methods",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/methods",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/methods/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/methods/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/methods/:id/revise",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/metrics/kpi",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/metrics/kpi/:key",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/metrics/tat",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/notebook-templates",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/notebook-templates",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications/:id/read",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications/read-all",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/oos",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/oos/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/oos/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/oos/:id/assignable-cause",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos/:id/assignable-cause/confirm",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos/:id/close",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos/:id/retest-plan",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos/:id/retests",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos/:id/tasks",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/oos/:id/tasks/:taskId",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/oos/checklist-templates",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos/checklist-templates",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/oos/overdue",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/oos/settings",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/oos/settings",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/periodic-reviews",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/periodic-reviews/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/periodic-reviews/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/periodic-reviews/:id/cancel",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/periodic-reviews/:id/complete",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/periodic-reviews/due",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/periodic-reviews/plans",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/periodic-reviews/plans",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/periodic-reviews/plans/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/periodic-reviews/plans/:id/open",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/permissions/matrix",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/permissions/me",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/permissions/role-changes",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/permissions/role-changes",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/permissions/role-changes/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/permissions/role-changes/:id/cancel",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/permissions/role-changes/:id/reject",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/prepared-solutions",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/prepared-solutions",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/prepared-solutions/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/prepared-solutions/:id/consume",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/prepared-solutions/:id/discard",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/prepared-solutions/:id/traceback",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/products",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/products",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/products/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/products/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/products/:id/status",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/qms/actions",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/qms/actions/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/actions/:id/cancel",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/actions/:id/complete",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/qms/records",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/records",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/qms/records/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/qms/records/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/records/:id/actions",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/records/:id/comments",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/records/:id/effectiveness",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/records/:id/links",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/records/:id/sign",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/qms/records/:id/transition",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/qms/settings",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/qms/settings",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/ready",
+      "auth": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/reagent-items",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-items",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/reagent-items/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reagent-lots",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-lots",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reagent-lots/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-lots/:id/consume",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-lots/:id/dispose",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-lots/:id/open",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-lots/:id/reject",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-lots/:id/release",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagent-lots/:id/retest",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reagent-lots/:id/traceback",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reagent-materials",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reagents",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reagents",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/artifact/:jobId",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/batch/:batch",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/filters",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/reports/generate",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/metrics",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/runs/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/runs/:id/pdf",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/runs/:id/verify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/status/:jobId",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/reports/trends",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/resolve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/result-materials/:id/withdraw",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/result-versions/:id/sign",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/retention/candidates",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/retention/flags",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/retention/flags",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/retention/flags/:id/withdraw",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/retention/holds",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/retention/holds",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/retention/holds/:id/release",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/retention/policies",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/retention/policies/:recordClass",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/samples",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/samples",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/samples/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/samples/:id/attachments",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/samples/:id/attachments",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/samples/:id/materials",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/samples/:id/notebook",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/samples/:id/result-sources",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/samples/:id/result-versions",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/samples/:id/results-batch",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/samples/:id/results/:resultId",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/samples/:id/results/:resultId/materials",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/samples/:id/review-checklist",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/samples/:id/review-checklist",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/samples/:id/transition",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/samples/bulk-import",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/search",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/security-events",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/security-events/types",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/security-events/verify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/signatures/entity/:type/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/signatures/meanings",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/signatures/verify/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/specifications",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/specifications",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/specifications/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/specifications/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stability",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/stability",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stability-trend",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/stability/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stability/chambers",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/stability/chambers",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/stability/chambers/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stability/conditions",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/stability/conditions",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/stability/conditions/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stability/protocols",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/stability/protocols",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/stability/protocols/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/stability/protocols/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/stability/protocols/:id/revise",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stability/studies/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/stability/timepoints",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/stability/timepoints/:id/pull",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/system/info",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/tat/calendar",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/tat/holidays",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/tat/holidays/:id/remove",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/tat/samples/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/tat/samples/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/tat/settings",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/tat/sla/:priority",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/test-plans",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/test-plans",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/test-plans/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/test-plans/:id/approve",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/test-plans/:id/revise",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/traceability/batch/:batch",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/traceability/batch/:batch/material",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/traceability/batch/:batch/release",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/traceability/batch/:batch/verify-chain",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/traceability/batches",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/training",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training/:userId/certify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/training/assignments",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training/assignments",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training/assignments/:id/acknowledge",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training/assignments/:id/certify",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/training/curricula",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training/curricula",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training/curricula/:id",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/training/qualifications",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training/qualifications/:id/revoke",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training/qualifications/override",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/transcribe",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/trending/alerts",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/trending/alerts/:id/acknowledge",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/trending/alerts/evaluate",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/trending/baselines",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/trending/baselines",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/trending/parameters",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/trending/series",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/validation/modules",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/validation/modules/:module/status",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/worklists",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/worklists/:id",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/worklists/:id",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists/:id/bench-sheet",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists/:id/cancel",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists/:id/complete",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/worklists/:id/grid",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists/:id/items",
+      "auth": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/worklists/:id/items/:itemId",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists/:id/items/:itemId/remove",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists/:id/release",
+      "auth": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/worklists/:id/reorder",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/worklists/:id/run-sequence.csv",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/worklists/bench-sheets/:jobId",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/worklists/candidates",
+      "auth": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/worklists/workload",
+      "auth": true
+    }
+  ]
+}

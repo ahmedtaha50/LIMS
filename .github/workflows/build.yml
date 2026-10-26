@@ -1,0 +1,120 @@
+name: build
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Typecheck, build, OQ tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: lims, POSTGRES_PASSWORD: lims, POSTGRES_DB: lims }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U lims" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      SQL_HOST: 127.0.0.1
+      SQL_USER: lims
+      SQL_PASSWORD: lims
+      SQL_DB_NAME: lims
+      SQL_ADMIN_USER: lims
+      SQL_ADMIN_PASSWORD: lims
+      JWT_SECRET: ci-only-secret-not-for-production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Repository root holds no stray scripts
+        run: bash scripts/check-root-clean.sh
+      - run: npm run lint
+      - run: npm run build
+      - name: Create schema with the shipped installer and seed demo data
+        run: |
+          ADMIN_EMAIL=bootstrap@example.invalid ADMIN_NAME=Bootstrap ADMIN_PASSWORD=bootstrap-password-123 node dist-server/init-db.cjs
+          PGPASSWORD=lims psql -h 127.0.0.1 -U lims lims -c 'delete from users'
+          npx tsx scripts/dev/seed/index.ts
+      - name: Start the shipped server bundle (production mode, loopback)
+        run: |
+          nohup node --enable-source-maps dist-server/server.cjs > server.log 2>&1 &
+          for i in $(seq 1 40); do [ "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/ready)" = 200 ] && break; sleep 2; done
+          curl -sf http://127.0.0.1:3000/api/ready
+      - name: Server bundle and source maps are not served
+        run: |
+          for f in server.cjs server.cjs.map init-db.cjs backup-cli.cjs; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:3000/$f"); echo "$f $code"; [ "$code" = 404 ] || exit 1
+          done
+      - name: OQ controls
+        env: { BASE: 'http://127.0.0.1:3000/api' }   # the server listens on loopback only
+        run: tests/security-controls.sh | tee oq-run.txt
+      - name: OQ-09 backup and restore
+        env: { BASE: 'http://127.0.0.1:3000/api' }
+        run: tests/backup-restore.sh | tee backup-run.txt
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        continue-on-error: true   # artifact storage quota must not block the installer build
+        with:
+          name: oq-evidence
+          retention-days: 14
+          path: |
+            oq-run.txt
+            backup-run.txt
+            server.log
+
+  windows-installer:
+    name: Windows installer (.exe)
+    needs: verify
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Add Windows-only native packages missing from the Linux lockfile
+        run: node scripts/install-win-natives.cjs
+      - run: npm run build
+      - name: Built-in PostgreSQL bundle check (explicit; see docs/changes/r3-w7-gate.md)
+        shell: bash
+        run: |
+          if [ -x build/pgsql/bin/postgres.exe ] || [ -f build/pgsql/bin/postgres.exe ]; then
+            echo "Built-in PostgreSQL bundle present: $(cat build/pgsql/PG_BINARIES.json | head -c 200)"
+          else
+            msg="build/pgsql is absent (npm run fetch:pg is not run until the PostgreSQL archive SHA-256 is pinned in desktop/pg-bundle.json). This installer carries NO built-in database: the setup screen offers it but refuses with a clear message; only 'Connect to an existing PostgreSQL' works."
+            echo "::warning title=Installer without built-in PostgreSQL::$msg"
+            echo "### Installer without built-in PostgreSQL" >> "$GITHUB_STEP_SUMMARY"; echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - run: npx electron-builder --win nsis --publish never
+      - name: Checksums
+        shell: pwsh
+        run: Get-ChildItem release\*.exe | ForEach-Object { "$((Get-FileHash $_ -Algorithm SHA256).Hash)  $($_.Name)" } | Tee-Object release\SHA256SUMS.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        continue-on-error: true   # the GitHub release below is the durable download
+        with:
+          name: B-Pharma-LIMS-windows-installer
+          retention-days: 3
+          path: |
+            release/*.exe
+            release/SHA256SUMS.txt
+      - name: Read version
+        id: ver
+        shell: bash
+        run: echo "v=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      # Tags are built, signed and published by release.yml.
+      - name: Publish branch build as a pre-release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: v${{ steps.ver.outputs.v }}-build.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          name: B-Pharma LIMS ${{ steps.ver.outputs.v }} build ${{ github.run_number }}
+          prerelease: true
+          make_latest: false
+          body: Automated build of ${{ github.sha }} from ${{ github.ref_name }}. Not a validated release.
+          files: |
+            release/*.exe
+            release/SHA256SUMS.txt

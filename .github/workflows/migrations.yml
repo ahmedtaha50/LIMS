@@ -1,0 +1,66 @@
+name: migrations
+
+# Roadmap M04. Fails when:
+#   - src/db/schema changes without a migration (and the other way round)  -> tests/upgrade/schema-drift.test.ts
+#   - an applied migration is edited, a newer database is opened, a file is out of order -> tests/upgrade/runner.test.ts
+#   - desktop/schema.sql is stale                                               -> tests/upgrade/desktop-schema.test.ts
+#   - a v0.1.0 installation does not upgrade with all its records, signatures and audit chain -> tests/upgrade/upgrade-v0.1.0.test.ts
+#   - a fresh install and an upgraded v0.1.0 installation differ in pg_dump      -> tests/upgrade/dump-diff.sh
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths:
+      - 'drizzle/**'
+      - 'src/db/**'
+      - 'src/server/migrate.ts'
+      - 'src/server/init-db.ts'
+      - 'src/server/boot/**'
+      - 'src/server/routes/system.ts'
+      - 'desktop/schema.sql'
+      - 'tests/upgrade/**'
+      - '.github/workflows/migrations.yml'
+  pull_request:
+    paths:
+      - 'drizzle/**'
+      - 'src/db/**'
+      - 'src/server/migrate.ts'
+      - 'src/server/init-db.ts'
+      - 'src/server/boot/**'
+      - 'src/server/routes/system.ts'
+      - 'desktop/schema.sql'
+      - 'tests/upgrade/**'
+      - '.github/workflows/migrations.yml'
+  workflow_dispatch:
+
+jobs:
+  migrations:
+    name: Migrations (real PostgreSQL 16)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: lims, POSTGRES_PASSWORD: lims, POSTGRES_DB: lims }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U lims" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      SQL_HOST: 127.0.0.1
+      SQL_USER: lims
+      SQL_PASSWORD: lims
+      # Name prefix only: the tests create <SQL_DB_NAME>_up<pid>_<label> databases and drop them again.
+      SQL_DB_NAME: lims_migrations
+      JWT_SECRET: ci-only-secret-not-for-production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Migration, drift and upgrade tests
+        run: npx vitest run -c tests/upgrade/vitest.config.ts
+      - name: pg_dump of a fresh install against an upgraded v0.1.0 installation
+        run: tests/upgrade/dump-diff.sh
+      - name: desktop/schema.sql is what the migrations generate
+        run: |
+          npx tsx src/server/boot/migrate-cli.ts export-schema "$RUNNER_TEMP/schema.sql"
+          diff -u desktop/schema.sql "$RUNNER_TEMP/schema.sql"

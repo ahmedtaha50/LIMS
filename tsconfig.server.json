@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strictNullChecks": true
+  },
+  "include": [
+    "server.ts",
+    "vitest.config.ts",
+    "src/server",
+    "src/db",
+    "src/i18n/server",
+    "src/lib/validations",
+    "scripts/dev",
+    "tests"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-server",
+    "release",
+    "backups"
+  ]
+}

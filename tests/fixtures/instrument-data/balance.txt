@@ -1,0 +1,11 @@
+Mettler Toledo XPR205
+Date: 2026-10-20 08:15
+Sample ID: SMP-FX-1
+N       12.3456 g
+
+Sample ID: SMP-FX-2
+Net:  -0.0020 g
+Tare  8.0000 g
+Gross 20.3456 g
+
+   101.5 mg  S

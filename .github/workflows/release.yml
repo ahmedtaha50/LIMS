@@ -1,0 +1,93 @@
+# Controlled release (roadmap M36): the version comes from the tag; CI writes the signed release manifest and the SBOM next to the
+# installer; the installer is installed silently on a clean Windows runner, booted, checked at /api/ready and uninstalled before
+# anything is published. The existing build.yml keeps publishing branch builds as pre-releases; this workflow publishes tags.
+# Secrets (optional until the validation owner has created them, see docs/release-procedure.md):
+#   RELEASE_SIGNING_KEY   Ed25519 private key (PEM) that signs release-manifest.json
+#   CSC_LINK, CSC_KEY_PASSWORD   Authenticode certificate for electron-builder
+# Third-party actions are pinned by commit SHA (the tag in the comment is what the SHA was taken from).
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Version to build, as a tag name (v0.2.0). Nothing is published from a manual run.'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  windows-release:
+    name: Build, sign manifest, silent install test
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      VERSION_TAG: ${{ github.event.inputs.version_tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Add Windows-only native packages missing from the Linux lockfile
+        run: node scripts/install-win-natives.cjs
+      - name: Version from the tag
+        run: node scripts/release/set-version.cjs "$env:VERSION_TAG"
+      - name: Installer tests (manifest, tamper detection, SBOM, update gate)
+        run: npm run test:installer
+      - name: Dependency audit with recorded waivers
+        run: npm run release:audit
+      - run: npm run lint
+      - run: npm run build
+      - name: Release manifest for the packaged application
+        env: { RELEASE_SIGNING_KEY: '${{ secrets.RELEASE_SIGNING_KEY }}' }
+        run: node scripts/make-release-manifest.cjs --git-sha "$env:GITHUB_SHA"
+      - name: Built-in PostgreSQL bundle check (explicit; see docs/changes/r3-w7-gate.md)
+        shell: bash
+        run: |
+          if [ -x build/pgsql/bin/postgres.exe ] || [ -f build/pgsql/bin/postgres.exe ]; then
+            echo "Built-in PostgreSQL bundle present: $(cat build/pgsql/PG_BINARIES.json | head -c 200)"
+          else
+            msg="build/pgsql is absent (npm run fetch:pg is not run until the PostgreSQL archive SHA-256 is pinned in desktop/pg-bundle.json). This installer carries NO built-in database: the setup screen offers it but refuses with a clear message; only 'Connect to an existing PostgreSQL' works."
+            echo "::warning title=Installer without built-in PostgreSQL::$msg"
+            echo "### Installer without built-in PostgreSQL" >> "$GITHUB_STEP_SUMMARY"; echo "$msg" >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Installer (Authenticode-signed when CSC_LINK is set)
+        env: { CSC_LINK: '${{ secrets.CSC_LINK }}', CSC_KEY_PASSWORD: '${{ secrets.CSC_KEY_PASSWORD }}' }
+        run: npx electron-builder --win nsis --publish never
+      - name: Published manifest (adds the installer hash), SBOM and checksums
+        env: { RELEASE_SIGNING_KEY: '${{ secrets.RELEASE_SIGNING_KEY }}' }
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem release\*.exe | Select-Object -First 1).FullName
+          node scripts/make-release-manifest.cjs --git-sha "$env:GITHUB_SHA" --installer $exe --out release\release-manifest.json
+          node scripts/release/make-sbom.cjs --out release\sbom.cdx.json --git-sha "$env:GITHUB_SHA"
+          Get-ChildItem release\*.exe, release\release-manifest.json, release\sbom.cdx.json | ForEach-Object { "$((Get-FileHash $_ -Algorithm SHA256).Hash)  $($_.Name)" } | Tee-Object release\SHA256SUMS.txt
+      - name: Silent install, boot, /api/ready within 60 s, uninstall
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem release\*.exe | Select-Object -First 1).FullName
+          pwsh -File tests\installer\silent-install.ps1 -Installer $exe -TimeoutSeconds 60
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: B-Pharma-LIMS-release
+          retention-days: 14
+          path: |
+            release/*.exe
+            release/release-manifest.json
+            release/sbom.cdx.json
+            release/SHA256SUMS.txt
+      - name: Attach to the GitHub release (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          files: |
+            release/*.exe
+            release/release-manifest.json
+            release/sbom.cdx.json
+            release/SHA256SUMS.txt
