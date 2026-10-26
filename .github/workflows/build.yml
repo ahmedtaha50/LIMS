@@ -93,6 +93,17 @@ jobs:
       - name: Checksums
         shell: pwsh
         run: Get-ChildItem release\*.exe | ForEach-Object { "$((Get-FileHash $_ -Algorithm SHA256).Hash)  $($_.Name)" } | Tee-Object release\SHA256SUMS.txt
+      - name: Installed application starts (silent install, real application, integrity check)
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem release\*.exe | Select-Object -First 1).FullName
+          pwsh -File tests\installer\gui-smoke.ps1 -Installer $exe -TimeoutSeconds 60
+      - name: Installed server boots against a database (silent install, init-db, /api/ready)
+        shell: pwsh
+        continue-on-error: true   # first run on a real runner; informative until it has been seen green once
+        run: |
+          $exe = (Get-ChildItem release\*.exe | Select-Object -First 1).FullName
+          pwsh -File tests\installer\silent-install.ps1 -Installer $exe -TimeoutSeconds 60
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         continue-on-error: true   # the GitHub release below is the durable download
         with:
