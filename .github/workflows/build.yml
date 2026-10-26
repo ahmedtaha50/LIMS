@@ -98,12 +98,6 @@ jobs:
         run: |
           $exe = (Get-ChildItem release\*.exe | Select-Object -First 1).FullName
           pwsh -File tests\installer\gui-smoke.ps1 -Installer $exe -TimeoutSeconds 60
-      - name: Installed server boots against a database (silent install, init-db, /api/ready)
-        shell: pwsh
-        continue-on-error: true   # first run on a real runner; informative until it has been seen green once
-        run: |
-          $exe = (Get-ChildItem release\*.exe | Select-Object -First 1).FullName
-          pwsh -File tests\installer\silent-install.ps1 -Installer $exe -TimeoutSeconds 60
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         continue-on-error: true   # the GitHub release below is the durable download
         with:
@@ -129,3 +123,10 @@ jobs:
           files: |
             release/*.exe
             release/SHA256SUMS.txt
+      - name: Installed server boots against a database (silent install, init-db, /api/ready)
+        shell: pwsh
+        timeout-minutes: 8        # it hung once on its first run; a hang must not hold the job
+        continue-on-error: true   # first run on a real runner; informative until it has been seen green once
+        run: |
+          $exe = (Get-ChildItem release\*.exe | Select-Object -First 1).FullName
+          pwsh -File tests\installer\silent-install.ps1 -Installer $exe -TimeoutSeconds 60
