@@ -91,7 +91,7 @@ export function RecordTable({ records, selected, onSelect }: { records: readonly
   if (records.length === 0) return <p className="text-sm text-slate-500 p-4">No quality records match.</p>;
   return (
     <table className="w-full text-sm">
-      <thead className="text-start text-xs text-slate-500 uppercase">
+      <thead className="text-start text-xs text-slate-600 uppercase">
         <tr><th className="p-2">Number</th><th className="p-2">Type</th><th className="p-2">Title</th><th className="p-2">Class</th><th className="p-2">State</th><th className="p-2">Due</th></tr>
       </thead>
       <tbody>
@@ -132,7 +132,7 @@ export function ActionTable({ actions, me, canApprove, onComplete, onCancel }: {
   if (actions.length === 0) return <p className="text-sm text-slate-500">No actions.</p>;
   return (
     <table className="w-full text-sm">
-      <thead className="text-start text-xs text-slate-500 uppercase">
+      <thead className="text-start text-xs text-slate-600 uppercase">
         <tr><th className="p-2">Action</th><th className="p-2">Owner</th><th className="p-2">Due</th><th className="p-2">Status</th><th className="p-2">Evidence</th><th className="p-2" /></tr>
       </thead>
       <tbody>
@@ -481,7 +481,7 @@ export function Qms({ token, user, recordId }: { token?: string; user: any; reco
         <section className="bg-white rounded-xl border border-slate-200 p-4">
           <p className="text-xs text-slate-500 mb-2">Open actions of every record, earliest due first. Select the record to complete one.</p>
           <table className="w-full text-sm">
-            <thead className="text-start text-xs text-slate-500 uppercase"><tr><th className="p-2">Action</th><th className="p-2">Record</th><th className="p-2">Owner</th><th className="p-2">Due</th></tr></thead>
+            <thead className="text-start text-xs text-slate-600 uppercase"><tr><th className="p-2">Action</th><th className="p-2">Record</th><th className="p-2">Owner</th><th className="p-2">Due</th></tr></thead>
             <tbody>
               {actions.map(a => (
                 <tr key={a.id} className="border-t border-slate-100">
