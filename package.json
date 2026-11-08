@@ -105,6 +105,7 @@
     },
     "asar": false,
     "afterPack": "scripts/release/after-pack.cjs",
+    "electronDist": "node_modules/electron/dist",
     "extraResources": [
       { "from": "build/pgsql", "to": "pgsql" }
     ],
