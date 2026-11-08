@@ -78,6 +78,16 @@ jobs:
       - run: npm ci
       - name: Add Windows-only native packages missing from the Linux lockfile
         run: node scripts/install-win-natives.cjs
+      - name: Electron binary present (npm ci may have skipped it when GitHub failed; retried, checked against electron's checksums.json)
+        shell: pwsh
+        run: |
+          $exe = 'node_modules/electron/dist/electron.exe'
+          for ($i = 1; $i -le 4 -and -not (Test-Path $exe); $i++) {
+            Remove-Item -Recurse -Force node_modules/electron/dist, node_modules/electron/path.txt -ErrorAction SilentlyContinue
+            node node_modules/electron/install.js
+            if (-not (Test-Path $exe)) { Start-Sleep -Seconds (30 * $i) }
+          }
+          if (-not (Test-Path $exe)) { throw 'node_modules/electron/dist/electron.exe is missing (GitHub download failed); the installer cannot be packaged' }
       - run: npm run build
       - name: Fetch the built-in PostgreSQL (pinned SHA-256 in desktop/pg-bundle.json)
         run: npm run fetch:pg
