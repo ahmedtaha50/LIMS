@@ -93,7 +93,7 @@ jobs:
         run: |
           $env:LIMS_PG_BIN = (Resolve-Path build\pgsql\bin).Path
           node --test tests/installer/pg-supervisor.test.cjs
-      - run: npx electron-builder --win nsis --publish never
+      - run: npx electron-builder --win nsis --publish never -c.electronDist=node_modules/electron/dist
       - name: Checksums
         shell: pwsh
         run: Get-ChildItem release\*.exe | ForEach-Object { "$((Get-FileHash $_ -Algorithm SHA256).Hash)  $($_.Name)" } | Tee-Object release\SHA256SUMS.txt
