@@ -21,6 +21,7 @@ const net = require('net');
 const crypto = require('crypto');
 const os = require('os');
 const { spawn, spawnSync, execFile } = require('child_process');
+const { EventEmitter } = require('events');
 
 const WIN = process.platform === 'win32';
 const exe = (name) => (WIN ? name + '.exe' : name);
@@ -160,12 +161,41 @@ function superviseEmbedded({ binDir, dataDir, port, logFile, runAs, onEvent = ()
       onEvent('PG_ORPHAN_STOPPED', { ok: r.code === 0, detail: r.out.trim().slice(0, 200) });
     }
   }
+  const readPid = () => { try { return Number(fs.readFileSync(pidFile, 'utf8').split('\n')[0]) || null; } catch { return null; } };
+  /**
+   * Windows: postgres.exe refuses to run under an account with administrative rights ("Execution of PostgreSQL by a user with
+   * administrative permissions is not permitted"); pg_ctl starts it with a restricted token instead. pg_ctl returns at once (-W),
+   * so the postmaster is watched by the PID it writes, and the handle behaves like a child process (pid, kill, 'exit').
+   */
+  function startViaPgCtl() {
+    const h = new EventEmitter(); h.pid = null;
+    const stale = readPid(); let gone = false;
+    const finish = (code) => { if (gone) return; gone = true; clearInterval(iv); h.emit('exit', code, null); };
+    h.unwatch = () => { gone = true; clearInterval(iv); };
+    h.kill = () => { if (h.pid) { try { process.kill(h.pid); } catch { /* gone */ } } };
+    const iv = setInterval(() => {
+      if (!h.pid) { const p = readPid(); if (p && p !== stale) h.pid = p; return; }
+      try { process.kill(h.pid, 0); } catch { finish(null); }
+    }, 500);
+    fs.closeSync(fs.openSync(logFile, 'a', 0o600));
+    if (runAs) { try { fs.chownSync(logFile, runAs.uid, runAs.gid); } catch { /* best effort */ } }
+    // spawn with stdio ignored, not execFile: the postmaster can inherit pg_ctl's handles, and a captured pipe would never close
+    const p = spawn(path.join(binDir, exe('pg_ctl')), ['-D', dataDir, 'start', '-W', '-l', logFile, '-o', `-p ${port} -c listen_addresses=127.0.0.1`],
+      { env: cleanEnv(), stdio: 'ignore', windowsHide: true, uid: runAs?.uid, gid: runAs?.gid });
+    p.on('exit', (code) => { if (code !== 0) finish(code); });
+    p.on('error', () => finish(-1));
+    return h;
+  }
   function spawnOnce() {
+    if (WIN) { const h = startViaPgCtl(); watch(h); return; }
     const out = fs.openSync(logFile, 'a', 0o600);
     if (runAs) { try { fs.fchownSync(out, runAs.uid, runAs.gid); } catch { /* best effort */ } }
     const c = spawn(path.join(binDir, exe('postgres')), ['-D', dataDir, '-p', String(port), '-c', 'listen_addresses=127.0.0.1'],
       { env: cleanEnv(), stdio: ['ignore', out, out], windowsHide: true, uid: runAs?.uid, gid: runAs?.gid });
     fs.closeSync(out);
+    watch(c);
+  }
+  function watch(c) {
     child = c; startedAt = Date.now();
     onEvent('PG_START', { pid: c.pid, port });
     c.on('exit', (code, signal) => {
@@ -188,13 +218,15 @@ function superviseEmbedded({ binDir, dataDir, port, logFile, runAs, onEvent = ()
     });
     c.on('error', (e) => onEvent('PG_EXIT', { error: e.message }));
   }
+  /** The last lines PostgreSQL wrote, so a refusal to start says why (shown to the user and in the release-event log). */
+  const logTail = () => { try { return fs.readFileSync(logFile, 'utf8').trim().split(/\r?\n/).slice(-6).join(' | '); } catch { return ''; } };
   async function waitReady(ms) {
     const end = Date.now() + ms;
     for (;;) {
       if (stopping) throw new Error('stopped');
-      if (giveUp) throw new Error('PostgreSQL stopped repeatedly. See ' + logFile);
+      if (giveUp) throw new Error('PostgreSQL stopped repeatedly. See ' + logFile + (logTail() ? ' :: ' + logTail() : ''));
       if (await ready()) return;
-      if (Date.now() > end) throw new Error('PostgreSQL did not become ready. See ' + logFile);
+      if (Date.now() > end) throw new Error('PostgreSQL did not become ready. See ' + logFile + (logTail() ? ' :: ' + logTail() : ''));
       await sleep(250);
     }
   }
@@ -209,7 +241,7 @@ function superviseEmbedded({ binDir, dataDir, port, logFile, runAs, onEvent = ()
       onEvent('PG_READY', { restarted: false });
     },
     /** Marks this supervisor as no longer responsible for the process (it was lost with the application); touches nothing. Tests only. */
-    detach() { stopping = true; if (timer) clearTimeout(timer); timer = null; child = null; },
+    detach() { stopping = true; if (timer) clearTimeout(timer); timer = null; child?.unwatch?.(); child = null; },
     async stop() {
       stopping = true;
       if (timer) { clearTimeout(timer); timer = null; }
@@ -219,6 +251,7 @@ function superviseEmbedded({ binDir, dataDir, port, logFile, runAs, onEvent = ()
       await ctl(['stop', '-m', 'fast', '-w', '-t', '45']);
       const done = await Promise.race([exited.then(() => true), sleep(8000).then(() => false)]);
       if (!done && c) { try { c.kill('SIGKILL'); } catch { /* gone */ } await Promise.race([exited, sleep(3000)]); }
+      c?.unwatch?.();
       child = null;
       onEvent('PG_STOP', {});
     },
