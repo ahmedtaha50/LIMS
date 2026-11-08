@@ -45,16 +45,20 @@ jobs:
       - name: Release manifest for the packaged application
         env: { RELEASE_SIGNING_KEY: '${{ secrets.RELEASE_SIGNING_KEY }}' }
         run: node scripts/make-release-manifest.cjs --git-sha "$env:GITHUB_SHA"
-      - name: Built-in PostgreSQL bundle check (explicit; see docs/changes/r3-w7-gate.md)
+      - name: Fetch the built-in PostgreSQL (pinned SHA-256 in desktop/pg-bundle.json)
+        run: npm run fetch:pg
+      - name: Built-in PostgreSQL bundle check (the installer must carry it)
         shell: bash
         run: |
-          if [ -x build/pgsql/bin/postgres.exe ] || [ -f build/pgsql/bin/postgres.exe ]; then
-            echo "Built-in PostgreSQL bundle present: $(cat build/pgsql/PG_BINARIES.json | head -c 200)"
-          else
-            msg="build/pgsql is absent (npm run fetch:pg is not run until the PostgreSQL archive SHA-256 is pinned in desktop/pg-bundle.json). This installer carries NO built-in database: the setup screen offers it but refuses with a clear message; only 'Connect to an existing PostgreSQL' works."
-            echo "::warning title=Installer without built-in PostgreSQL::$msg"
-            echo "### Installer without built-in PostgreSQL" >> "$GITHUB_STEP_SUMMARY"; echo "$msg" >> "$GITHUB_STEP_SUMMARY"
-          fi
+          test -f build/pgsql/bin/postgres.exe || { echo "::error title=No built-in PostgreSQL::build/pgsql/bin/postgres.exe is missing after fetch:pg"; exit 1; }
+          echo "Built-in PostgreSQL bundle present: $(head -c 200 build/pgsql/PG_BINARIES.json)"
+      - name: Built-in PostgreSQL works on Windows (bundled binaries, informative)
+        continue-on-error: true
+        timeout-minutes: 8
+        shell: pwsh
+        run: |
+          $env:LIMS_PG_BIN = (Resolve-Path build\pgsql\bin).Path
+          node --test tests/installer/pg-supervisor.test.cjs
       - name: Installer (Authenticode-signed when CSC_LINK is set)
         env: { CSC_LINK: '${{ secrets.CSC_LINK }}', CSC_KEY_PASSWORD: '${{ secrets.CSC_KEY_PASSWORD }}' }
         run: npx electron-builder --win nsis --publish never

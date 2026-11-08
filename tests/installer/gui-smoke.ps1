@@ -26,6 +26,12 @@ $manifest = Join-Path $res 'release-manifest.json'
 if (-not (Test-Path $manifest)) { throw "the installed application has no release-manifest.json ($manifest)" }
 $m = Get-Content $manifest -Raw | ConvertFrom-Json
 Write-Host ("manifest: version {0}, git {1}, {2} files" -f $m.version, $m.gitSha, @($m.files.PSObject.Properties).Count)
+$pg = Join-Path $app 'resources\pgsql'
+if (-not (Test-Path (Join-Path $pg 'bin\postgres.exe'))) { throw "the installer carries no built-in PostgreSQL ($pg\bin\postgres.exe)" }
+$pgm = Get-Content (Join-Path $pg 'PG_BINARIES.json') -Raw | ConvertFrom-Json
+$bad = @($pgm.files.PSObject.Properties | Where-Object { (Get-FileHash (Join-Path $pg $_.Name) -Algorithm SHA256).Hash.ToLower() -ne $_.Value })
+if ($bad.Count) { throw ("installed PostgreSQL files differ from PG_BINARIES.json: " + ($bad.Name -join ', ')) }
+Write-Host ("built-in PostgreSQL {0}: {1} executables and libraries match PG_BINARIES.json" -f $pgm.version, @($pgm.files.PSObject.Properties).Count)
 
 Step "start the installed application (user data in $ud)"
 $proc = Start-Process -FilePath $exe -ArgumentList "--user-data-dir=`"$ud`"" -PassThru
