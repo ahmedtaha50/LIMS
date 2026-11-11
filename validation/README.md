@@ -5,6 +5,7 @@ Status: **DRAFT, conditional**. Not approved; not released for GxP use (see VSR 
 | Folder | Content |
 |---|---|
 | `docs/*.docx` | VP, URS, GRA, FRS, RTM, IQ, OQ, PQ, DIA, VSR (`node validation/build/build.cjs` regenerates them) |
+| `docs/VAL-LIMS-FS-001-FS.docx` | Functional Specification of the whole system (functions per area, permissions and routes, signature meanings, record states, scheduled jobs, interfaces, tables). `node validation/build/fs.cjs` regenerates it; `validation/build/fs-data.sh` refreshes `build/data/*.json` from an installed database and the source |
 | `docs/RTM.csv`, `docs/deviations.csv` | Machine-readable traceability (with the executed test ids) and deviation register |
 | `evidence/` | Raw execution output the documents are generated from: `oq-run-*.txt` and `backup-run-*.txt` (shell OQ against the built bundle), `junit-*.xml` (the whole Vitest suite against PostgreSQL 16), `e2e-run-*.txt` (browser flows), `desktop-run-*.txt` (Electron shell, upgrade, built-in database and the node:test checks of the installer), `iq-sandbox-*.txt`, `windows-smoke-*.txt` (a copy of the CI job log of the Windows runner, not produced by this package) |
 | `build/content.cjs`, `build/content-r2.cjs`, `build/content-r3.cjs` | Single source for requirements, mechanisms, risk scores, deviations and OQ steps (release R1, R2 and R3) |

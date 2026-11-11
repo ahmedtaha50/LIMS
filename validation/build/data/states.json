@@ -1,0 +1,188 @@
+{
+ "entities": {
+  "oos": {
+   "states": [
+    "Open",
+    "Approved",
+    "Closed"
+   ],
+   "initial": "Open",
+   "terminal": [
+    "Approved",
+    "Closed"
+   ],
+   "transitions": {
+    "Open": [
+     "Approved",
+     "Closed"
+    ]
+   },
+   "editable": [
+    "Open"
+   ]
+  },
+  "specification": {
+   "states": [
+    "Draft",
+    "Active",
+    "Obsolete"
+   ],
+   "initial": "Draft",
+   "terminal": [
+    "Obsolete"
+   ],
+   "transitions": {
+    "Draft": [
+     "Active"
+    ],
+    "Active": [
+     "Obsolete"
+    ]
+   },
+   "editable": [
+    "Draft"
+   ]
+  },
+  "batchRelease": {
+   "states": [
+    "Quarantine Hold",
+    "Released",
+    "Rejected"
+   ],
+   "initial": "Quarantine Hold",
+   "terminal": [
+    "Released",
+    "Rejected"
+   ],
+   "transitions": {
+    "Quarantine Hold": [
+     "Released",
+     "Rejected"
+    ]
+   },
+   "editable": []
+  },
+  "eln": {
+   "states": [
+    "Draft",
+    "Signed"
+   ],
+   "initial": "Draft",
+   "terminal": [
+    "Signed"
+   ],
+   "transitions": {
+    "Draft": [
+     "Signed"
+    ]
+   },
+   "editable": [
+    "Draft"
+   ]
+  },
+  "instrument": {
+   "states": [
+    "Active",
+    "In Calibration",
+    "Out of Service",
+    "Retired"
+   ],
+   "initial": "Active",
+   "terminal": [
+    "Retired"
+   ],
+   "transitions": {
+    "Active": [
+     "In Calibration",
+     "Out of Service",
+     "Retired"
+    ],
+    "In Calibration": [
+     "Active",
+     "Out of Service",
+     "Retired"
+    ],
+    "Out of Service": [
+     "Active",
+     "In Calibration",
+     "Retired"
+    ]
+   },
+   "editable": [
+    "Active",
+    "In Calibration",
+    "Out of Service"
+   ]
+  }
+ },
+ "sample": [
+  {
+   "from": "Logged",
+   "to": "Testing",
+   "roles": [
+    "Analyst",
+    "Admin"
+   ],
+   "signature": false,
+   "meaning": "",
+   "sod": false
+  },
+  {
+   "from": "Testing",
+   "to": "Pending Review",
+   "roles": [
+    "Analyst",
+    "Admin"
+   ],
+   "signature": true,
+   "meaning": "Submit for Review - I confirm results are accurate and complete",
+   "sod": false
+  },
+  {
+   "from": "Pending Review",
+   "to": "Approved",
+   "roles": [
+    "Reviewer",
+    "QA",
+    "Admin"
+   ],
+   "signature": true,
+   "meaning": "Approval of Results - Batch Release",
+   "sod": true
+  },
+  {
+   "from": "Pending Review",
+   "to": "Rejected",
+   "roles": [
+    "Reviewer",
+    "QA",
+    "Admin"
+   ],
+   "signature": true,
+   "meaning": "Rejection of Results",
+   "sod": true
+  },
+  {
+   "from": "Testing",
+   "to": "Rejected",
+   "roles": [
+    "QA",
+    "Admin"
+   ],
+   "signature": true,
+   "meaning": "Immediate Rejection (Quality Failure)",
+   "sod": false
+  },
+  {
+   "from": "Approved",
+   "to": "Rejected",
+   "roles": [
+    "QA",
+    "Admin"
+   ],
+   "signature": true,
+   "meaning": "Revocation of Approval",
+   "sod": false
+  }
+ ]
+}

@@ -1,0 +1,77 @@
+[
+ {
+  "name": "archive.verify",
+  "cron": "40 4 * * 0",
+  "description": "Weekly: re-hashes every archived bundle against its manifest and announces one that no longer verifies (event archive.verification_failed)."
+ },
+ {
+  "name": "artifacts.cleanup",
+  "cron": "30 3 * * *",
+  "description": "Deletes generated documents (Certificate of Analysis PDFs) after their 30-day retention."
+ },
+ {
+  "name": "audit.anchor",
+  "cron": "20 0 * * *",
+  "description": "Daily anchor of the audit trail head to the second path (AUDIT_ANCHOR_DIR or the backup mirror), then a check of every anchor against the database."
+ },
+ {
+  "name": "audit.clock",
+  "cron": "*/5 * * * *",
+  "description": "Clock guard: a clock found earlier than records already written blocks signing until an Administrator acknowledges it."
+ },
+ {
+  "name": "audit.verify",
+  "cron": "0 4 * * 0",
+  "description": "Weekly check of the whole audit hash chain and of the security event chain; the result is a security event."
+ },
+ {
+  "name": "backup.daily",
+  "cron": "0 2 * * *",
+  "description": "Encrypted backup, copied to the mirror, then pruned by the 7/4/12 retention rule."
+ },
+ {
+  "name": "backup.drill",
+  "cron": "0 3 1 * *",
+  "description": "Monthly restore drill: the newest backup is restored into a scratch database and compared with its manifest."
+ },
+ {
+  "name": "calibration.due",
+  "cron": "15 6 * * *",
+  "description": "Daily: announces instruments due for calibration within 30 days, and overdue ones (event instrument.calibration_due)."
+ },
+ {
+  "name": "em.trends",
+  "cron": "40 5 * * *",
+  "description": "Daily: environmental monitoring adverse trends (3 consecutive alert-level results at a point, 2 action-level results within 30 days, a recurring organism in a room)."
+ },
+ {
+  "name": "oot.evaluate",
+  "cron": "20 * * * *",
+  "description": "Hourly: approved results are checked against the control-limit baselines; a rule violation raises an advisory out-of-trend alert (no result or disposition is changed)."
+ },
+ {
+  "name": "periodic.scan",
+  "cron": "20 6 * * *",
+  "description": "Daily: opens the periodic reviews that fall due within 14 days and announces open reviews due or overdue (event periodic.review_due)."
+ },
+ {
+  "name": "reagents.expiry",
+  "cron": "5 * * * *",
+  "description": "Hourly: marks reagent lots and prepared solutions past their expiry (or in-use expiry) Expired, and announces those expiring within 30 and 7 days (event reagent.expiry_alert)."
+ },
+ {
+  "name": "stability.timepoints",
+  "cron": "5 * * * *",
+  "description": "Hourly: stability pulls whose window opened become Due; a window that closed without a pull becomes Missed and opens a deviation; pulled timepoints follow their sample (InTesting, Complete)."
+ },
+ {
+  "name": "tat.sweep",
+  "cron": "*/10 * * * *",
+  "description": "Every 10 minutes: starts the turnaround clock of received samples (due date from the priority and the business calendar), and announces samples due within 24 hours and overdue ones (event sample.tat_alert)."
+ },
+ {
+  "name": "training.overdue",
+  "cron": "10 1 * * *",
+  "description": "Daily: assigns curricula to users and documents added since, marks training past its due date Overdue and re-derives the software-trained flag."
+ }
+]
