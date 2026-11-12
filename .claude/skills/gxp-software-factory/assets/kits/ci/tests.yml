@@ -1,0 +1,38 @@
+name: tests
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  unit-and-api:
+    name: Vitest (real PostgreSQL)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: lims, POSTGRES_PASSWORD: lims, POSTGRES_DB: lims }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U lims" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      SQL_HOST: 127.0.0.1
+      SQL_USER: lims
+      SQL_PASSWORD: lims
+      # Base name only: the harness builds lims_test_tpl and one lims_test_t<pid> per test file, and drops them again.
+      SQL_DB_NAME: lims_test
+      JWT_SECRET: ci-only-secret-not-for-production
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { fetch-depth: 0 } # the API contract check compares with the target branch
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - name: Unit and API tests
+        run: npm test
+      - name: Release integrity, SBOM and update gate (no database)
+        run: npm run test:installer
+      - name: API v1 contract (docs/api current, no breaking change against the target branch)
+        run: npx tsx src/server/v1/openapi-cli.ts check --base "origin/${{ github.base_ref || 'main' }}"

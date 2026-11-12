@@ -1,0 +1,107 @@
+{
+ "REPORT": {
+  "type": "object",
+  "properties": {
+   "track": {
+    "type": "string"
+   },
+   "status": {
+    "type": "string",
+    "enum": [
+     "complete",
+     "partial",
+     "blocked"
+    ]
+   },
+   "done": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   },
+   "notDone": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   },
+   "filesChanged": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   },
+   "testsAdded": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   },
+   "testEvidence": {
+    "type": "string",
+    "description": "Exact commands run and their pass/fail totals"
+   },
+   "decisionsForUser": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    },
+    "description": "GxP or product judgements implemented as conservative defaults that need human confirmation"
+   },
+   "needsFromOtherTracks": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   }
+  },
+  "required": [
+   "track",
+   "status",
+   "done",
+   "notDone",
+   "filesChanged",
+   "testsAdded",
+   "testEvidence",
+   "decisionsForUser",
+   "needsFromOtherTracks"
+  ]
+ },
+ "GATE": {
+  "type": "object",
+  "properties": {
+   "green": {
+    "type": "boolean"
+   },
+   "commit": {
+    "type": "string"
+   },
+   "checks": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    },
+    "description": "Each gate with its result"
+   },
+   "integrationFixes": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   },
+   "remainingFailures": {
+    "type": "array",
+    "items": {
+     "type": "string"
+    }
+   }
+  },
+  "required": [
+   "green",
+   "commit",
+   "checks",
+   "integrationFixes",
+   "remainingFailures"
+  ]
+ }
+}

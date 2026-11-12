@@ -1,0 +1,65 @@
+{
+  "vision": "One paragraph: who the product is for, what it must be trusted for, and the order of work (R1 makes it trustworthy, R2 adds depth, R3 adds what competitors lack).",
+  "releases": [
+    {
+      "name": "R1 Foundation and integrity",
+      "goal": "Close the integrity defects and make parallel work possible: split the monolith first (one serial track), then give every later track its own files.",
+      "tracks": [
+        {
+          "track": "r1-core",
+          "gapIds": ["M01"],
+          "ownsFiles": ["src/server/app.ts", "src/server/routes/index.ts", "src/server/core/**", "tests/helpers/**", "tests/route-table.json"],
+          "dependsOn": [],
+          "summary": "Runs alone first. Characterisation test of the route table, then a mechanical move of every route into src/server/routes/<domain>.ts. Adds the transaction, audit and validation primitives and the test harness."
+        },
+        {
+          "track": "r1-migrations",
+          "gapIds": ["M02"],
+          "ownsFiles": ["src/server/migrate/**", "migrations/000*", "tests/upgrade/**"],
+          "migrations": "0000-0009",
+          "dependsOn": ["r1-core"],
+          "summary": "Forward-only, versioned migrations with a verified backup before any upgrade of an installed database."
+        },
+        {
+          "track": "r1-esign",
+          "gapIds": ["M03"],
+          "ownsFiles": ["src/server/esign/**", "src/server/routes/signatures.ts", "migrations/002*", "tests/api/esign*.test.ts"],
+          "migrations": "0020-0029",
+          "dependsOn": ["r1-core", "r1-migrations"],
+          "summary": "One signing service: password re-entered, meaning from a catalogue, bound to the record version, audit entry in the same transaction."
+        },
+        {
+          "track": "r1-audit",
+          "gapIds": ["M04"],
+          "ownsFiles": ["src/server/audit/**", "src/server/routes/audit.ts", "migrations/003*", "tests/api/audit*.test.ts"],
+          "migrations": "0030-0039",
+          "dependsOn": ["r1-core", "r1-migrations"],
+          "summary": "Hash-chained, append-only audit trail with on-demand verification and a reason for change."
+        }
+      ]
+    },
+    {
+      "name": "R2 Feature depth",
+      "goal": "Features buyers expect. Core tables are frozen (their columns feed signed hashes): a feature adds a sidecar table and its own route, guard and schedule files in the registries.",
+      "tracks": [
+        {
+          "track": "r2-reports",
+          "gapIds": ["M05"],
+          "ownsFiles": ["src/server/reports/**", "src/server/routes/reports.ts", "src/components/Reports.tsx", "migrations/010*", "tests/api/report*.test.ts"],
+          "migrations": "0100-0109",
+          "dependsOn": [],
+          "summary": "Controlled certificate: gap-free number, e-signature, stored PDF with its SHA-256."
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    { "id": "M01", "title": "Platform core: split the monolith, transactional primitives, test harness", "competitorBenchmark": "n/a (engineering foundation)", "currentStateEvidence": "src/server/api.ts holds 64 routes in one router (wc -l: 3012). No test framework: grep -r vitest package.json -> nothing.", "design": "Route modules per domain, createRouter/asyncHandler, withTransaction, updateVersioned, writeAudit; Vitest with a real database per test file.", "files": ["src/server/routes/*.ts", "src/server/core/*.ts"], "acceptance": ["tests/route-table.json lists the same routes before and after the move.", "A write with a stale version answers 409 and changes nothing."], "effort": "L", "impact": "critical", "gxpRisk": "Every later control (audit, signature, concurrency) depends on these primitives being the only write path." },
+    { "id": "M02", "title": "Versioned migrations for installed databases", "competitorBenchmark": "Incumbents ship upgrade scripts with a backup step.", "currentStateEvidence": "Schema is pushed with drizzle-kit push; no migrations folder (ls migrations -> no such directory).", "design": "Numbered SQL migrations, a schema_migrations table, a runner that refuses a database it does not recognise, backup before upgrade.", "files": ["src/server/migrate/*.ts"], "acceptance": ["A v0.1.0 database upgrades with every earlier signature still verifying.", "A database ahead of the code is refused with a readable message."], "effort": "M", "impact": "critical", "gxpRisk": "An upgrade that rewrites signed columns invalidates signatures." },
+    { "id": "M03", "title": "Electronic signature service", "competitorBenchmark": "Signature manifestation with meaning, bound to the record.", "currentStateEvidence": "Three components verify the password in the browser (src/components/Sign.tsx:41).", "design": "signRecord(tx, { entity, id, version, meaning, password, totp }).", "files": ["src/server/esign/*.ts"], "acceptance": ["A wrong password creates no signature and is audited.", "A signature made against version 3 does not verify against version 4."], "effort": "M", "impact": "critical", "gxpRisk": "Part 11 signature binding; do not cite clauses you have not read." },
+    { "id": "M04", "title": "Audit trail v2", "competitorBenchmark": "Field-level history with reason for change and review.", "currentStateEvidence": "audit rows carry no reason; UPDATE on audit_trail is possible for the application role.", "design": "Append-only triggers, hash chain, reason for change past draft.", "files": ["src/server/audit/*.ts"], "acceptance": ["UPDATE and DELETE on audit_trail fail for every role.", "One changed byte fails verification and names the row."], "effort": "M", "impact": "high", "gxpRisk": "The audit trail is the record of record changes." },
+    { "id": "M05", "title": "Controlled certificate", "competitorBenchmark": "CoA with version control and re-issue.", "currentStateEvidence": "Reports.tsx prints 'ALL TESTS PASSED' regardless of results (line 236).", "design": "Issue only for an approved record; supersede with reason.", "files": ["src/server/reports/*.ts"], "acceptance": ["A record with a failing result cannot get a certificate stating compliance."], "effort": "M", "impact": "high", "gxpRisk": "A certificate is a released GxP statement." }
+  ],
+  "topDefects": ["VERIFIED. <defect with file:line and what it causes>"],
+  "droppedOrDeferred": ["<what was left out and why: every dropped idea is named so nobody thinks it was forgotten>"]
+}

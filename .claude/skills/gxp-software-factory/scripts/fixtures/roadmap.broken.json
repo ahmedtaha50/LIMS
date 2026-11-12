@@ -1,0 +1,14 @@
+{
+  "releases": [
+    { "name": "R1", "goal": "g", "tracks": [
+      { "track": "a", "gapIds": ["G1"], "ownsFiles": ["src/api.ts", "src/a/**"], "dependsOn": [], "summary": "s", "migrations": "0010-0019" },
+      { "track": "b", "gapIds": ["G1", "G2"], "ownsFiles": ["src/api.ts", "src/b/**"], "dependsOn": [], "summary": "s", "migrations": "0015-0025" },
+      { "track": "c", "gapIds": ["G9"], "ownsFiles": ["src/new/*.ts"], "dependsOn": ["d"], "summary": "s" },
+      { "track": "d", "gapIds": [], "ownsFiles": ["src/new/**"], "dependsOn": ["c"], "summary": "s" },
+      { "track": "e", "gapIds": ["G3"], "ownsFiles": [], "dependsOn": ["zzz"], "summary": "s" },
+      { "track": "f", "gapIds": ["G4"], "ownsFiles": ["src/f/*.ts"], "dependsOn": [], "summary": "s" },
+      { "track": "g", "gapIds": ["G5"], "ownsFiles": ["src/f/**"], "dependsOn": [], "summary": "s" }
+    ] }
+  ],
+  "gaps": [ { "id": "G1", "title": "one", "acceptance": ["x"] }, { "id": "G2", "title": "two", "acceptance": [] }, { "id": "G3", "title": "three", "acceptance": ["x"] }, { "id": "G4", "title": "four", "acceptance": ["x"] }, { "id": "G5", "title": "five", "acceptance": ["x"] }, { "id": "G6", "title": "orphan", "acceptance": ["x"] } ]
+}

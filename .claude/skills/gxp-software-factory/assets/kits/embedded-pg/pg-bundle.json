@@ -1,0 +1,13 @@
+{
+  "_comment": "Windows x64 PostgreSQL 16 binaries bundled into the installer (extraResources: build/pgsql -> resources/pgsql). Run `npm run fetch:pg` before electron-builder. sha256 is the hash of the downloaded zip and MUST be pinned by whoever releases (copy it from the vendor page and check it independently); fetch refuses to run while it is null. url and version are NOT verified from this repository.",
+  "version": "16.9",
+  "url": "https://get.enterprisedb.com/postgresql/postgresql-16.9-1-windows-x64-binaries.zip",
+  "sha256": "304eb7dab70717015c4fd09986122e470d53a57a3a2b443d31e2c1d83d88db88",
+  "license": "PostgreSQL License (permissive); the EDB zip also carries third-party libraries (OpenSSL, ICU, libxml2, zlib ...)",
+  "keep": [
+    "bin",
+    "lib",
+    "share"
+  ],
+  "_pinned": "Pinned 2026-11-08 from a download of the url above over HTTPS (314,500,604 bytes; zip test passed; contains pgsql/bin/postgres.exe 16.9 dated 2025-05-07). EDB publishes no checksum for this zip, so the pin is trust-on-first-download: it guarantees every build uses these exact bytes, not that the first download was genuine. QA/IT may re-download on another network and compare."
+}

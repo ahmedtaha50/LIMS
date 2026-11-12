@@ -1,0 +1,18 @@
+{
+  "_comment": "Project facts every brief needs. Fill once (Orient), keep next to the roadmap. Unknown values stay TODO: never guess them.",
+  "PROJECT": "Sample Tracker", "REPO": "/path/to/repo", "BRANCH": "main",
+  "ROADMAP": "docs/roadmap/roadmap.json", "CHANGES_DIR": "docs/changes",
+  "HOUSE_RULES_FILE": "AGENTS.md",
+  "HOUSE_RULES_SUMMARY": "audit entry in the SAME transaction as the change; e-signatures with meaning and record version; optimistic concurrency (WHERE id AND version); strict input schemas with server-controlled fields stripped; actor always from the session; no silent failures.",
+  "DB_ENGINE": "PostgreSQL 16", "DB_PREFIX": "app_", "BASE_PORT": 3100,
+  "DB_ENV": "SQL_HOST=127.0.0.1 SQL_USER=app SQL_PASSWORD=app SQL_DB_NAME=<your db>",
+  "DB_CREATE": "PGPASSWORD=app psql -h 127.0.0.1 -U app postgres -c \"create database <your db>\"",
+  "DB_START": "pg_lsclusters; pg_ctlcluster 16 main start",
+  "EVIDENCE_CHECKS": "tests/security-controls.sh and tests/backup-restore.sh",
+  "MUST_KEEP_WORKING": "the desktop shell tests (xvfb-run -a node tests/desktop-shell.cjs) after any change to the build, migrations or start-up",
+  "GATE_DB": "app_gate", "GATE_PORT": 3190,
+  "CHECKS": "a) lint and type check (no new baseline errors)  b) the full test suite  c) build and bundle budget  d) install the schema the way a real install does, seed, start the built server, run the shared evidence checks against it  e) migration suite  f) desktop tests  g) traceability gate  h) repository-root hygiene",
+  "SHARED_COUNTERS": "e.g. the number of signature meanings asserted by the upgrade test",
+  "DERIVED_FILES": "e.g. schema export, permission matrix, route table",
+  "TRAILERS": "<the commit trailer lines the session requires>"
+}
