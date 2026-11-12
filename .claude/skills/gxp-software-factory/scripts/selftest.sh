@@ -21,4 +21,8 @@ printf 'a\nb\n' | node ratchet.cjs --baseline $T/b.json >/dev/null 2>&1; ok "rat
 printf 'a\nb\nc\n' | node ratchet.cjs --baseline $T/b.json >/dev/null 2>&1; ok "ratchet: a new finding fails" $? 1
 printf 'a\nb\nc\n' | node ratchet.cjs --baseline $T/b.json --update >/dev/null 2>&1; ok "ratchet: the baseline cannot grow silently" $? 1
 printf 'a\n' | node ratchet.cjs --baseline $T/b.json --strict-stale >/dev/null 2>&1; ok "ratchet: a stale entry fails in strict mode" $? 1
+M=$(mktemp -d); mkdir -p $M/src; echo '{"dependencies":{"express":"1","zod":"1"}}' > $M/package.json; echo "import express from 'express'; import { z } from 'zod';" > $M/src/a.ts
+printf 'Stack: Express, Zod.\n' > $M/AGENTS.md; node manual-check.cjs --repo $M >/dev/null 2>&1; ok "manual-check: a manual that matches the code" $? 0
+printf 'Stack: Express, Zod, Firebase Auth, RabbitMQ.\n' > $M/AGENTS.md; node manual-check.cjs --repo $M >/dev/null 2>&1; ok "manual-check: a manual naming what is not installed" $? 1
+rm -rf $M
 rm -rf $T; [ $fail = 0 ] && echo "selftest OK" || echo "selftest FAILED"; exit $fail

@@ -43,5 +43,17 @@ track, a cycle, overlapping migration ranges. It prints the wave plan with a dat
 briefs. Commit the roadmap; tracks read it from the repository.
 
 Then write the project facts once (`assets/briefs/factory.config.example.json`): they fill every brief. Unknown stays `TODO`.
+## The agent manual is reviewed like code
+
+Every track reads `AGENTS.md` first, so an error there is repeated by every track. On the source project the manual still said
+"Firebase Auth" and "RabbitMQ" after the code had moved to local accounts and a database job queue, and listed two libraries no
+file imported. Before the first wave, and after any wave that changes the stack:
+
+```bash
+node scripts/manual-check.cjs --repo .      # named but not installed / installed but never imported / banned but present
+```
+For each difference decide whether the manual or the code is wrong and fix that one. When something is deliberately gone, say so
+in the manual ("X is not used and must not be reintroduced"): the next agent will otherwise bring it back.
+
 If the `gxp-agent-rules` skill is available, use it to write or audit the repository's `AGENTS.md` before the first wave: every
 track reads that file first.

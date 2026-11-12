@@ -19,7 +19,7 @@ work fails quietly, by sounding finished.
 
 | The user says / the situation | Station | Read | Tools |
 |---|---|---|---|
-| "review this system", "what is missing", "make a plan", new codebase | 1 Discovery | `references/discovery.md` | `scripts/roadmap-lint.cjs`, `assets/workflows/discovery.workflow.js`, `assets/examples/roadmap.example.json` |
+| "review this system", "what is missing", "make a plan", new codebase | 1 Discovery | `references/discovery.md` | `scripts/roadmap-lint.cjs`, `scripts/manual-check.cjs`, `assets/workflows/discovery.workflow.js`, `assets/examples/roadmap.example.json` |
 | "continue", "كمل", "start the wave / release", many features to build | 2 Waves | `references/waves.md` | `assets/briefs/*`, `scripts/reports-digest.cjs`, `scripts/ratchet.cjs`, `assets/workflows/release-waves.workflow.js` |
 | pushed; CI red, or failed in seconds; "is it green?"; repo move | 3 CI | `references/ci.md` | `scripts/ci-log-digest.cjs`, `assets/kits/ci/` |
 | "build the installer", "I want one file that just runs", built-in database, an error screenshot from the installed app | 4 Installer | `references/installer.md` | `assets/kits/release/`, `assets/kits/embedded-pg/` |
@@ -30,7 +30,7 @@ First visit to a project: look before acting. Is there a roadmap, an agent manua
 `validation/` folder, an installer config? What is the last gate record and the state of the last CI run? Then say in two lines
 where the project stands and what you are starting.
 
-Run `bash scripts/selftest.sh` once on a new machine: it proves the tools work there (16 checks).
+Run `bash scripts/selftest.sh` once on a new machine: it proves the tools work there (18 checks).
 
 ## The line in one page
 
