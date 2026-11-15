@@ -30,9 +30,16 @@ HOUSE RULES (all agents)
 - Never invent regulatory citations, approvals, signatures or numbers. Where a GxP judgement is needed (retention, permissions,
   segregation of duties, rounding), implement a conservative default and list it under decisionsForUser.
 - No speculative abstractions, no features outside your gaps. Match the surrounding code style.
+- A temporary edit made for an experiment (a forced branch, a debug line) carries the comment FACTORY-TEMP and is removed before you
+  report; the gate's pre-commit check refuses that marker.
 - Finish with {{CHANGES_DIR}}/{{TRACK}}.md (what changed, why, how to verify, decisions needing confirmation, what was NOT done), the
   gate patch, and ONE JSON report (schema REPORT in report.schema.json) written to {{REPORT_PATH}}. Be honest: status "partial" if an
   acceptance criterion is unmet, and say which. Then return a five-line summary and stop: do not keep waking on background jobs.
+
+ACCEPTANCE LEDGER. The plan gives your gaps these criteria. Write the test for each first. In the report, "acceptance" has one entry
+per line below: {"gap", "n", "status": "met" | "partly" | "not-met", "evidence": "<test file> :: <fragment of the test title>"}.
+"complete" is only true when every line is met; otherwise the status is "partial" and the line says why.
+{{ACCEPTANCE}}
 
 {{CONTEXT}}
 

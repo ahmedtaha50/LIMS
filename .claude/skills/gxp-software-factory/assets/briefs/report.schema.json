@@ -53,6 +53,39 @@
     "items": {
      "type": "string"
     }
+   },
+   "acceptance": {
+    "type": "array",
+    "description": "The acceptance ledger: one entry per acceptance criterion of the track's gaps, numbered as in the brief. 'met' needs evidence: the test file and a fragment of the test title.",
+    "items": {
+     "type": "object",
+     "properties": {
+      "gap": {
+       "type": "string"
+      },
+      "n": {
+       "type": "integer",
+       "description": "1-based number of the criterion within its gap"
+      },
+      "status": {
+       "type": "string",
+       "enum": [
+        "met",
+        "partly",
+        "not-met"
+       ]
+      },
+      "evidence": {
+       "type": "string",
+       "description": "tests/api/x.test.ts :: fragment of the test title"
+      }
+     },
+     "required": [
+      "gap",
+      "n",
+      "status"
+     ]
+    }
    }
   },
   "required": [
@@ -64,7 +97,8 @@
    "testsAdded",
    "testEvidence",
    "decisionsForUser",
-   "needsFromOtherTracks"
+   "needsFromOtherTracks",
+   "acceptance"
   ]
  },
  "GATE": {
