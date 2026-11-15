@@ -1,0 +1,44 @@
+{
+  "_comment": "The only clauses this skill lets a document cite without a person checking the text. Pointers, not quotations: never quote regulatory text from memory. references/regulatory-anchors.md is the readable copy of this file.",
+  "part11": {
+    "title": "21 CFR Part 11 (US FDA): Electronic Records; Electronic Signatures",
+    "sections": {
+      "11.1": { "name": "Scope", "paragraphs": null },
+      "11.2": { "name": "Implementation", "paragraphs": "ab" },
+      "11.3": { "name": "Definitions", "paragraphs": "ab" },
+      "11.10": { "name": "Controls for closed systems", "paragraphs": "abcdefghijk" },
+      "11.30": { "name": "Controls for open systems", "paragraphs": "" },
+      "11.50": { "name": "Signature manifestations", "paragraphs": "ab" },
+      "11.70": { "name": "Signature/record linking", "paragraphs": "" },
+      "11.100": { "name": "General requirements (electronic signatures)", "paragraphs": "abc" },
+      "11.200": { "name": "Electronic signature components and controls", "paragraphs": "ab" },
+      "11.300": { "name": "Controls for identification codes/passwords", "paragraphs": "abcde" }
+    },
+    "paragraphNames": {
+      "11.10(a)": "validation of systems", "11.10(b)": "accurate and complete copies for inspection", "11.10(c)": "protection of records through the retention period",
+      "11.10(d)": "limiting system access to authorised individuals", "11.10(e)": "secure, computer-generated, time-stamped audit trails",
+      "11.10(f)": "operational system checks (permitted sequencing of steps)", "11.10(g)": "authority checks", "11.10(h)": "device checks",
+      "11.10(i)": "education, training and experience of the people involved", "11.10(j)": "written policies holding individuals accountable for actions under their signatures",
+      "11.10(k)": "controls over systems documentation",
+      "11.50(a)": "printed name, date and time, and meaning of the signature", "11.50(b)": "the same controls for these items, shown in human-readable form",
+      "11.100(a)": "unique to one individual, never reused or reassigned", "11.100(b)": "identity verified before a signature is assigned", "11.100(c)": "certification to the agency",
+      "11.200(a)": "non-biometric signatures: two distinct components, used only by the owner", "11.200(b)": "biometric signatures",
+      "11.300(a)": "uniqueness of each identification code and password combination", "11.300(b)": "periodic check, recall or revision", "11.300(c)": "loss management",
+      "11.300(d)": "transaction safeguards against unauthorised use", "11.300(e)": "initial and periodic testing of devices"
+    }
+  },
+  "annex11": {
+    "title": "EU GMP Annex 11: Computerised Systems (the text in force since 2011)",
+    "clauses": {
+      "1": { "name": "Risk Management", "sub": 0 }, "2": { "name": "Personnel", "sub": 0 }, "3": { "name": "Suppliers and Service Providers", "sub": 4 },
+      "4": { "name": "Validation", "sub": 8 }, "5": { "name": "Data", "sub": 0 }, "6": { "name": "Accuracy Checks", "sub": 0 }, "7": { "name": "Data Storage", "sub": 2 },
+      "8": { "name": "Printouts", "sub": 2 }, "9": { "name": "Audit Trails", "sub": 0 }, "10": { "name": "Change and Configuration Management", "sub": 0 },
+      "11": { "name": "Periodic evaluation", "sub": 0 }, "12": { "name": "Security", "sub": 4 }, "13": { "name": "Incident Management", "sub": 0 },
+      "14": { "name": "Electronic Signature", "sub": 0 }, "15": { "name": "Batch release", "sub": 0 }, "16": { "name": "Business Continuity", "sub": 0 }, "17": { "name": "Archiving", "sub": 0 }
+    }
+  },
+  "gamp": { "title": "GAMP 5 software categories", "categories": { "1": "Infrastructure software", "3": "Non-configured products", "4": "Configured products", "5": "Custom applications" } },
+  "pics": { "011": "PI 011: Good Practices for Computerised Systems in Regulated GxP Environments", "041": "PI 041: Good Practices for Data Management and Integrity in Regulated GMP/GDP Environments" },
+  "ich": ["Q1A", "Q1E", "Q2", "Q7", "Q8", "Q9", "Q10", "Q12"],
+  "alcoaPlus": ["Attributable", "Legible", "Contemporaneous", "Original", "Accurate", "Complete", "Consistent", "Enduring", "Available"]
+}
