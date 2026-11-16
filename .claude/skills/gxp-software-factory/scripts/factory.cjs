@@ -191,7 +191,7 @@ function main(argv, io) {
     const want = String(cfg.TRAILERS || '').split('\n').map(l => l.split(':')[0].trim()).filter(k => k && !k.startsWith('<'));
     if (!want.length) add('SKIP', 'commit trailers', 'none configured (TRAILERS in factory.config.json)');
     else { const miss = want.filter(k => !new RegExp('^' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ':', 'm').test(msg)); add(miss.length ? 'FAIL' : 'PASS', 'the gate commit carries the required trailers', miss.length ? 'missing: ' + miss.join(', ') : want.join(', ')); }
-    const inHead = (gitTry(repo, ['show', '--name-only', '--format=', 'HEAD']) || '').split('\n');
+    const inHead = (gitTry(repo, ['show', '--name-only', '--relative', '--format=', 'HEAD']) || '').split('\n');
     const rec = inHead.filter(f => f.startsWith(cfg.CHANGES_DIR + '/') && /gate[^/]*\.md$/i.test(f));
     add(rec.length ? 'PASS' : 'FAIL', 'the gate commit contains a gate record', rec.length ? rec.join(', ') : `no ${cfg.CHANGES_DIR}/*gate*.md in HEAD: write what was merged by hand, each fix, the evidence`);
     const patches = leftoverPatches(), loose = patches.filter(p => !p.item);

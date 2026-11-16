@@ -332,6 +332,9 @@ sec('subfolder project');
   clean('ownership is judged on paths relative to the project folder', run('ownership-audit.cjs', ['--tracks', 'r1-alpha', '--repo', p]));
   fs.appendFileSync(path.join(p, 'src/beta/b.js'), '// edited by alpha\n');
   fault('a foreign edit inside the project folder is still caught', run('ownership-audit.cjs', ['--tracks', 'r1-alpha', '--repo', p]), 1, /FOREIGN/);
+  git(top, 'checkout', '-q', '--', '.'); fs.rmSync(path.join(p, 'docs/changes'), { recursive: true, force: true }); fs.writeFileSync(path.join(top, 'README.md'), '# monorepo\n');
+  w(p, 'docs/changes/r1-w1-gate.md', '# gate\n'); git(top, 'add', '-A'); git(top, 'commit', '-q', '-m', 'R1 wave 1\n\nReviewed-By: drill');
+  is('clean', 'the gate record is found in a commit made from the top of the repository', /PASS +the gate commit contains a gate record/.test(run('factory.cjs', ['exit', 'gate', '--repo', p]).out), true);
   w(p, 'src/alpha/t.js', 'if (true) { run(); }\n');
   fault('a forced branch inside the project folder is still caught', run('precommit-guard.cjs', ['--repo', p]), 1, /TEMP/);
 }
