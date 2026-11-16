@@ -476,7 +476,8 @@
           ],
           "ownsFiles": [
             "server/directory/**",
-            "tests/api/directory*.test.ts"
+            "tests/api/directory*.test.ts",
+            "server/routes/directory-settings.ts"
           ],
           "dependsOn": [
             "r5-settings"
