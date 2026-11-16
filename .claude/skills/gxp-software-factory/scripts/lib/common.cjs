@@ -56,9 +56,9 @@ function changedFiles(repo, base = 'HEAD') {
   return [...out].sort();
 }
 
-/** Runs a sibling tool; returns { code, out }. */
+/** Runs a sibling tool (by name) or any Node script (by absolute path); returns { code, out }. */
 function tool(name, a, cwd) {
-  const r = spawnSync(process.execPath, [path.join(__dirname, '..', name), ...a], { cwd, encoding: 'utf8', maxBuffer: 64 << 20 });
+  const r = spawnSync(process.execPath, [path.resolve(__dirname, '..', name), ...a], { cwd, encoding: 'utf8', maxBuffer: 64 << 20 });
   return { code: r.status === null ? 1 : r.status, out: (r.stdout || '') + (r.stderr || '') };
 }
 /** RFC 4180: quoted fields may hold commas, quotes ("") and new lines. Returns rows of strings. */

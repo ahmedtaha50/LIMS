@@ -1,5 +1,10 @@
 {
-  "_comment": "The only clauses this skill lets a document cite without a person checking the text. Pointers, not quotations: never quote regulatory text from memory. references/regulatory-anchors.md is the readable copy of this file.",
+  "_comment": "The only clauses this skill lets a document cite without a person checking the text. Pointers, not quotations: never quote regulatory text from memory. Print it with: node scripts/citation-check.cjs --list. How to use it: references/regulatory-anchors.md.",
+  "watch": [
+    { "what": "EU GMP Annex 11", "checked": "2026-11-15", "note": "A revision (together with a revised Chapter 4 and a new Annex 22 on artificial intelligence) was in public consultation from 7 July to 7 October 2025. A web search on the date above found no adopted text, and EudraLex Volume 4 still listed the 2011 text. The draft renumbers and adds clauses, so open EudraLex Volume 4 before a clause number goes into a document that will be signed." },
+    { "what": "ICH Q1", "checked": "2026-11-15", "note": "One consolidated Q1 guideline (to replace Q1A to Q1F and Q5C) was in consultation in 2025 and had not reached Step 4 when searched on the date above. Until it is adopted and implemented in the region, Q1A(R2) to Q1E are the texts to cite." },
+    { "what": "everything else", "checked": "2026-11-15", "note": "This list says which clause numbers can exist, not which revision is current. For a signed document, a person opens the source (eCFR for 21 CFR, EudraLex Volume 4, picscheme.org, ich.org, ISPE for GAMP) and confirms the number and its text." }
+  ],
   "part11": {
     "title": "21 CFR Part 11 (US FDA): Electronic Records; Electronic Signatures",
     "sections": {

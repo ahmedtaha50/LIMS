@@ -3,6 +3,8 @@
 //
 //   node open-items.cjs add-reports <dir-with-report-*.json> [--roadmap <file>]     notDone, unmet acceptance, decisionsForUser
 //   node open-items.cjs add-deviations <deviations.csv>                             OPEN deviations (and closes the ones the CSV closed)
+//   node open-items.cjs add --kind not-done|decision --source "<where it comes from>" "<text>"   one item by hand: a gate patch
+//                                                                                   deferred on purpose, a question the user left open
 //   node open-items.cjs list [--all] [--kind decision|not-done|acceptance|deviation]
 //   node open-items.cjs resolve OI-0007 --by "<commit, deviation id, test name or the user's decision>"
 //   node open-items.cjs drop OI-0007 --reason "..." --decided-by "<name of the person>"
@@ -18,12 +20,12 @@ const path = require('path');
 const crypto = require('crypto');
 const { args, loadConfig, loadRoadmap, parseCsv, today } = require('./lib/common.cjs');
 
-const { opt, flag, positional } = args(process.argv.slice(2), ['--repo', '--file', '--roadmap', '--by', '--reason', '--decided-by', '--kind']);
+const { opt, flag, positional } = args(process.argv.slice(2), ['--repo', '--file', '--roadmap', '--by', '--reason', '--decided-by', '--kind', '--source']);
 const [cmd, arg1] = positional;
 const repo = path.resolve(opt('--repo', '.'));
 const file = path.resolve(repo, opt('--file', loadConfig(repo).OPEN_ITEMS));
 const KINDS = ['not-done', 'acceptance', 'decision', 'deviation'];
-const usage = () => { console.error('usage: node open-items.cjs add-reports <dir> | add-deviations <csv> | list [--all] | resolve <id> --by "..." | drop <id> --reason "..." --decided-by "..." | check'); process.exit(2); };
+const usage = () => { console.error('usage: node open-items.cjs add-reports <dir> | add-deviations <csv> | add --kind not-done|decision --source "..." "<text>" | list [--all] | resolve <id> --by "..." | drop <id> --reason "..." --decided-by "..." | check'); process.exit(2); };
 if (!cmd) usage();
 
 const reg = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : { comment: 'Open items of the delivery plan. An item leaves this list only as resolved (with a reference) or dropped (by a named person).', items: [] };
@@ -56,6 +58,11 @@ if (cmd === 'add-reports') {
     }
   }
   save(); console.log(`${added} item(s) added. ${summary()}`);
+} else if (cmd === 'add') {
+  const kind = opt('--kind', ''), source = norm(opt('--source', '')), text = norm(arg1 || '');
+  if (!['not-done', 'decision'].includes(kind) || source.length < 2 || text.length < 10) { console.error('open-items: add needs --kind not-done|decision, --source "<the gate, the message or the file it comes from>" and a text that says what is open'); process.exit(2); }
+  const added = add(kind, source, text);
+  save(); console.log(`${added ? '1 item added' : 'already on the list'}. ${summary()}`);
 } else if (cmd === 'add-deviations') {
   if (!arg1 || !fs.existsSync(arg1)) usage();
   const rows = parseCsv(fs.readFileSync(arg1, 'utf8')).slice(1).filter(r => r.length >= 4 && r[0]);

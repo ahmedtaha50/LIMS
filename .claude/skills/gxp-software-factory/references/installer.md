@@ -1,7 +1,10 @@
 # Phase 4: A desktop installer the user can actually run (Electron + NSIS, built on a Windows runner)
 
 Kits: `assets/kits/release/` (manifest, afterPack hook, verifier, SBOM, audit gate, Windows smoke test), `assets/kits/embedded-pg/`
-(built-in PostgreSQL), `assets/kits/ci/build-windows-installer.yml`. Read `assets/kits/README.md` for what to rename.
+(built-in PostgreSQL), `assets/kits/ci/workflows/build-windows-installer.yml`. Read `assets/kits/README.md` for what to rename.
+Leave through `node scripts/factory.cjs exit installer --log <saved Windows job log>`: the manifest hook is registered, the
+integrity check can see the files, the database bundle is pinned, the smoke start comes before the publish step, HEAD is pushed
+and the job log is clean.
 
 ## Integrity: the installed files must match what was built
 

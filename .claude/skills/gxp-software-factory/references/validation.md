@@ -28,7 +28,12 @@ against the built bundle; browser flows; desktop and installer checks; a sandbox
 - Never edit a script while it is running (the shell reads it as it goes).
 - Evidence from another machine (the CI log of the Windows runner) is copied with a header saying where it came from and that the
   package did not produce it; the requirement stays `P*` under a deviation.
-- When the source changes after evidence was collected, regenerate both in the same change, or say the documents are stale.
+- Evidence belongs to a commit: the collection script writes `git <sha>` into the IQ record. When the source changes afterwards,
+  collect again and regenerate in the same change, or say which commit the documents describe.
+  `node scripts/evidence-fresh.cjs --repo .` answers FRESH, STALE (with the files that changed) or UNKNOWN.
+- When a fix closes the cause of a deviation, the content source changes in the same commit: the verification moves from `GAP` or
+  `P*` to the test that now passes, and the deviation is CLOSED with that evidence. A requirement left as a gap after its fix
+  makes the package understate the product, which is also wrong.
 
 ## Honest wording that must be in the package
 
@@ -37,7 +42,9 @@ against the built bundle; browser flows; desktop and installer checks; a sandbox
 - IQ in a sandbox does not qualify the target PC; end-user PQ not performed, if so.
 - Deviations `DEV-YYYY-MM-DD-NN`, OPEN or CLOSED with the evidence that closed them. Fix the cause rather than re-listing known debt
   (a contrast failure was fixed in the component, not re-added to the baseline). A VSR conclusion stays CONDITIONAL while any is open.
-- Never invent approvals, signatures, regulatory citations or retention numbers.
+- Never invent approvals, signatures, regulatory citations or retention numbers. Citations are checked
+  (`node scripts/citation-check.cjs --repo .`, with `--strict` before the package goes to QA); the words "validated",
+  "qualified", "compliant" and "approved" follow `references/regulatory-anchors.md`.
 
 ## Order of work for a new release
 
@@ -45,3 +52,10 @@ against the built bundle; browser flows; desktop and installer checks; a sandbox
 3. Collect evidence. 4. `node validation/build/check.cjs` until it is green for honest reasons (a missing test becomes a test or an
 open deviation, never a removed requirement). 5. Generate. 6. Convert one document to PDF and look at a page. 7. Commit sources,
 evidence and documents together.
+
+## Exit gate
+
+`node scripts/factory.cjs exit validation --repo .`: the traceability gate passes; the evidence is about the code that is checked
+in; no cited clause is impossible; the documents were generated after the last change of their sources. It also prints the count
+of open deviations. Two lines stay with you: the package says what it is (draft, AI execution, blank approvals), and one
+generated document was opened and looked at.

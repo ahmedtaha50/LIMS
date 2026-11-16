@@ -20,7 +20,8 @@ Never say "passed" for a run you have not read; say "running" and come back. If 
 one check for when the run should be done instead of polling.
 
 ```bash
-node scripts/ci-log-digest.cjs <saved job log>      # failing step, the lines that say why, test totals, verdict
+node scripts/ci-log-digest.cjs <saved job log>            # failing step, the lines that say why, test totals, verdict
+node scripts/ci-log-digest.cjs <output file> --local      # the same for a run on this machine
 ```
 Digest the log even when the job is green: an informative step (`continue-on-error`) can be red inside a green job. That is how the
 Windows database failure was found.
@@ -33,6 +34,14 @@ Windows database failure was found.
 | `UNHANDLED_AFTER_GREEN` | all tests pass, exit 1 | fix the unhandled error; do not mask the exit code |
 | `TEST_FAILURE` | a real failing test | reproduce under CI conditions; never weaken the assertion |
 | `MISSING_FILE` | ENOENT in packaging | shell quoting, output path, or a download skipped without an error |
+| `ENV_SERVICE_DOWN` | connection refused to the database or another local service | start the service; change no code |
+| `ENV_DB_SETUP` | the database, role or schema is not there | create and seed a fresh database for this run |
+| `ENV_CONFIG` | the application refused a configuration value | set the value the message names; do not loosen the rule |
+| `ENV_PORT_BUSY` | the port is taken | another run is alive: stop it, or use the port the plan gave this track |
+| `ENV_TOOL_MISSING` | a command is not installed | install it, or say the check was not run |
+
+A green suite outranks environment words in the same log: a test that prints "connection refused" on purpose is not an outage.
+An `ENV_*` verdict is never a reason to edit product code or a test (`references/judgement.md`, section 2).
 
 Lessons that cost a run each:
 - **Config file over command-line flags** when a step runs in PowerShell: `-c.electronDist=...` was split and read as a file name.
@@ -41,6 +50,11 @@ Lessons that cost a run each:
 - **New checks start informative** (`continue-on-error`, a `timeout-minutes`, placed after publishing) until seen green once; then
   make them blocking. A blocking step that hangs holds the release; an informative one must never be cited as proof.
 - **A failure that was your own mistake is reported as yours**, plainly, with the fix.
+
+## Exit gate
+
+`node scripts/factory.cjs exit ci --log <saved log>[,<saved log>]`: HEAD is pushed and every digested log has the verdict OK. Two
+lines stay with you: the log is the run of this commit, not an earlier one; and the informative steps were read too.
 
 ## Moving repository or account
 

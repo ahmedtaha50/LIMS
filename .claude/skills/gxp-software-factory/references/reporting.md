@@ -22,3 +22,13 @@ Rules:
 
 After a wave, a fix or a build, the message has five parts: what was built or fixed; the numbers (suite, evidence checks, CI);
 what is not done or not verified; decisions for the user; what happens next (and when you will check again).
+
+The third and fourth parts are read from the register, not from memory: `node scripts/open-items.cjs list` (and
+`list --kind decision`). A question the user has not answered goes on the list too
+(`open-items.cjs add --kind decision --source "<the message>" "<the question>"`), so it is asked again instead of forgotten.
+
+## Exit gate
+
+`node scripts/factory.cjs exit report --repo .` before the message is sent: the tree is clean, HEAD is pushed, the register is
+consistent. Four lines stay with you: every claim names its receipt; failures and your own mistakes come first; what is not done
+and the decisions are listed; what happens next is stated.

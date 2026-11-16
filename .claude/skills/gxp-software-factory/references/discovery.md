@@ -2,6 +2,8 @@
 
 Goal: a `roadmap.json` whose every claim about the code was checked, split so that parallel tracks never touch the same file.
 Script as it ran: `assets/workflows/discovery.workflow.js`. Shape of the result: `assets/examples/roadmap.example.json`.
+Enter when there is no roadmap, the roadmap has lint errors, or the user asks what is missing. Leave through
+`node scripts/factory.cjs exit discovery`.
 
 ## Three passes
 
@@ -42,7 +44,11 @@ It fails on: a file owned by two tracks of the same wave, a gap in two tracks or
 track, a cycle, overlapping migration ranges. It prints the wave plan with a database name and a port per track; put those in the
 briefs. Commit the roadmap; tracks read it from the repository.
 
-Then write the project facts once (`assets/briefs/factory.config.example.json`): they fill every brief. Unknown stays `TODO`.
+Then write the project facts once: copy `assets/briefs/factory.config.example.json` to `factory.config.json` at the root of the
+project and fill it from the repository (commands, database names, checks, commit trailers). Every brief is generated from it, and
+`make-briefs.cjs` refuses to write one while a fact is missing or still `TODO`. Ask the user only for what the repository does
+not say.
+
 ## The agent manual is reviewed like code
 
 Every track reads `AGENTS.md` first, so an error there is repeated by every track. On the source project the manual still said
@@ -57,3 +63,9 @@ in the manual ("X is not used and must not be reintroduced"): the next agent wil
 
 If the `gxp-agent-rules` skill is available, use it to write or audit the repository's `AGENTS.md` before the first wave: every
 track reads that file first.
+
+## Exit gate
+
+`node scripts/factory.cjs exit discovery --repo .` checks: the roadmap is committed; it lints clean; every track has gaps and every
+gap has acceptance criteria; the agent manual matches the code; `factory.config.json` exists. Two lines stay with you: the
+fact-check verdicts were applied to the roadmap, and the user saw the plan (releases, what was dropped and why, their decisions).

@@ -2,6 +2,7 @@
 // Checks every regulatory citation in the project's documents against the anchor list (scripts/lib/anchors.json).
 //
 //   node citation-check.cjs [paths...] [--repo .] [--strict] [--json]
+//   node citation-check.cjs --list          prints the anchor list (what may be cited without a person opening the text)
 //   default paths: AGENTS.md README.md docs validation/build validation/README.md   (text files; evidence logs are skipped)
 //
 //   VALID     the clause exists in the anchor list (21 CFR Part 11, EU GMP Annex 11 of 2011, GAMP 5 categories, PIC/S PI 011 and PI 041, ICH Q-numbers)
@@ -16,6 +17,23 @@ const { args } = require('./lib/common.cjs');
 const A = require('./lib/anchors.json');
 
 const { opt, flag, positional } = args(process.argv.slice(2), ['--repo']);
+if (flag('--list')) {
+  // The anchor list in readable form: the single source is lib/anchors.json, so this print cannot drift from what is checked.
+  console.log(A.part11.title);
+  for (const [s, v] of Object.entries(A.part11.sections)) {
+    console.log(`  ${s.padEnd(7)} ${v.name}${v.paragraphs === null ? '  (has paragraphs; not enumerated here)' : v.paragraphs ? `  (${v.paragraphs[0]}) to (${v.paragraphs[v.paragraphs.length - 1]})` : '  (no lettered paragraphs)'}`);
+    for (const ch of v.paragraphs || '') { const k = `${s}(${ch})`; if (A.part11.paragraphNames[k]) console.log(`    ${k.padEnd(10)} ${A.part11.paragraphNames[k]}`); }
+  }
+  console.log('\n' + A.annex11.title);
+  for (const [c, v] of Object.entries(A.annex11.clauses)) console.log(`  ${c.padStart(2)}  ${v.name}${v.sub ? `  (${c}.1 to ${c}.${v.sub})` : ''}`);
+  console.log('\n' + A.gamp.title); for (const [c, v] of Object.entries(A.gamp.categories)) console.log(`  ${c}  ${v}`);
+  console.log('\nPIC/S'); for (const v of Object.values(A.pics)) console.log('  ' + v);
+  console.log('\nICH quality guidelines: ' + A.ich.join(', '));
+  console.log('ALCOA+: ' + A.alcoaPlus.join(', '));
+  console.log('\nWatch (the list is not a calendar of revisions):'); for (const w of A.watch || []) console.log(`  ${w.what} (checked ${w.checked}): ${w.note}`);
+  console.log('\nThese are pointers to clause numbers, in paraphrase. They are never quoted as regulatory text.');
+  process.exit(0);
+}
 const repo = path.resolve(opt('--repo', '.'));
 const roots = positional.length ? positional : ['AGENTS.md', 'CLAUDE.md', 'README.md', 'docs', 'validation/build', 'validation/README.md'];
 const TEXT = /\.(md|markdown|txt|cjs|mjs|js|ts|tsx|json|csv|ya?ml)$/i;
