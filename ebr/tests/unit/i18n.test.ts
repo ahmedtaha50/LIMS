@@ -28,7 +28,7 @@ describe('the Arabic and English interface (E26#2)', () => {
   });
 
   it('E26#2: every key made from a server code (meanings, statuses, setting names) is in both dictionaries', () => {
-    expect(dynamicPrefixes.sort()).toEqual(['fieldType', 'item', 'meaning', 'setting', 'settingGroup', 'status', 'stepType', 'unit']);
+    expect(dynamicPrefixes.sort()).toEqual(['fieldType', 'item', 'meaning', 'objectKind', 'role', 'setting', 'settingGroup', 'status', 'stepType', 'unit']);
     expect(Object.keys(en).filter(k => !(k in ar))).toEqual([]);
     for (const p of dynamicPrefixes) expect(Object.keys(en).some(k => k.startsWith(`${p}.`)), p).toBe(true);
   });

@@ -61,6 +61,29 @@ function SignForm({ label, onSubmit, note }: { label: string; note?: string; onS
   );
 }
 
+type LimsView = { limsReachable: boolean; samples: Array<{ externalRef: string; step: string; limsSampleId: string; test: string; status: string; result: Array<{ parameter: string; value: string | null; unit: string | null; outOfSpecification: boolean }> | null }> };
+
+/** E32#4: the LIMS samples of the batch, with the results once approved in the LIMS (E18#1). */
+function LimsSamples({ b }: { b: Batch }) {
+  const t = useT();
+  const [v, setV] = useState<LimsView | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => { void api<LimsView>('GET', `/api/batches/${b.id}/lims`).then(setV).catch(e => setError(errorText(t, e, 'Not loaded.'))); }, [b.id, b.version]);
+  if (error) return <Alert>{error}</Alert>;
+  if (!v || v.samples.length === 0) return null;
+  return (
+    <Card title={t('LIMS samples')}>
+      {!v.limsReachable ? <Alert kind="info">{t('The LIMS cannot be reached now: the last known state is shown.')}</Alert> : null}
+      <ul className="flex flex-col gap-2">{v.samples.map(s => (
+        <li key={s.externalRef} className="rounded-lg border border-slate-200 p-2 text-base">
+          <p><b>{s.test}</b> · {t('LIMS sample {id}', { id: s.limsSampleId })} · {s.status}</p>
+          {s.result ? <ul className="mt-1 ps-5">{s.result.map(r => <li key={r.parameter} className={r.outOfSpecification ? 'font-semibold text-red-800' : ''}>{r.parameter}: {r.value ?? '—'}{r.unit ? ` ${r.unit}` : ''}{r.outOfSpecification ? ` (${t('out of specification')})` : ''}</li>)}</ul>
+            : <p className="text-sm text-slate-600">{t('No approved result yet.')}</p>}
+        </li>))}</ul>
+    </Card>
+  );
+}
+
 /** E12#3: yield and material reconciliation, once, before the batch is closed (r2-materials). */
 function Reconcile({ b, onDone }: { b: Batch; onDone: (b: Batch) => void }) {
   const t = useT();
@@ -120,6 +143,7 @@ function BatchView({ id, me, onBack }: { id: string; me: Me; onBack: () => void 
         </div>))}</Card> : null}
       {b.status === 'in_progress' && !current && !b.waitingFor && can('batch.complete') && b.steps.some(s => s.definition.type === 'material') ? <Reconcile b={b} onDone={setB} /> : null}
       {b.status === 'in_progress' && !current && !b.waitingFor && !open.length && can('batch.complete') ? <Card title={t('All steps are recorded')}><SignForm label={t('Close the batch')} onSubmit={async (password) => setB(await api<Batch>('POST', `/api/batches/${b.id}/complete`, { version: b.version, password }))} /></Card> : null}
+      {b.steps.some(s => s.definition.type === 'sample') ? <LimsSamples b={b} /> : null}
       <ol className="flex flex-col gap-2" aria-label={t('Steps')}>
         {b.steps.map(s => (
           <li key={s.id} className={`rounded-xl border p-3 ${s.id === b.nextStepId ? 'border-sky-700 bg-sky-50' : 'border-slate-200 bg-white'}`}>

@@ -7,6 +7,12 @@
   },
   {
     "method": "GET",
+    "path": "/api/audit/recent",
+    "permission": "audit.read",
+    "summary": "Recent audit entries, filtered by record, action, user and period"
+  },
+  {
+    "method": "GET",
     "path": "/api/audit/verify",
     "permission": "audit.verify",
     "summary": "Recompute the hash chain of the whole audit trail"

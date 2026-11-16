@@ -21,7 +21,7 @@ async function signInAny(page: Page, user: string) {
 }
 const toArabic = async (page: Page) => { if (await page.getByRole('button', { name: 'العربية' }).isVisible()) await page.getByRole('button', { name: 'العربية' }).click(); await expect(page.locator('html')).toHaveAttribute('dir', 'rtl'); };
 const nav = (page: Page, project: string) => project === 'tablet' ? page.getByRole('navigation', { name: 'القائمة الرئيسية (أسفل الشاشة)' }) : page.getByRole('navigation', { name: 'القائمة الرئيسية', exact: true });
-const SCREENS = ['الرئيسية', 'التشغيلات', 'السجلات', 'أنواع السجلات', 'الوصفات (MBR)', 'المواد', 'المراجعة والإفراج', 'الإعدادات'];
+const SCREENS = ['الرئيسية', 'التشغيلات', 'السجلات', 'أنواع السجلات', 'الوصفات (MBR)', 'المواد', 'المراجعة والإفراج', 'سجل التدقيق', 'المستخدمون', 'الإعدادات'];
 
 test('E26#1 E26#3: a user switches to Arabic; every screen is right to left, fits, keeps 44 px targets and shows no English', async ({ page }, info) => {
   const user = `e2e-ar-${info.project.name}`;

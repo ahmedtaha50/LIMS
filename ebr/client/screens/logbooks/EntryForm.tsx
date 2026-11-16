@@ -57,7 +57,7 @@ export function EntryForm({ logbookId, kinds, correcting, onSaved, onCancel }: {
             </select></div>);
         if (fd.type === 'boolean') return (
           <fieldset key={fd.key} className="flex flex-col gap-1"><legend className="text-sm font-semibold text-slate-700">{label}</legend>
-            <div className="flex gap-3">{['yes', 'no'].map(v => <label key={v} className="flex min-h-11 min-w-11 items-center gap-2 rounded-lg border border-slate-400 px-3"><input type="radio" name={fd.key} value={v} defaultChecked={def === (v === 'yes')} className="size-5" />{v === 'yes' ? t('Yes') : t('No')}</label>)}</div>
+            <div className="flex gap-3">{['yes', 'no'].map(v => <label key={v} className="flex min-h-11 min-w-11 items-center gap-2 rounded-lg border border-slate-400 px-3"><input type="radio" name={fd.key} value={v} defaultChecked={def === (v === 'yes')} className="size-11 shrink-0" />{v === 'yes' ? t('Yes') : t('No')}</label>)}</div>
           </fieldset>);
         return <TextField key={fd.key} label={label} name={fd.key} type={fd.type === 'number' ? 'number' : fd.type === 'datetime' ? 'datetime-local' : 'text'} step={fd.type === 'number' ? 'any' : undefined} inputMode={fd.type === 'number' ? 'decimal' : undefined} defaultValue={def === undefined ? undefined : String(def)} {...(limits ? { hint: limits } : {})} />;
       })}

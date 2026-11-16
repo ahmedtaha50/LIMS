@@ -41,7 +41,7 @@ function StepEditor({ s, onChange, id }: { s: Step; onChange: (s: Step) => void;
       {s.type === 'equipment' ? <div className="flex flex-col gap-1"><label htmlFor={`${id}-kind`} className="text-sm font-semibold text-slate-700">{t('Kind')}</label>
         <select id={`${id}-kind`} value={String(s.objectKind)} onChange={e => set('objectKind', e.target.value)} className="min-h-11 rounded-lg border border-slate-400 bg-white px-3 text-base"><option value="equipment">{t('Equipment')}</option><option value="room">{t('Room')}</option></select></div> : null}
       {s.type === 'sample' ? <>{text('test', t('Test'))}{number('quantity', t('Quantity'))}{text('unit', t('Unit'))}</> : null}
-      <label className="flex min-h-11 items-center gap-2 text-base"><input type="checkbox" className="size-5" checked={!!s.critical} onChange={e => set('critical', e.target.checked || undefined)} />{t('Critical step')}</label>
+      <label className="flex min-h-11 items-center gap-2 text-base"><input type="checkbox" className="size-11 shrink-0" checked={!!s.critical} onChange={e => set('critical', e.target.checked || undefined)} />{t('Critical step')}</label>
     </div>
   );
 }
@@ -136,6 +136,12 @@ function Actions({ m, v, me, onDone, onEdit }: { m: Master; v: Version; me: Me; 
       {v.status === 'draft' && can('mbr.design') ? <div className="flex flex-col gap-2"><div><Button variant="secondary" onClick={onEdit}>{t('Edit draft')}</Button></div>{signed('submit', t('Sign as author and send to QA'))}</div> : null}
       {v.status === 'in_review' && can('mbr.approve') ? <div className="grid gap-2 md:grid-cols-2">{signed('approve', t('Approve (QA)'), t('Comment'))}{signed('reject', t('Send back'), t('Reason *'))}</div> : null}
       {v.status === 'approved' && can('mbr.approve') ? signed('make-effective', t('Make effective')) : null}
+      {can('mbr.design') ? <details className="rounded-lg bg-slate-50 p-2"><summary className="min-h-11 cursor-pointer content-center text-base font-semibold">{t('Copy into a new recipe')}</summary>
+        <form className="mt-2 grid gap-2 md:grid-cols-3" aria-label={t('Copy version {n} into a new recipe', { n: v.versionNo })} onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget);
+          void api('POST', `/api/mbrs/${m.id}/versions/${v.id}/copy`, { code: String(f.get('code')), productName: String(f.get('productName')) }).then(() => { setError(null); onDone(); }).catch(err => setError(errorText(t, err, 'Not created.'))); }}>
+          <TextField label={t('Recipe code *')} name="code" required dir="ltr" /><TextField label={t('Product *')} name="productName" required />
+          <div className="flex items-end"><Button type="submit">{t('Copy as a new draft')}</Button></div>
+        </form></details> : null}
       {error ? <Alert>{error}</Alert> : null}
     </div>
   );
