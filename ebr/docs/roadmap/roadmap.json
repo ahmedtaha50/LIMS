@@ -492,14 +492,18 @@
           "ownsFiles": [
             "client/**",
             "tests/e2e/i18n*.spec.ts",
-            "tests/unit/i18n*.test.ts"
+            "tests/unit/i18n*.test.ts",
+            "server/routes/preferences.ts",
+            "migrations/033*",
+            "tests/api/preferences*.test.ts"
           ],
           "dependsOn": [
             "r5-yield",
             "r5-directory-settings",
             "r5-builtin-review"
           ],
-          "summary": "Arabic and English for every screen, right to left, per user."
+          "summary": "Arabic and English for every screen, right to left, per user (kept with the account); the screens of R5 (settings, QA review of built-in types, yield limits).",
+          "migrations": "0330-0339"
         }
       ]
     }
