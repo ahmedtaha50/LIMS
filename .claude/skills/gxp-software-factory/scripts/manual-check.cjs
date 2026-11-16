@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Does the agent manual (AGENTS.md / CLAUDE.md) describe the code that exists?
 //
-//   node manual-check.cjs [--repo .] [--manual AGENTS.md] [--src src,server,desktop] [--json]
+//   node manual-check.cjs [--repo .] [--manual AGENTS.md] [--src src,server,client,desktop,app,lib] [--json]
 //
 // Why: every agent reads the manual first. A manual that names a technology the code does not use (the source project said
 // "Firebase Auth" and "RabbitMQ" long after both were gone) makes every track build on something that is not there.
@@ -37,7 +37,7 @@ function main(argv, io) {
     jspdf: ['jspdf'], xlsx: ['xlsx'], html2canvas: ['html2canvas'], react: ['react'], vue: ['vue'], vite: ['vite'], tailwind: ['tailwindcss'],
     electron: ['electron'], playwright: ['playwright', '@playwright/test'], vitest: ['vitest'], jest: ['jest'], otplib: ['otplib'], '@google/genai': ['@google/genai'], openai: ['openai'], passport: ['passport'],
   };
-  const srcDirs = opt('--src', 'src,server,desktop,app,lib').split(',').map(d => path.join(repo, d)).filter(d => fs.existsSync(d));
+  const srcDirs = opt('--src', 'src,server,client,desktop,app,lib').split(',').map(d => path.join(repo, d)).filter(d => fs.existsSync(d));
   const sources = [];
   const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { if (e.name === 'node_modules' || e.name.startsWith('.')) continue; const p = path.join(d, e.name); if (e.isDirectory()) walk(p); else if (/\.((c|m)?(j|t)sx?|css)$/.test(e.name)) sources.push(p); } };
   srcDirs.forEach(walk);
@@ -52,7 +52,9 @@ function main(argv, io) {
     const hits = lines.map((l, i) => ({ l, i })).filter(x => re.test(x.l));
     if (!hits.length) continue;
     // the SENTENCE that names it must say so, not just the same line
-    const banned = hits.some(x => x.l.split(/(?<=[.;:!?])\s+/).some(sen => re.test(sen) && /\b(?:not used|no longer used|must not|removed|do not use)\b/i.test(sen)));
+    // a ban covers its sentence and, when the sentence ends with ':', the list that follows ("Not used, do not add: X, Y")
+    const BAN = /\b(?:not used|no longer used|must not|removed|do not use|do not add|never use)\b/i;
+    const banned = hits.some(x => { let inherit = false; return x.l.split(/(?<=[.;:!?])\s+/).some(sen => { const hit = re.test(sen) && (BAN.test(sen) || inherit); inherit = /:\s*$/.test(sen) && BAN.test(sen); return hit; }); });
     const installed = pkgs.filter(p => deps.has(p));
     const used = pkgs.filter(imported);
     const where = `${manualFile}:${hits[0].i + 1}`;

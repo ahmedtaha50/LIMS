@@ -234,6 +234,11 @@ sec('manual-check');
   clean('a manual that matches the code', run('manual-check.cjs', ['--repo', p]));
   w(p, 'AGENTS.md', 'Stack: Express, Zod, Firebase Auth, RabbitMQ.\n');
   fault('a manual naming what is not installed', run('manual-check.cjs', ['--repo', p]), 1);
+  w(p, 'AGENTS.md', 'Stack: Express, Zod. Not used, do not add: any cloud identity service (Firebase included).\n');
+  clean('a ban written as a list after a colon is understood as a ban', run('manual-check.cjs', ['--repo', p]));
+  w(p, 'package.json', { dependencies: { express: '1', zod: '1', react: '19' } }); w(p, 'client/main.tsx', "import { StrictMode } from 'react';\n");
+  w(p, 'AGENTS.md', 'Stack: Express, Zod, React.\n');
+  clean('a client folder is read for imports', run('manual-check.cjs', ['--repo', p]));
 }
 
 // ---------- 12. the conductor: status and the exit gate of every station
