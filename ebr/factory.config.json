@@ -13,5 +13,9 @@
   "CHECKS": "a) npm run lint (type check, accessibility lint)  b) npm test on a fresh database  c) npm run build  d) start the built server, run the Playwright tests at both viewports  e) migrations applied twice change nothing  f) route-table snapshot",
   "SHARED_COUNTERS": "the number of signature meanings and permissions asserted by the tests",
   "DERIVED_FILES": "tests/route-table.json, docs/permission-matrix.csv",
+  "CHECK_COMMANDS": ["npm run lint", "npm test"],
+  "SCREENS": { "routeTable": "tests/route-table.json", "clientDir": "client", "exceptions": {
+    "GET /api/health": "checked by the load balancer, the service installer and monitoring",
+    "GET /api/signatures/meanings": "the list for other systems; the screens show meanings from their dictionaries" } },
   "TRAILERS": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01SauYmXNGWpk2yfK1rWQjao"
 }

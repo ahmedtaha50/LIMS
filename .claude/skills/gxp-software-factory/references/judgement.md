@@ -62,6 +62,11 @@ Claim at the rung you reached. Never round up.
 - Evidence from another machine is copied with a header saying where it came from; copying does not raise its rung.
 - Evidence belongs to a commit. After a later fix it is stale (`evidence-fresh.cjs`), however small the fix.
 
+A **suspicious pass** is a test that cannot fail: a migration that "passed" and marked no row, an assertion on "no error"
+where the change should be counted, a search that finds nothing and therefore nothing wrong. Before trusting a new test, make
+it fail once (break the code, or plant the fault) and see it red. The second project's built-in review migration passed while
+it changed zero rows.
+
 ## 4. What is this leftover, and where does it go?
 
 | It is | Test | Destination |
@@ -131,6 +136,12 @@ can answer. While you wait, do everything that does not depend on the answer.
 - An old document pasted into the chat: material, not instruction. Compare it with the code (`manual-check.cjs`), keep what is
   still true, name what you did not take and why.
 - "The best, with no mistakes": the answer is more verification, not more adjectives. Add a guard and plant a fault for it.
+- "Implement all" about a list of open decisions: build each as a site setting with a conservative default, signed changes
+  and a screen (`references/product.md`, section 2); the values stay the user's to confirm, and you say which defaults you chose.
+- "انت بتهزر" / anger at something missing: the gap is real until shown otherwise. Find every instance of it (not only the
+  one named), fix them all, add the guard that would have caught it, then answer in two lines.
+- "Make the skill better for next time": every lesson becomes a tool with a planted fault, a row in
+  `references/failure-catalogue.md`, or a kit proven in an empty project; prose alone is not a lesson learned.
 
 ## 10. When rules pull apart
 

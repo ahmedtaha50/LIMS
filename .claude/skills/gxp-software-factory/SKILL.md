@@ -5,9 +5,11 @@ description: End-to-end method, guards and toolkits for taking regulated softwar
 
 # GxP software factory
 
-A production line for regulated software, distilled from one real project: a pharma LIMS taken from a five-reviewer audit through
-three releases (39 tracks, 2,183 passing tests), a Windows installer with a built-in database, and a validation package whose
-traceability is computed from executed evidence.
+A production line for regulated software, distilled from two real projects: a pharma LIMS taken from a five-reviewer audit
+through three releases (39 tracks, 2,183 passing tests), a Windows installer with a built-in database, and a validation package
+whose traceability is computed from executed evidence; then an EBR and logbook web application built from nothing through six
+releases (Arabic and English, tablets and desktops, Docker or a Windows service), whose package derives its 94 requirements
+from the roadmap and is gated in CI over the evidence of every job.
 
 Two ideas hold it together.
 
@@ -44,6 +46,7 @@ after editing any tool, run `node scripts/selftest.cjs` (or `bash scripts/selfte
 | "build the installer", "one file that just runs", built-in database, an error screenshot from the installed app | 4 Installer | `references/installer.md` | `exit installer` |
 | "validation files", CSV, URS/FRS/RTM/IQ/OQ/PQ, "functional specification" | 5 Validation | `references/validation.md` | `exit validation` |
 | any status message, "what is done / verified?", a mistake to own | 6 Reporting | `references/reporting.md` | `exit report` |
+| a user interface; "how do I run it to test it"; "implement all" (open decisions); a user angry that something is missing | Product completeness (inside the gate, before "done") | `references/product.md` | `exit gate` (screen coverage) |
 
 Three references serve every station:
 - `references/judgement.md`: look-alike situations and the move for each (environment or product, how strong a proof is, what a
@@ -59,7 +62,8 @@ Three references serve every station:
 |---|---|
 | The plan is followed | `roadmap-lint.cjs` (no file with two owners, every gap in one track), `make-briefs.cjs` (briefs generated from the plan), `ownership-audit.cjs` (tracks stayed in their files), `reports-digest.cjs --roadmap` (every acceptance criterion answered with a named test), `open-items.cjs` (leftovers stay on a list), the exit gates |
 | The references are followed | `citation-check.cjs` (no clause that does not exist), `manual-check.cjs` (the agent manual matches the code), `evidence-fresh.cjs` (evidence belongs to the code that is checked in), the traceability gate of `assets/kits/validation/` (nothing claimed beyond what was executed) |
-| Mistakes are caught before they ship | `precommit-guard.cjs` (temporary edits, focused or skipped tests, secrets, junk), `ratchet.cjs` (known debt can only shrink), `ci-log-digest.cjs` (the verdict decides the move), `skill-lint.cjs` and `selftest.cjs` (this skill itself) |
+| Mistakes are caught before they ship | `checked-commit.cjs` (no commit after a failing check), `precommit-guard.cjs` (temporary edits, focused or skipped tests, secrets, junk), `ratchet.cjs` (known debt can only shrink), `ci-log-digest.cjs` (the verdict decides the move), `ci-head.cjs` (the green run read is HEAD's), `ps1-lint.cjs` (Windows scripts that no Linux run can test), `skill-lint.cjs` and `selftest.cjs` (this skill itself) |
+| The user gets a product, not an API | `screen-coverage.cjs` (every function a person can call has a screen), the run-guide test and demo data of `references/product.md`, the kit `web-i18n` (no text missing in either language) |
 | Look-alikes are told apart | `references/judgement.md`, `references/failure-catalogue.md`, the verdict classes of `ci-log-digest.cjs` |
 
 ## The line in one page
@@ -96,6 +100,8 @@ Three references serve every station:
 - **Start agents only when you are allowed to.** If the session permits agents only on request, ask once or build the tracks in
   sequence yourself; the ledger, the gate and the exit gates are the same.
 - **A refused permission is an answer.** Do not route around it; tell the user what you needed and why.
+- **Commit through `checked-commit.cjs`**, never `checks ; git commit`: a commit is made only after its checks were seen
+  passing. **Report CI only from the run of HEAD** (`ci-head.cjs`), read after the last push.
 - **Diagnosable failures.** An error message carries its cause (the last log lines, the file that differs), so the next failure
   can be read from a screenshot.
 
@@ -110,6 +116,10 @@ Three references serve every station:
 | `reports-digest.cjs` | are all reports in, and did each answer its acceptance criteria with evidence |
 | `open-items.cjs` | what is still open: not done, unmet criteria, decisions for the user, open deviations |
 | `precommit-guard.cjs` | does this commit carry a temporary edit, a focused or skipped test, a secret, or junk |
+| `checked-commit.cjs` | commit only if every check (`CHECK_COMMANDS` or `--check`) and the guard pass, with the trailers: the only way to commit |
+| `ci-head.cjs` | is the CI run I read the run of HEAD, pushed, completed and green (`factory.cjs exit ci --run <run.json>`) |
+| `screen-coverage.cjs` | does every route a person can call have a screen that calls it (`SCREENS` in the config) |
+| `ps1-lint.cjs` | will these PowerShell scripts parse, and call psql so that a failure fails, on Windows |
 | `ratchet.cjs` | did a list of known findings grow |
 | `ci-log-digest.cjs` | why did this run fail: account, infrastructure, timeout, environment, or a real failure (`--local` for this machine) |
 | `evidence-fresh.cjs` | is the validation evidence about the code that is checked in |
@@ -128,7 +138,8 @@ when Node can reach the npm registry.
 
 Templates and kits: `assets/briefs/` (track and gate briefs, report schema, project facts), `assets/workflows/` (discovery and
 release scripts for a Workflow tool), `assets/examples/roadmap.example.json`, `assets/kits/` (release integrity, built-in
-PostgreSQL, validation engine, CI workflows; `assets/kits/README.md` says what each one was proven on).
+PostgreSQL, validation engine, the roadmap-driven validation engine with its CI traceability job, Arabic and English
+interface, CI workflows; `assets/kits/README.md` says what each one was proven on).
 
 ## Working with the sibling skills, if they are installed
 

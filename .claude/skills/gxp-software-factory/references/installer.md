@@ -34,6 +34,21 @@ What it does not prove (say so): the set-up screen, database creation, sign-in.
   role for requests, restart with back-off, a free-disk guard.
 - **An error must carry its cause**: "the database stopped" now includes the last lines of the database log.
 
+## A server application as a Windows service (no Docker)
+
+Proven on the second project, on the `windows-latest` runner, with PostgreSQL 16 from Chocolatey on its own port (5433,
+beside the image's own PostgreSQL):
+- **WinSW** wraps the Node server; pin its download by SHA-256 in the install script and refuse a different file.
+- The install script checks the database URL works **before** it installs anything, migrates, installs, starts, and waits
+  for the health answer; when there is none it prints the end of the server's error log (a bare "no health answer" hid a
+  database that was never created).
+- A CI script runs the whole life: install, first administrator, sign in, restart (the data is still there), uninstall (the
+  database is left). It prints one `PASS <name>` line per proof; those lines are the job's evidence for the traceability gate.
+- psql on Windows: options before the connection address, `-v ON_ERROR_STOP=1` on every SQL call, and check the result
+  (`select 1` on the new database). In strings, `${name}:` never `$name:`. `ps1-lint.cjs` checks all three.
+- Say what was run: "on a Windows Server runner of GitHub Actions", not "on Windows". The plant server stays an open
+  deviation until it is installed there.
+
 ## Publishing and telling the user
 
 - Branch builds publish a pre-release per run (`v<version>-build.<run>`), labelled "not a validated release". Order by

@@ -17,6 +17,10 @@ export interface Roadmap { releases: Release[]; gaps: Gap[]; tracks: Track[]; by
 export interface Config {
   ROADMAP: string; CHANGES_DIR: string; EVIDENCE_DIR: string; VALIDATION_DIR: string; OPEN_ITEMS: string; DB_PREFIX: string; BASE_PORT: number;
   VALIDATION_DOCS?: string; DEVIATIONS_CSV?: string; HOUSE_RULES_FILE?: string; TRAILERS?: string; PROJECT?: string; BRANCH?: string;
+  /** checked-commit.cjs: the shell commands that must pass before a commit */
+  CHECK_COMMANDS?: string[];
+  /** screen-coverage.cjs: the route table, the screens folder, the routes no person calls with their reasons */
+  SCREENS?: { routeTable?: string; clientDir?: string; exceptions?: Record<string, string> };
   [k: string]: unknown;
 }
 

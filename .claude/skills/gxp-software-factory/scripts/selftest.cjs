@@ -347,6 +347,99 @@ sec('subfolder project');
   fault('a forced branch inside the project folder is still caught', run('precommit-guard.cjs', ['--repo', p]), 1, /TEMP/);
 }
 
+// ---------- 12b. checked-commit: never a commit after a failing check
+sec('checked-commit');
+{
+  const p = tmp(); git(p, 'init', '-q'); w(p, 'src/a.js', 'module.exports = 1;\n'); commit(p, 'base');
+  const cfg = { TRAILERS: 'Reviewed-By: drill', CHECK_COMMANDS: ['node -e "process.exit(0)"'] };
+  w(p, 'factory.config.json', cfg); commit(p, 'config');
+  // checked-commit runs git itself: the identity of the drill's commits comes from the environment
+  process.env.GIT_AUTHOR_NAME = process.env.GIT_COMMITTER_NAME = 'drill'; process.env.GIT_AUTHOR_EMAIL = process.env.GIT_COMMITTER_EMAIL = 'drill@example.invalid';
+  w(p, 'src/a.js', 'module.exports = 2;\n');
+  const before = git(p, 'rev-parse', 'HEAD');
+  fault('a failing check: nothing is committed', run('checked-commit.cjs', ['--repo', p, '--all', '-m', 'change', '--check', 'node -e "process.exit(3)"']), 1, /NOT committed/);
+  is('fault', 'HEAD did not move after the failing check', git(p, 'rev-parse', 'HEAD'), before);
+  w(p, 'src/b.js', 'if (true) { start(); } // FACTORY-TEMP\n');
+  fault('a temporary edit: the guard stops the commit after the checks pass', run('checked-commit.cjs', ['--repo', p, '--all', '-m', 'change']), 1, /precommit-guard/);
+  rm(p, 'src/b.js'); git(p, 'add', '-A');
+  fault('no check configured or given: refused', run('checked-commit.cjs', ['--repo', tmp(), '-m', 'x']), 2, /not a git repository|no check/);
+  fault('a bare argument is refused, not ignored', run('checked-commit.cjs', ['--repo', p, 'change', '-m', 'x']), 2, /unexpected argument/);
+  clean('the checks and the guard pass: committed with the trailers', run('checked-commit.cjs', ['--repo', p, '--all', '-m', 'change']));
+  is('clean', 'the commit carries the configured trailer', /^Reviewed-By: drill$/m.test(git(p, 'log', '-1', '--format=%B')), true);
+}
+
+// ---------- 12c. ci-head: the CI result read is HEAD's
+sec('ci-head');
+{
+  const remote = tmp(); git(remote, 'init', '-q', '--bare');
+  const p = tmp(); git(p, 'init', '-q'); w(p, 'a.txt', '1\n'); const old = commit(p, 'one');
+  git(p, 'remote', 'add', 'origin', remote); git(p, 'push', '-q', '-u', 'origin', 'HEAD:refs/heads/main'); git(p, 'branch', '-q', '--set-upstream-to=origin/main');
+  w(p, 'a.txt', '2\n'); const head = commit(p, 'two'); git(p, 'push', '-q');
+  const runs = w(p, '../runs.json', { workflow_runs: [{ head_sha: old, status: 'completed', conclusion: 'success', created_at: '2026-01-01' }] });
+  fault('a green run of an EARLIER commit is not the result of HEAD', run('ci-head.cjs', [runs, '--repo', p]), 1, /no run of HEAD/);
+  fault('the run of HEAD failed', run('ci-head.cjs', ['--repo', p, '--sha', head, '--conclusion', 'failure']), 1, /ended failure/);
+  fault('the run of HEAD is still running: green is not known', run('ci-head.cjs', ['--repo', p, '--sha', head, '--status', 'in_progress']), 1, /in_progress/);
+  clean('the completed, successful run of HEAD', run('ci-head.cjs', ['--repo', p, '--sha', head, '--conclusion', 'success']));
+  w(p, 'a.txt', '3\n'); const local = commit(p, 'three');
+  fault('HEAD not pushed: CI has not run on it', run('ci-head.cjs', ['--repo', p, '--sha', local, '--conclusion', 'success']), 1, /not pushed/);
+}
+
+// ---------- 12d. screen-coverage: every function a person can call has a screen
+sec('screen-coverage');
+{
+  const p = tmp();
+  w(p, 'routes.json', [{ method: 'GET', path: '/api/users' }, { method: 'POST', path: '/api/users' }, { method: 'POST', path: '/api/users/:id/lock' }, { method: 'GET', path: '/api/health' }]);
+  w(p, 'client/users.tsx', "const list = () => api(`/api/users?${q}`);\nconst add = (b) => api('/api/users', { method: 'POST', body: b });\nconst act = (id, a) => api(`/api/users/${id}/${a}`, { method: 'POST' });\n");
+  w(p, 'client/i18n/ar.ts', "export default { '/api/health': 'x' };\n");
+  const cfg = (ex) => w(p, 'factory.config.json', { SCREENS: { routeTable: 'routes.json', clientDir: 'client', exceptions: ex } });
+  cfg({ 'GET /api/health': 'called by the load balancer' });
+  fault('a route no screen calls (the action chosen at run time is never named)', run('screen-coverage.cjs', ['--repo', p]), 1, /NOSCREEN\s+POST \/api\/users\/:id\/lock/);
+  w(p, 'client/users.tsx', fs.readFileSync(path.join(p, 'client/users.tsx'), 'utf8') + "const ACTIONS = ['lock'];\n");
+  clean('every route called with its method, the rest named with a reason', run('screen-coverage.cjs', ['--repo', p]));
+  cfg({ 'GET /api/health': 'called by the load balancer', 'GET /api/gone': 'old' });
+  fault('an exception for a route that does not exist', run('screen-coverage.cjs', ['--repo', p]), 1, /STALE/);
+  cfg({ 'GET /api/health': '' });
+  fault('an exception without its reason', run('screen-coverage.cjs', ['--repo', p]), 1, /NOREASON/);
+  cfg({});
+  fault('a translation file naming a path is not a screen', run('screen-coverage.cjs', ['--repo', p]), 1, /GET \/api\/health/);
+}
+
+// ---------- 12e. ps1-lint: the PowerShell mistakes a Linux run cannot show
+sec('ps1-lint');
+{
+  const p = tmp();
+  w(p, 'deploy/ok.ps1', "$app = 'ebr'\nWrite-Host \"${app}: started on $env:COMPUTERNAME\"\n& $psql -v ON_ERROR_STOP=1 -c 'select 1' 'postgres://u@h/db'\n# \"$app:\" in a comment is not code\n");
+  clean('scope prefixes, ${name}:, options before the address', run('ps1-lint.cjs', ['--repo', p]));
+  w(p, 'deploy/bad1.ps1', "Write-Host \"$app: started\"\n");
+  fault('"$app:" in a double-quoted string', run('ps1-lint.cjs', ['--repo', p, 'deploy/bad1.ps1']), 1, /VARCOLON/);
+  w(p, 'deploy/bad2.ps1', "& $psql 'postgres://u@h/db' -v ON_ERROR_STOP=1 -c 'create database x'\n");
+  fault('psql options after the connection address', run('ps1-lint.cjs', ['--repo', p, 'deploy/bad2.ps1']), 1, /PSQLORDER/);
+  w(p, 'deploy/bad3.ps1', "& 'C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe' -c 'create database x' 'postgres://u@h/db'\n");
+  fault('psql runs SQL without ON_ERROR_STOP', run('ps1-lint.cjs', ['--repo', p, 'deploy/bad3.ps1']), 1, /PSQLSTOP/);
+}
+
+// ---------- 12f. the kit validation-roadmap, copied into an empty project: requirements from the roadmap, tests found by tag
+sec('kit validation-roadmap');
+{
+  const p = tmp();
+  fs.cpSync(path.join(S, '..', 'assets', 'kits', 'validation-roadmap', 'validation'), path.join(p, 'validation'), { recursive: true });
+  w(p, 'docs/roadmap/roadmap.json', { releases: [], gaps: [{ id: 'G01', title: 'Sign-in', gxpRisk: 'High', acceptance: ['A wrong password is refused', 'The refusal is audited'] }] });
+  w(p, 'src/a.js', 'module.exports = 1;\n');
+  w(p, 'tests/a.test.js', "describe('sign-in', () => {\n  it('G01#1: a wrong password is refused', () => {});\n  it('G01#2: the refusal is audited', () => {});\n  it('X99#1: a tag of no gap', () => {});\n});\n");
+  const gate = () => { const r = spawnSync(process.execPath, [path.join(p, 'validation/build/check.cjs')], { encoding: 'utf8' }); return { code: r.status, out: (r.stdout || '') + (r.stderr || '') }; };
+  const junit = (fail) => w(p, 'validation/evidence/junit-2026-01-01.xml', `<testsuites><testsuite><testcase classname="tests/a.test.js" name="sign-in &gt; G01#1: a wrong password is refused"/><testcase classname="tests/a.test.js" name="sign-in &gt; G01#2: the refusal is audited">${fail ? '<failure/>' : ''}</testcase></testsuite></testsuites>`);
+  junit(false);
+  fault('as copied: the mechanisms are still placeholders, so the gate is red', gate(), 1, /placeholder/);
+  const cf = path.join(p, 'validation/build/content.cjs');
+  fs.writeFileSync(cf, fs.readFileSync(cf, 'utf8').replace(/const FRS = gaps\.map\([^\n]*\n/, "const FRS = [['FRS-G01', 'src/a.js refuses and audits.', all('G01')]];\n"));
+  clean('filled in: both High requirements found by their tags and passed in the evidence', gate());
+  junit(true);
+  fault('a referenced test failed in the evidence', gate(), 1, /URS-G01-2: .* is Fail/);
+  junit(false);
+  w(p, 'tests/a.test.js', "it('G01#1: a wrong password is refused', () => {});\n");
+  fault('a High requirement whose test lost its tag: no test, no deviation', gate(), 1, /URS-G01-2 \(High\): no executed test and no open deviation/);
+}
+
 // ---------- 13. the skill itself
 sec('skill-lint');
 {

@@ -14,5 +14,7 @@
   "CHECKS": "a) lint and type check (no new baseline errors)  b) the full test suite  c) build and bundle budget  d) install the schema the way a real install does, seed, start the built server, run the shared evidence checks against it  e) migration suite  f) desktop tests  g) traceability gate  h) repository-root hygiene",
   "SHARED_COUNTERS": "e.g. the number of signature meanings asserted by the upgrade test",
   "DERIVED_FILES": "e.g. schema export, permission matrix, route table",
-  "TRAILERS": "<the commit trailer lines the session requires>"
+  "TRAILERS": "<the commit trailer lines the session requires>",
+  "CHECK_COMMANDS": ["npm run lint", "npm test"],
+  "_SCREENS": { "_comment": "rename to SCREENS when the project has a user interface: screen-coverage.cjs and exit gate read it", "routeTable": "tests/route-table.json", "clientDir": "client", "exceptions": { "GET /api/health": "called by the load balancer and the installer, not by a person" } }
 }

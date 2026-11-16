@@ -1,0 +1,26 @@
+# The traceability gate over the evidence of THIS run (kit validation-roadmap of the gxp-software-factory skill; proven on the
+# EBR project, where it closed a hole: the gate had run on a developer machine while CI was red for five pushes).
+# Every job writes its evidence to $RUNNER_TEMP/evidence and uploads it as an artifact named evidence-<job>; the last job
+# downloads them all and runs the gate. A job that wrote no evidence fails (if-no-files-found: error), so a requirement cannot
+# be shown verified by a job that did not run. Merge these steps into the project's workflow; CHANGE the job names and commands.
+#
+#   in each job, after its tests (results as files in $RUNNER_TEMP/evidence: junit-*.xml, e2e-*.xml, perf-*.json, ci-*.txt):
+#       - name: Evidence of this job for the traceability gate
+#         uses: actions/upload-artifact@v4
+#         with: { name: evidence-<job>, path: '${{ runner.temp }}/evidence/', if-no-files-found: error, retention-days: 30 }
+#   a job that proves something without a test file writes one line per proof: "PASS <name> <what was shown>" into ci-<job>.txt;
+#   content.cjs references it as { ci: '<name>' }.
+jobs:
+  traceability:
+    needs: [test]            # every job that uploads evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: 'evidence-*', path: '${{ runner.temp }}/evidence', merge-multiple: true }
+      - name: Traceability gate against the results of this run
+        run: |
+          echo "PASS ci-workflow the jobs of run $GITHUB_RUN_ID passed" > $RUNNER_TEMP/evidence/ci-workflow.txt
+          ls $RUNNER_TEMP/evidence
+          VALIDATION_EVIDENCE=$RUNNER_TEMP/evidence node validation/build/check.cjs

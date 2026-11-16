@@ -5,7 +5,7 @@
 //       Reads the repository (manual, roadmap, change records, open items, validation, installer, CI files) and says which
 //       station comes next. Start here whenever you enter a project or the user says "continue".
 //
-//   node factory.cjs exit <station> [--repo .] [--tracks a,b] [--reports <dir>] [--log <file>[,<file>]]
+//   node factory.cjs exit <station> [--repo .] [--tracks a,b] [--reports <dir>] [--log <file>[,<file>]] [--run <run.json>]
 //       stations: discovery | wave | gate | ci | installer | validation | report
 //       The exit gate of a station. PASS and FAIL lines are checked by tools; MANUAL lines are for you to confirm, each with
 //       what counts as proof. Exit code 1 when anything FAILS.
@@ -22,7 +22,7 @@ const { cli } = require('./lib/runtime.cjs');
 function main(argv, io) {
   const console = io.console;
 
-  const { opt, positional } = args(argv, ['--repo', '--tracks', '--reports', '--log']);
+  const { opt, positional } = args(argv, ['--repo', '--tracks', '--reports', '--log', '--run']);
   const [cmd, station] = positional;
   const repo = path.resolve(opt('--repo', '.'));
   const STATIONS = ['discovery', 'wave', 'gate', 'ci', 'installer', 'validation', 'report'];
@@ -201,10 +201,20 @@ function main(argv, io) {
     if (!gitTry(repo, ['rev-parse', '--verify', '--quiet', 'HEAD~1'])) add('SKIP', 'the commit holds no temporary edit, focused or skipped test, secret or junk', 'first commit of the repository');
     else { const pg = tool('precommit-guard.cjs', ['--repo', repo, '--base', 'HEAD~1'], repo); add(pg.code === 0 ? 'PASS' : 'FAIL', 'the commit holds no temporary edit, focused or skipped test, secret or junk', pg.code === 0 ? '' : '\n' + tail(pg.out, 8)); }
     add(has(cfg.OPEN_ITEMS) ? 'PASS' : 'FAIL', 'the leftovers of the wave are in the open-items register', has(cfg.OPEN_ITEMS) ? cfg.OPEN_ITEMS : `node scripts/open-items.cjs add-reports <reports dir> --roadmap ${cfg.ROADMAP}`);
+    if (cfg.SCREENS) { const sc = tool('screen-coverage.cjs', ['--repo', repo], repo); add(sc.code === 0 ? 'PASS' : 'FAIL', 'every function a person can call has a screen', sc.code === 0 ? tail(sc.out, 1).trim() : '\n' + tail(sc.out, 10)); }
+    else add('SKIP', 'every function a person can call has a screen', 'no SCREENS in factory.config.json (a project with a user interface sets routeTable, clientDir and exceptions)');
+    const ps = tool('ps1-lint.cjs', ['--repo', repo], repo);
+    if (/ 0 script\(s\)/.test(ps.out)) add('SKIP', 'PowerShell scripts parse and call psql correctly on Windows', 'no .ps1 in the project');
+    else add(ps.code === 0 ? 'PASS' : 'FAIL', 'PowerShell scripts parse and call psql correctly on Windows', ps.code === 0 ? tail(ps.out, 1).trim() : '\n' + tail(ps.out, 10));
     add('MANUAL', 'every check ran on a fresh database, under CI conditions', 'proof: the gate report lists each check with its command and totals');
     add('MANUAL', 'shared counters were summed and derived files regenerated once', 'proof: named in the gate record');
   }
-  if (station === 'ci') { pushed(); digestLogs(); add('MANUAL', 'the digested log is the run of HEAD', `proof: the run's commit is ${st.head}, not an earlier one`); add('MANUAL', 'informative steps were read too', 'proof: the digest shows no step with an error, or each one is explained'); }
+  if (station === 'ci') {
+    pushed(); digestLogs();
+    // the run read must be HEAD's: CI was once red for five pushes while the report said green from an earlier run
+    const runFile = opt('--run', '');
+    if (!runFile) add('MANUAL', 'the run read is the run of HEAD', `save the workflow run (JSON with head_sha, status, conclusion) and pass --run <file>; proof: scripts/ci-head.cjs PASS for ${st.head}`);
+    else { const ch = tool('ci-head.cjs', [path.resolve(runFile), '--repo', repo], repo); add(ch.code === 0 ? 'PASS' : 'FAIL', 'the run read is the run of HEAD, completed and green', ch.code === 0 ? tail(ch.out, 1).trim() : '\n' + tail(ch.out, 6)); } add('MANUAL', 'informative steps were read too', 'proof: the digest shows no step with an error, or each one is explained'); }
   if (station === 'installer') {
     const inst = installer();
     if (!inst) add('SKIP', 'installer configuration', 'no electron-builder "build" section in package.json');
