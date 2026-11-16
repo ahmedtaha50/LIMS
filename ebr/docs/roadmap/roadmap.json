@@ -24,11 +24,15 @@
             "migrations/000*",
             "tests/helpers/**",
             "tests/api/core*.test.ts",
-            "tests/route-table.json"
+            "tests/route-table.json",
+            "package-lock.json",
+            "tsconfig.build.json",
+            ".gitignore",
+            "server/routes/health.ts"
           ],
           "dependsOn": [],
           "migrations": "0000-0009",
-          "summary": "Runs alone first: skeleton, migration runner, route registry as a directory, test harness on a real database."
+          "summary": "Runs alone first: skeleton, migration runner, route registry as a directory, test harness on a real database. Also owns the CI workflow of ebr (../.github/workflows/ebr.yml, outside this folder: named here because ownsFiles is relative to ebr/)."
         },
         {
           "track": "r1-identity",
@@ -93,7 +97,8 @@
           "track": "r1-logbook",
           "gapIds": [
             "E06",
-            "E07"
+            "E07",
+            "E21"
           ],
           "ownsFiles": [
             "server/logbook/**",
@@ -109,7 +114,7 @@
             "r1-shell"
           ],
           "migrations": "0030-0039",
-          "summary": "Equipment and rooms, signed logbook entries, status derived from the entries."
+          "summary": "Logbooks driven by types the users create (fields, limits, signatures; versioned, QA-approved); equipment and rooms are built-in types; signed entries; status derived from the entries."
         },
         {
           "track": "r1-mbr",
@@ -315,7 +320,8 @@
       "acceptance": [
         "`npm test` runs unit and API tests against a fresh PostgreSQL database created per run, and fails when PostgreSQL is not reachable instead of skipping",
         "Migrations are forward-only: applying them twice changes nothing, and a migration file edited after it was applied is refused at start-up",
-        "A route added as a new file under server/routes/ is mounted without editing a shared list (route table snapshot test)"
+        "A route added as a new file under server/routes/ is mounted without editing a shared list (route table snapshot test)",
+        "A CI workflow runs the lint and the tests of ebr/ on every push that touches ebr/, against a PostgreSQL service"
       ]
     },
     {
@@ -504,6 +510,17 @@
       "acceptance": [
         "URS, FRS, risk assessment, RTM, IQ, OQ and the summary report are generated from the requirements and executed tests; nothing is typed as a result",
         "Every Critical or High requirement links to a passed executed test or an open deviation"
+      ]
+    },
+    {
+      "id": "E21",
+      "title": "Create any logbook: configurable logbook types",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A user with the permission can create a new logbook type (for example balance, temperature, room cleaning, utility, instrument) with its own fields: text, number with unit and limits, date and time, choice list, yes/no, signature with meaning",
+        "A logbook type is versioned and is used only after a QA signature by someone other than its author; changing it creates a new version, and entries keep the version they were written with",
+        "Logbooks are created from an approved type for any object (equipment, room, area, instrument, process) without a code change; equipment and room logbooks are built-in types made the same way",
+        "An entry is validated on the server against its type version: unknown fields are refused, a number outside its limits is flagged at once and needs a comment"
       ]
     }
   ],
