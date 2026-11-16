@@ -343,6 +343,18 @@
   },
   {
     "method": "GET",
+    "path": "/api/settings",
+    "permission": "settings.read",
+    "summary": "Site settings with their values, defaults and last change"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/settings/:key",
+    "permission": "settings.manage",
+    "summary": "Change a site setting (within bounds, signed, with a reason)"
+  },
+  {
+    "method": "GET",
     "path": "/api/signatures",
     "permission": "signatures.read",
     "summary": "The signatures of one record"

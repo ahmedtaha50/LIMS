@@ -9,8 +9,8 @@ import { isPrivileged } from '../identity/roles.js';
 import { directoryConfig, directorySignIn } from '../directory/index.js';
 import { clearCookie, openSession, sessionOf, setCookie, type SessionActor } from '../identity/sessions.js';
 import { newSecret, otpauthUrl, verifyTotp } from '../identity/totp.js';
+import { settingsOf } from '../settings/index.js';
 
-const MAX_FAILURES = 5, WINDOW_MINUTES = 15, LOCK_MINUTES = 30;
 const wrong = () => new HttpError(401, 'bad_credentials', 'The user name or the password is not correct.');
 type U = { id: string; username: string; display_name: string; password_hash: string; roles: string[]; status: string; totp_secret: string | null; totp_enabled: boolean; locked_until: Date | null; must_change_password: boolean; auth_source: string; break_glass: boolean };
 const me = (a: SessionActor) => ({ userId: a.userId, username: a.username, displayName: a.displayName, permissions: [...a.permissions].sort(), mustChangePassword: a.restricted === 'password', mustSetUpSecondFactor: a.restricted === 'mfa' });
@@ -24,6 +24,9 @@ export const routes = [
       let u = (await pool.query<U>('SELECT * FROM users WHERE lower(username) = lower($1)', [input.username])).rows[0];
       const fail = async (why: string, user: U | undefined) => withTx(pool, async (c) => {
         let locked = false;
+        // E27: the numbers are site settings, read at the moment of the failure
+        const st = await settingsOf(c, ['signin.maxFailures', 'signin.windowMinutes', 'signin.lockMinutes'] as const);
+        const MAX_FAILURES = Number(st['signin.maxFailures']), WINDOW_MINUTES = Number(st['signin.windowMinutes']), LOCK_MINUTES = Number(st['signin.lockMinutes']);
         if (user) {
           await c.query('INSERT INTO login_failures (user_id) VALUES ($1)', [user.id]);
           const n = (await c.query<{ n: number }>(`SELECT count(*)::int AS n FROM login_failures WHERE user_id = $1 AND at > now() - make_interval(mins => $2)`, [user.id, WINDOW_MINUTES])).rows[0]!.n;

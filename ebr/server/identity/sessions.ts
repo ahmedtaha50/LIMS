@@ -2,12 +2,13 @@ import { createHash, randomBytes } from 'node:crypto';
 import type { Request, Response } from 'express';
 import type { Client, Pool } from '../core/db.js';
 import type { Actor, Authorizer } from '../core/route.js';
+import { defaultValue } from '../settings/index.js';
 import { isPrivileged, permissionsOf } from './roles.js';
 
 export const COOKIE = 'ebr_session';
-/** Sign-off after inactivity (Annex 11 security) and an absolute limit per session; both can be set per site. */
-const idleMinutes = () => Number(process.env.EBR_SESSION_IDLE_MINUTES ?? 15);
-const maxHours = () => Number(process.env.EBR_SESSION_MAX_HOURS ?? 12);
+/** Sign-off after inactivity (Annex 11 security) and an absolute limit per session: site settings (E27), read in the same query. */
+const idleMinutes = () => Number(defaultValue('session.idleMinutes'));
+const maxHours = () => Number(defaultValue('session.maxHours'));
 const hash = (t: string) => createHash('sha256').update(t).digest('hex');
 
 export async function openSession(c: Client, userId: string, mfa: boolean, userAgent: string | undefined): Promise<{ token: string; id: string }> {
@@ -41,7 +42,8 @@ export async function sessionOf(pool: Pool, req: Request): Promise<SessionActor 
   if (!token) return null;
   const r = await pool.query<Row>(
     `SELECT s.id AS session_id, s.mfa, s.created_at, s.last_seen, u.id AS user_id, u.username, u.display_name, u.roles, u.must_change_password,
-            s.last_seen > now() - make_interval(mins => $2) AS idle_ok, s.created_at > now() - make_interval(hours => $3) AS age_ok,
+            s.last_seen > now() - make_interval(mins => COALESCE((SELECT (value #>> '{}')::int FROM site_settings WHERE key = 'session.idleMinutes'), $2)) AS idle_ok,
+            s.created_at > now() - make_interval(hours => COALESCE((SELECT (value #>> '{}')::int FROM site_settings WHERE key = 'session.maxHours'), $3)) AS age_ok,
             s.last_seen < now() - interval '60 seconds' AS touch
        FROM sessions s JOIN users u ON u.id = s.user_id
       WHERE s.token_hash = $1 AND s.revoked_at IS NULL AND u.status = 'active'`, [hash(token), idleMinutes(), maxHours()]);

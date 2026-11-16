@@ -35,11 +35,14 @@ qa,mbr.approve,true
 qa,mbr.read,true
 qa,review.perform,true
 qa,session,true
+qa,settings.read,true
 qa,signatures.read,true
 admin,audit.read,true
 admin,audit.verify,true
 admin,logbook.manage,true
 admin,logbook.read,true
 admin,session,true
+admin,settings.manage,true
+admin,settings.read,true
 admin,signatures.read,true
 admin,users.manage,true
