@@ -38,17 +38,20 @@ jobs:
       - name: Type check
         run: npm run lint
       - name: Tests on PostgreSQL 16 (they fail, never skip, when the database is missing)
-        run: npm test
+        run: npx vitest run --reporter=default --reporter=junit --outputFile.junit=$RUNNER_TEMP/evidence/junit-ci.xml
       - name: Build
         run: npm run build
       - name: Browser for the interface tests
         run: npx playwright install --with-deps chromium
       - name: Interface tests on the built application (tablet 820x1180 and desktop 1440x900)
-        run: npx playwright test
-      - name: Capacity test (300 users, two instances, one stopped halfway) - informative until seen green
-        continue-on-error: true
+        run: npx playwright test --reporter=list,junit
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ${{ runner.temp }}/evidence/e2e-ci.xml
+      - name: Capacity test (300 users, two instances, one stopped halfway)
         timeout-minutes: 8
-        run: npm run test:perf
+        run: npm run test:perf && cp tests/perf/results.json $RUNNER_TEMP/evidence/perf-ci.json
+      - name: Traceability gate (E20#2) against the results of THIS run
+        run: VALIDATION_EVIDENCE=$RUNNER_TEMP/evidence node validation/build/check.cjs
       - name: The built server starts, migrates and answers
         run: |
           psql "postgres://ebr:ebr@127.0.0.1:5432/postgres" -c "create database ebr_ci"

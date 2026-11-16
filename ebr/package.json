@@ -38,6 +38,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^5.2.0",
+    "docx": "^9.5.1",
     "eslint": "^9.39.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "ldapjs": "^3.0.7",

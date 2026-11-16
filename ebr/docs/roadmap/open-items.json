@@ -84,9 +84,11 @@
       "kind": "not-done",
       "source": "report:r2-execution",
       "text": "Material, equipment and sample steps have no handler yet (r2-materials, r2-interlock, r3-lims-link)",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "bd7f9c066bc970ae"
+      "key": "bd7f9c066bc970ae",
+      "by": "every step type has a handler since R3 wave 1 (server/steps/core, material, equipment, sample)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0010",
@@ -111,9 +113,11 @@
       "kind": "not-done",
       "source": "report:r3-deploy",
       "text": "docker compose up not run here (no daemon): CI job",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "44730c24c96e1141"
+      "key": "44730c24c96e1141",
+      "by": "CI job compose: docker compose up --build on a clean runner, health, bootstrap administrator signs in (runs 9 and 10, success)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0013",
@@ -186,6 +190,60 @@
       "status": "open",
       "opened": "2026-11-16",
       "key": "ac8fb76d10f5fa28"
+    },
+    {
+      "id": "OI-0021",
+      "kind": "deviation",
+      "source": "deviation:DEV-2026-11-16-01",
+      "text": "Part of a requirement is supported by reading the code, not by an executed test of this package (URS-E01-1).",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "469e0fdaf684b706"
+    },
+    {
+      "id": "OI-0022",
+      "kind": "deviation",
+      "source": "deviation:DEV-2026-11-16-02",
+      "text": "Evidence from GitHub Actions (another machine): the CI workflow and the docker compose job (URS-E01-4, URS-E19-1).",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "25b7705976ae2ec5"
+    },
+    {
+      "id": "OI-0023",
+      "kind": "deviation",
+      "source": "deviation:DEV-2026-11-16-03",
+      "text": "The capacity test ran on a development machine, not on the plant reference server (URS-E16-1, URS-E16-2).",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "0f1d80adf5463b26"
+    },
+    {
+      "id": "OI-0024",
+      "kind": "deviation",
+      "source": "deviation:DEV-2026-11-16-04",
+      "text": "The Windows service installer has not been run on a Windows Server (URS-E19-2).",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "06a04c40a46836ad"
+    },
+    {
+      "id": "OI-0025",
+      "kind": "deviation",
+      "source": "deviation:DEV-2026-11-16-05",
+      "text": "IQ was executed in a development sandbox, not on the plant server; no end-user PQ was performed.",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "2409d901bb4860bf"
+    },
+    {
+      "id": "OI-0026",
+      "kind": "deviation",
+      "source": "deviation:DEV-2026-11-16-06",
+      "text": "Directory sign-on and the LIMS link were tested against a test LDAP server and a stand-in LIMS, not the plant's directory and LIMS (URS-E17-*, URS-E18-*).",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "9a66e7db0dc72034"
     }
   ]
 }
