@@ -15,10 +15,10 @@ param(
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $app = Resolve-Path (Join-Path $here '..\..')
-if (-not (Test-Path (Join-Path $app 'dist\server\main.js'))) { throw "dist\server\main.js not found under $app: build the application first (npm run build)." }
+if (-not (Test-Path (Join-Path $app 'dist\server\main.js'))) { throw "dist\server\main.js not found under ${app}: build the application first (npm run build)." }
 if (-not (Test-Path (Join-Path $here 'winsw.exe'))) { throw "winsw.exe not found next to this script." }
 $sha = (Get-FileHash -Algorithm SHA256 (Join-Path $here 'winsw.exe')).Hash.ToLower()
-if ($sha -ne $WinswSha256) { throw "winsw.exe has SHA-256 $sha, not the recorded $WinswSha256: not installed." }
+if ($sha -ne $WinswSha256) { throw "winsw.exe has SHA-256 $sha, not the recorded ${WinswSha256}: not installed." }
 $xml = @"
 <service>
   <id>$ServiceName</id>
