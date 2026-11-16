@@ -50,8 +50,9 @@ jobs:
       - name: Capacity test (300 users, two instances, one stopped halfway)
         timeout-minutes: 8
         run: npm run test:perf && cp tests/perf/results.json $RUNNER_TEMP/evidence/perf-ci.json
-      - name: Traceability gate (E20#2) against the results of THIS run
-        run: VALIDATION_EVIDENCE=$RUNNER_TEMP/evidence node validation/build/check.cjs
+      - name: Evidence of this job for the traceability gate
+        uses: actions/upload-artifact@v4
+        with: { name: evidence-test, path: '${{ runner.temp }}/evidence/', if-no-files-found: error, retention-days: 30 }
       - name: The built server starts, migrates and answers
         run: |
           psql "postgres://ebr:ebr@127.0.0.1:5432/postgres" -c "create database ebr_ci"
@@ -76,6 +77,11 @@ jobs:
           curl -sf http://127.0.0.1:4100/api/health | grep '"status":"ok"'
           curl -sf -H 'content-type: application/json' -d '{"username":"siteadmin","password":"ci first password 2026"}' http://127.0.0.1:4100/api/auth/login | tee login.json
           grep '"mustChangePassword":true' login.json
+          mkdir -p $RUNNER_TEMP/evidence
+          echo "PASS compose-up docker compose up on a clean runner: migrations applied, health ok, first administrator signs in (mustChangePassword)" > $RUNNER_TEMP/evidence/ci-compose.txt
+      - name: Evidence of this job for the traceability gate
+        uses: actions/upload-artifact@v4
+        with: { name: evidence-compose, path: '${{ runner.temp }}/evidence/', if-no-files-found: error, retention-days: 30 }
       - name: Logs when it failed
         if: failure()
         run: docker compose -f deploy/compose/docker-compose.yml --env-file deploy/compose/.env logs --no-color
@@ -111,7 +117,32 @@ jobs:
         run: |
           [System.Environment]::OSVersion.VersionString
           (Get-CimInstance Win32_OperatingSystem).Caption
-          .\deploy\windows\ci-check.ps1 -DatabaseUrl 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/ebr' -Psql 'C:\Program Files\PostgreSQL\16\bin\psql.exe'
+          .\deploy\windows\ci-check.ps1 -DatabaseUrl 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/ebr' -Psql 'C:\Program Files\PostgreSQL\16\bin\psql.exe' *>&1 | Tee-Object -FilePath ci-windows-raw.txt
+          New-Item -ItemType Directory -Force "$env:RUNNER_TEMP\evidence" | Out-Null
+          Get-Content ci-windows-raw.txt | Where-Object { $_ -match '^PASS ' } | Set-Content "$env:RUNNER_TEMP\evidence\ci-windows.txt"
+          if ((Get-Content "$env:RUNNER_TEMP\evidence\ci-windows.txt").Count -ne 4) { throw 'expected four PASS lines from ci-check.ps1' }
+      - name: Evidence of this job for the traceability gate
+        uses: actions/upload-artifact@v4
+        with: { name: evidence-windows, path: '${{ runner.temp }}/evidence/', if-no-files-found: error, retention-days: 30 }
       - name: Service logs when it failed
         if: failure()
         run: Get-ChildItem deploy/windows -Filter *.log | ForEach-Object { "== $($_.Name)"; Get-Content $_.FullName -Tail 80 }
+
+  traceability:
+    # E20#2: the gate over the evidence of THIS run only: the test job (suite, browser, capacity), compose and windows
+    needs: [test, compose, windows]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ebr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: 'evidence-*', path: '${{ runner.temp }}/evidence', merge-multiple: true }
+      - name: Traceability gate (E20#2) against the results of this run
+        run: |
+          echo "PASS ci-workflow lint, tests on PostgreSQL 16, build, browser tests and capacity test passed in run $GITHUB_RUN_ID" > $RUNNER_TEMP/evidence/ci-workflow.txt
+          ls $RUNNER_TEMP/evidence
+          VALIDATION_EVIDENCE=$RUNNER_TEMP/evidence node validation/build/check.cjs
+

@@ -38,10 +38,12 @@ function parseJunit(xml, prefix = '') {
 
 function load() {
   const junitFile = newest('junit-'), e2eFile = newest('e2e-'), perfFile = newest('perf-'), ciFile = newest('ci-');
+  // every ci-* file: in CI each job (compose, windows, the workflow itself) writes its own, all from the same run
+  const ciFiles = fs.existsSync(EV) ? fs.readdirSync(EV).filter(x => x.startsWith('ci-')).sort().map(x => path.join(EV, x)) : [];
   const cases = [...parseJunit(read(junitFile)), ...parseJunit(read(e2eFile), 'tests/e2e/')];
   const perf = perfFile ? JSON.parse(read(perfFile)) : null;
   const ci = {};
-  read(ciFile).split('\n').forEach(l => { const m = l.match(/^(PASS|FAIL) (\S+)/); if (m) (ci[m[2]] = ci[m[2]] || []).push(m[1]); });
+  for (const f of ciFiles) read(f).split('\n').forEach(l => { const m = l.match(/^(PASS|FAIL) (\S+)/); if (m) (ci[m[2]] = ci[m[2]] || []).push(m[1]); });
   return { junitFile, e2eFile, perfFile, ciFile, cases, perf, ci };
 }
 
