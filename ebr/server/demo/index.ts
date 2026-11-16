@@ -46,9 +46,10 @@ export type DemoResult = { accounts: string[]; logbooks: string[]; lots: string[
 
 export async function fillDemo(pool: Pool, password: string): Promise<DemoResult> {
   for (const u of DEMO_USERS) { const p = passwordProblem(password, u.username); if (p) throw new HttpError(400, 'weak_password', `EBR_DEMO_PASSWORD: ${p}`); }
-  const used = (await pool.query<{ n: number }>(`SELECT (SELECT count(*) FROM users)::int + (SELECT count(*) FROM logbooks)::int + (SELECT count(*) FROM mbr_masters)::int
-    + (SELECT count(*) FROM materials)::int + (SELECT count(*) FROM batches)::int - 1 AS n`)).rows[0]!.n;
-  if (used > 0) throw new HttpError(409, 'not_empty', 'This database already holds records (accounts beyond the first administrator, logbooks, recipes, materials or batches): demo data is only for an empty installation.');
+  // empty: nothing but the first administrator (existence checks only; nothing here counts or limits accounts, E16#3)
+  const used = (await pool.query<{ used: boolean }>(`SELECT EXISTS (SELECT 1 FROM users OFFSET 1) OR EXISTS (SELECT 1 FROM logbooks) OR EXISTS (SELECT 1 FROM mbr_masters)
+    OR EXISTS (SELECT 1 FROM materials) OR EXISTS (SELECT 1 FROM batches) AS used`)).rows[0]!.used;
+  if (used) throw new HttpError(409, 'not_empty', 'This database already holds records (accounts beyond the first administrator, logbooks, recipes, materials or batches): demo data is only for an empty installation.');
 
   const hash = await hashPassword(password);
   const ids: Record<string, string> = {};

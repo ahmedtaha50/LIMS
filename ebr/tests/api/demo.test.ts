@@ -58,10 +58,10 @@ describe('demo installation (E33)', () => {
       const login = await fetch(base + '/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: 'demo-supervisor', password: PW }) });
       expect(login.status).toBe(200);
       const cookie = `ebr_session=${(login.headers.get('set-cookie') ?? '').match(/ebr_session=([^;]*)/)![1]}`;
-      const m = (await (await fetch(base + '/api/mbrs', { headers: { cookie } })).json()).find((x: { code: string }) => x.code === 'PCM-500');
+      const m = ((await (await fetch(base + '/api/mbrs', { headers: { cookie } })).json()) as Array<{ id: string; code: string }>).find(x => x.code === 'PCM-500')!;
       const b = await fetch(base + '/api/batches', { method: 'POST', headers: { cookie, 'content-type': 'application/json' }, body: JSON.stringify({ mbrMasterId: m.id, batchNumber: 'DEMO-0001' }) });
       expect(b.status).toBe(201);
-      expect((await b.json()).steps).toHaveLength(7);
+      expect(((await b.json()) as { steps: unknown[] }).steps).toHaveLength(7);
     } finally { await new Promise<void>(res => server.close(() => res())); }
   });
 
