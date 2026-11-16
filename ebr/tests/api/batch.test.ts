@@ -131,8 +131,9 @@ describe('executing a batch (E10#2, E10#3, E11)', () => {
     expect(await verifyChain(db.pool)).toMatchObject({ ok: true });
   });
   it('a step type this version cannot record yet is refused with the reason, not skipped', async () => {
-    const m = await recipe('MAT-1', 'effective', [{ key: 'api', label: 'Paracetamol', type: 'material', material: 'RM-1', quantity: 60, unit: 'kg', tolerancePct: 0.5 }]);
-    const bm = (await call('sup-b', 'POST', '/api/batches', { mbrMasterId: m, batchNumber: 'B-MAT-1' })).body;
-    expect((await rec('op-b1', bm, 1, { lot: 'L1', weight: 60 })).body.code).toBe('step_type_not_available');
+    // a type whose handler comes in a later release (sample: r3-lims-link); material and equipment have theirs since R2 wave 2
+    const m = await recipe('SAMPLE-1', 'effective', [{ key: 'ipc', label: 'Moisture sample', type: 'sample', test: 'LOD', quantity: 10, unit: 'g' }]);
+    const bm = (await call('sup-b', 'POST', '/api/batches', { mbrMasterId: m, batchNumber: 'B-SAMPLE-1' })).body;
+    expect((await rec('op-b1', bm, 1, {})).body.code).toBe('step_type_not_available');
   });
 });

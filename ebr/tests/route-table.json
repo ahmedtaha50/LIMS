@@ -66,6 +66,12 @@
     "summary": "A batch: its steps in order, the next step, its exceptions"
   },
   {
+    "method": "GET",
+    "path": "/api/batches/:id/certified-copy",
+    "permission": "batch.read",
+    "summary": "The batch record as a certified copy (PDF), registered by its SHA-256"
+  },
+  {
     "method": "POST",
     "path": "/api/batches/:id/complete",
     "permission": "batch.complete",
@@ -85,6 +91,54 @@
   },
   {
     "method": "POST",
+    "path": "/api/batches/:id/reconcile",
+    "permission": "batch.complete",
+    "summary": "Record the yield and the material reconciliation of a batch"
+  },
+  {
+    "method": "GET",
+    "path": "/api/batches/:id/reconciliation",
+    "permission": "batch.read",
+    "summary": "The yield and material reconciliation of a batch (null before it is recorded)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/reject",
+    "permission": "batch.release",
+    "summary": "Reject the batch, with a reason"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/release",
+    "permission": "batch.release",
+    "summary": "Release the batch (QA signature, after a complete review)"
+  },
+  {
+    "method": "GET",
+    "path": "/api/batches/:id/review",
+    "permission": "batch.read",
+    "summary": "The review items, the review and the disposition of a batch"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/review",
+    "permission": "review.perform",
+    "summary": "Start the review by exception of a completed batch"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/review/complete",
+    "permission": "review.perform",
+    "summary": "Complete the review"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/review/items/:itemId",
+    "permission": "review.perform",
+    "summary": "Sign one review item as reviewed"
+  },
+  {
+    "method": "POST",
     "path": "/api/batches/:id/steps/:stepId/record",
     "permission": "batch.execute",
     "summary": "Record and sign the next step (states the version read)"
@@ -94,6 +148,12 @@
     "path": "/api/batches/:id/steps/:stepId/verify",
     "permission": "batch.execute",
     "summary": "Verify a step as the second person"
+  },
+  {
+    "method": "POST",
+    "path": "/api/certified-copies/verify",
+    "permission": "batch.read",
+    "summary": "Is this PDF a certified copy that the system issued, unchanged?"
   },
   {
     "method": "GET",
@@ -190,6 +250,36 @@
     "path": "/api/logbooks/:id/retire",
     "permission": "logbook.manage",
     "summary": "Retire a logbook (signed; it stays readable)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/material-lots/:id/reject",
+    "permission": "materials.release",
+    "summary": "QA rejects a lot, with a reason"
+  },
+  {
+    "method": "POST",
+    "path": "/api/material-lots/:id/release",
+    "permission": "materials.release",
+    "summary": "QA releases a lot for use"
+  },
+  {
+    "method": "GET",
+    "path": "/api/materials",
+    "permission": "materials.read",
+    "summary": "Materials and their lots"
+  },
+  {
+    "method": "POST",
+    "path": "/api/materials",
+    "permission": "materials.manage",
+    "summary": "Add a material"
+  },
+  {
+    "method": "POST",
+    "path": "/api/materials/:code/lots",
+    "permission": "materials.manage",
+    "summary": "Receive a lot (it starts in quarantine)"
   },
   {
     "method": "GET",

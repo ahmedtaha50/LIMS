@@ -87,6 +87,24 @@
       "status": "open",
       "opened": "2026-11-16",
       "key": "bd7f9c066bc970ae"
+    },
+    {
+      "id": "OI-0010",
+      "kind": "decision",
+      "source": "report:r2-materials",
+      "text": "Yield limits are a site setting (95 to 102%): set them per product?",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "d1a3755fd0791e86"
+    },
+    {
+      "id": "OI-0011",
+      "kind": "not-done",
+      "source": "report:r2-review-release",
+      "text": "Certified copy PDF prints Arabic as '?' (standard font)",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "54351b3081e2d745"
     }
   ]
 }

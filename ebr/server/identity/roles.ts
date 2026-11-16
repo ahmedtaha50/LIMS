@@ -4,9 +4,9 @@
  * Privileged roles need the second factor (E02#4): until it is set up, their session can only reach 'session' routes.
  */
 export const ROLES = {
-  operator: { privileged: false, permissions: ['session', 'signatures.read', 'logbook.read', 'logbook.write', 'mbr.read', 'batch.read', 'batch.execute'] },
-  supervisor: { privileged: false, permissions: ['session', 'signatures.read', 'audit.read', 'logbook.read', 'logbook.write', 'logbook.manage', 'logbook.type.design', 'mbr.read', 'mbr.design', 'batch.read', 'batch.create', 'batch.execute', 'batch.exception', 'batch.complete'] },
-  qa: { privileged: true, permissions: ['session', 'signatures.read', 'audit.read', 'audit.verify', 'logbook.read', 'logbook.type.approve', 'mbr.read', 'mbr.approve', 'batch.read'] },
+  operator: { privileged: false, permissions: ['session', 'signatures.read', 'logbook.read', 'logbook.write', 'mbr.read', 'batch.read', 'batch.execute', 'materials.read'] },
+  supervisor: { privileged: false, permissions: ['session', 'signatures.read', 'audit.read', 'logbook.read', 'logbook.write', 'logbook.manage', 'logbook.type.design', 'mbr.read', 'mbr.design', 'batch.read', 'batch.create', 'batch.execute', 'batch.exception', 'batch.complete', 'materials.read', 'materials.manage'] },
+  qa: { privileged: true, permissions: ['session', 'signatures.read', 'audit.read', 'audit.verify', 'logbook.read', 'logbook.type.approve', 'mbr.read', 'mbr.approve', 'batch.read', 'materials.read', 'materials.release', 'review.perform', 'batch.release'] },
   admin: { privileged: true, permissions: ['session', 'users.manage', 'audit.read', 'audit.verify', 'signatures.read', 'logbook.read', 'logbook.manage'] },
 } as const satisfies Record<string, { privileged: boolean; permissions: readonly string[] }>;
 export type Role = keyof typeof ROLES;

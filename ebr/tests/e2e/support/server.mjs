@@ -24,6 +24,21 @@ const { hashPassword } = await import('../../../dist/server/identity/password.js
   const steps = [{ key: 'clearance', label: 'Line clearance', type: 'verified', text: 'Room and mixer free of the previous product', critical: false },
     { key: 'water', label: 'Water added', type: 'data', unit: 'L', min: 10, max: 14, decimals: 1, critical: false },
     { key: 'ratio', label: 'Water per kg', type: 'calculation', formula: 'water / 60', unit: 'L/kg', min: 0.15, max: 0.25, decimals: 3, critical: false }];
+  // R2 wave 2: a released and an expired lot, a mixer per viewport (dirty: never cleaned), and one recipe per viewport for
+  // dispensing, for mixing and for review
+  await c.query("INSERT INTO materials (code, name, unit) VALUES ('RM-E2E', 'E2E powder', 'kg')");
+  await c.query("INSERT INTO material_lots (material_code, lot_number, status, expiry_date, created_by, decided_by, decided_at) VALUES ('RM-E2E', 'E2E-LOT-OK', 'released', '2099-12-31', 'e2e', 'e2e', now()), ('RM-E2E', 'E2E-LOT-OLD', 'released', '2020-01-31', 'e2e', 'e2e', now())");
+  const design = (steps) => JSON.stringify({ batchSize: { value: 10, unit: 'kg' }, phases: [{ key: 'p', label: 'Phase', steps }] });
+  const effective = async (code, name, steps) => {
+    const id = (await c.query('INSERT INTO mbr_masters (code, product_name) VALUES ($1, $2) RETURNING id', [code, name])).rows[0].id;
+    await c.query("INSERT INTO mbr_versions (master_id, version_no, status, design, author_id, author_name, approved_by, approved_at, effective_at) VALUES ($1, 1, 'effective', $2, 'e2e', 'e2e', 'e2e', now(), now())", [id, design(steps)]);
+  };
+  for (const vp of ['tablet', 'desktop']) {
+    await c.query("INSERT INTO logbooks (type_id, object_kind, object_code, name) VALUES ('00000000-0000-4000-8000-000000000e01', 'equipment', $1, $2)", [`MX-E2E-${vp}`, `Interlock mixer ${vp}`]);
+    await effective(`E2E-DISP-${vp}`, `Dispensing E2E ${vp}`, [{ key: 'powder', label: 'E2E powder', type: 'material', material: 'RM-E2E', quantity: 10, unit: 'kg', tolerancePct: 1, critical: false }]);
+    await effective(`E2E-MIX-${vp}`, `Mixing E2E ${vp}`, [{ key: 'mixer', label: 'Mixer', type: 'equipment', objectKind: 'equipment', purpose: '', critical: false }]);
+    await effective(`E2E-REV-${vp}`, `Review E2E ${vp}`, [{ key: 'ph', label: 'pH', type: 'data', unit: 'pH', min: 6, max: 7, decimals: 1, critical: false }]);
+  }
   for (const vp of ['tablet', 'desktop']) {
     const m = (await c.query("INSERT INTO mbr_masters (code, product_name) VALUES ($1, $2) RETURNING id", [`E2E-PCM-${vp}`, `Paracetamol E2E ${vp}`])).rows[0].id;
     await c.query("INSERT INTO mbr_versions (master_id, version_no, status, design, author_id, author_name, approved_by, approved_at, effective_at) VALUES ($1, 1, 'effective', $2, 'e2e', 'e2e', 'e2e', now(), now())", [m, JSON.stringify({ batchSize: { value: 60, unit: 'kg' }, phases: [{ key: 'granulation', label: 'Granulation', steps }] })]);

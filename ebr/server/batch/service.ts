@@ -4,7 +4,7 @@ import { HttpError, conflict, notFound } from '../core/errors.js';
 import type { Actor } from '../core/route.js';
 import { assertDifferentPerson, sign, type PasswordCheck } from '../esign/index.js';
 import type { Design, Step } from '../mbr/design.js';
-import { handlers, needsVerification } from './steps.js';
+import { batchHooks, handlers, needsVerification } from './steps.js';
 
 export type Ctx = { c: Client; pool: Pool; check: PasswordCheck; actor: Actor & { displayName?: string }; requestId: string };
 const signer = (a: Ctx['actor']) => ({ userId: a.userId, username: a.username, displayName: a.displayName ?? a.username });
@@ -96,6 +96,7 @@ export async function recordStep(x: Ctx, batchId: string, stepId: string, input:
   const sig = await sign(x.c, x.pool, x.check, { signer: signer(x.actor), password: input.password, meaning: 'performed', entity: 'batch_step', entityId: s.id, recordVersion: s.version, record: { batchId, seq: s.seq, value: out.value, comment }, requestId: x.requestId });
   await x.c.query(`UPDATE batch_steps SET state = 'done', value = $2, comment = $3, performed_by = $4, performed_name = $5, performed_at = $6, signature_id = $7, version = version + 1 WHERE id = $1`,
     [s.id, JSON.stringify(out.value), comment, x.actor.userId, signer(x.actor).displayName, sig.signedAt, sig.id]);
+  if (out.effects) await out.effects(sig.id, sig.signedAt);
   for (const e of out.exceptions) await x.c.query('INSERT INTO batch_exceptions (batch_id, step_id, kind, message, comment, raised_by) VALUES ($1, $2, $3, $4, $5, $6)', [batchId, s.id, e.kind, e.message, comment, x.actor.username]);
   if (b.status === 'created') await x.c.query("UPDATE batches SET status = 'in_progress', version = version + 1, updated_at = now() WHERE id = $1", [batchId]);
   await audit(x, 'batch.step_recorded', batchId, { newValue: { seq: s.seq, step: `${s.phase_key}.${s.step_key}`, value: out.value, comment, exceptions: out.exceptions, signatureId: sig.id } });
@@ -148,7 +149,8 @@ export async function completeBatch(x: Ctx, batchId: string, input: { version: n
   const d = await detail(x.c, batchId);
   const missing = d.steps.filter(s => s.state !== 'done').length, unverified = d.steps.filter(s => s.needsVerification && !s.verifiedBy).length, open = d.exceptions.filter(e => e.status === 'open').length;
   if (missing || unverified || open) throw new HttpError(409, 'not_complete', [missing && `${missing} step(s) not recorded`, unverified && `${unverified} step(s) not verified`, open && `${open} exception(s) open`].filter(Boolean).join(', ') + ': the batch cannot be closed.');
-  await sign(x.c, x.pool, x.check, { signer: signer(x.actor), password: input.password, meaning: 'performed', entity: 'batch', entityId: batchId, recordVersion: b.version, record: { batchNumber: b.batch_number, steps: d.steps.map(s => ({ seq: s.seq, value: s.value })) }, comment: 'batch completed', requestId: x.requestId });
+  const sig = await sign(x.c, x.pool, x.check, { signer: signer(x.actor), password: input.password, meaning: 'performed', entity: 'batch', entityId: batchId, recordVersion: b.version, record: { batchNumber: b.batch_number, steps: d.steps.map(s => ({ seq: s.seq, value: s.value })) }, comment: 'batch completed', requestId: x.requestId });
+  for (const hook of await batchHooks()) await hook({ c: x.c, pool: x.pool, actor: x.actor, batch: { id: b.id, batchNumber: b.batch_number, productName: b.product_name }, signatureId: sig.id, signedAt: sig.signedAt });
   await x.c.query("UPDATE batches SET status = 'completed', completed_at = now(), version = version + 1, updated_at = now() WHERE id = $1", [batchId]);
   await audit(x, 'batch.completed', batchId, { oldValue: { status: b.status }, newValue: { status: 'completed' } });
   return detail(x.c, batchId);

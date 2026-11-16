@@ -3,6 +3,7 @@ operator,batch.execute,false
 operator,batch.read,false
 operator,logbook.read,false
 operator,logbook.write,false
+operator,materials.read,false
 operator,mbr.read,false
 operator,session,false
 operator,signatures.read,false
@@ -16,6 +17,8 @@ supervisor,logbook.manage,false
 supervisor,logbook.read,false
 supervisor,logbook.type.design,false
 supervisor,logbook.write,false
+supervisor,materials.manage,false
+supervisor,materials.read,false
 supervisor,mbr.design,false
 supervisor,mbr.read,false
 supervisor,session,false
@@ -23,10 +26,14 @@ supervisor,signatures.read,false
 qa,audit.read,true
 qa,audit.verify,true
 qa,batch.read,true
+qa,batch.release,true
 qa,logbook.read,true
 qa,logbook.type.approve,true
+qa,materials.read,true
+qa,materials.release,true
 qa,mbr.approve,true
 qa,mbr.read,true
+qa,review.perform,true
 qa,session,true
 qa,signatures.read,true
 admin,audit.read,true

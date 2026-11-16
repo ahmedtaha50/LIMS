@@ -20,26 +20,33 @@ export type StepContext = {
  */
 export type StepHandler = {
   type: Step['type'];
-  record: (input: Record<string, unknown>, def: Step, ctx: StepContext) => Promise<{ value: unknown; number?: number; exceptions: RaisedException[] }>;
+  /** `effects` runs after the step is signed, in the same transaction, with that signature (an automatic logbook entry). */
+  record: (input: Record<string, unknown>, def: Step, ctx: StepContext) => Promise<{ value: unknown; number?: number; exceptions: RaisedException[]; effects?: (signatureId: string, signedAt: string) => Promise<void> }>;
 };
+/** Runs when a batch is closed, in the closing transaction: it may refuse the closing (throw) or write what closing means. */
+export type BatchHook = (ctx: { c: Client; pool: Pool; actor: Actor; batch: { id: string; batchNumber: string; productName: string }; signatureId: string; signedAt: string }) => Promise<void>;
 
 let cache: Map<string, StepHandler> | null = null;
+let hookCache: BatchHook[] = [];
+export async function batchHooks(): Promise<BatchHook[]> { await handlers(); return hookCache; }
 export async function handlers(): Promise<Map<string, StepHandler>> {
   if (cache) return cache;
+  const hooks: BatchHook[] = [];
   const root = fileURLToPath(new URL('../steps', import.meta.url));
   const out = new Map<string, StepHandler>();
   if (existsSync(root)) {
     for (const group of readdirSync(root, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name).sort()) {
       const file = ['index.ts', 'index.js'].map(f => join(root, group, f)).find(existsSync);
       if (!file) continue;
-      const mod: { handlers?: StepHandler[] } = await import(pathToFileURL(file).href);
+      const mod: { handlers?: StepHandler[]; onBatchComplete?: BatchHook } = await import(pathToFileURL(file).href);
+      if (mod.onBatchComplete) hooks.push(mod.onBatchComplete);
       for (const h of mod.handlers ?? []) {
         if (out.has(h.type)) throw new Error(`two step handlers for the type ${h.type} (server/steps/${group})`);
         out.set(h.type, h);
       }
     }
   }
-  cache = out;
+  cache = out; hookCache = hooks;
   return out;
 }
 

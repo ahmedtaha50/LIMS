@@ -1,7 +1,11 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { api, ApiError } from '../../api.js';
 import { Alert, Button, Card, TextField } from '../../ui/index.js';
+import type { StepInput } from '../../step-inputs/types.js';
 import type { Screen } from '../registry.js';
+
+/** Inputs of step types added by other tracks (materials, equipment), found by directory. */
+const inputs = new Map(Object.values(import.meta.glob<{ stepInput: StepInput }>('../../step-inputs/*.tsx', { eager: true })).map(m => [m.stepInput.type, m.stepInput]));
 
 type Def = { key: string; label: string; type: string; text?: string; unit?: string; min?: number; max?: number; formula?: string; critical?: boolean } & Record<string, unknown>;
 type BStep = { id: string; seq: number; phaseLabel: string; definition: Def; state: string; value: Record<string, unknown> | null; comment: string | null; performedBy: string | null; performedAt: string | null; verifiedBy: string | null; needsVerification: boolean; version: number };
@@ -21,7 +25,8 @@ function CurrentStep({ b, s, onDone }: { b: Batch; s: BStep; onDone: (b: Batch) 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const input: Record<string, unknown> = {};
+    const extra = inputs.get(d.type);
+    const input: Record<string, unknown> = extra ? extra.read(f) : {};
     if (d.type === 'data') { const v = String(f.get('value') ?? ''); if (v !== '') input.value = Number(v); }
     const body: Record<string, unknown> = { version: s.version, input, password: String(f.get('password') ?? '') };
     const comment = String(f.get('comment') ?? ''); if (comment) body.comment = comment;
@@ -33,6 +38,7 @@ function CurrentStep({ b, s, onDone }: { b: Batch; s: BStep; onDone: (b: Batch) 
       <h3 className="text-xl font-bold">{d.label}</h3>
       {d.text ? <p className="text-base">{d.text}</p> : null}
       {d.type === 'data' ? <TextField label={`Value${d.unit ? ` (${d.unit})` : ''} *`} name="value" type="number" step="any" inputMode="decimal" required {...(d.min !== undefined || d.max !== undefined ? { hint: `Limits: ${d.min ?? '…'} to ${d.max ?? '…'} ${d.unit ?? ''}` } : {})} /> : null}
+      {inputs.get(d.type) ? (() => { const X = inputs.get(d.type)!.Fields; return <X def={d} />; })() : null}
       {d.type === 'calculation' ? <p className="text-base">The server calculates <b>{d.formula}</b>{d.unit ? ` in ${d.unit}` : ''} from the recorded values when you sign.</p> : null}
       <TextField label="Comment" name="comment" hint="Required when a value is outside its limits." />
       <TextField label="Your password (signature) *" name="password" type="password" autoComplete="current-password" required hint="Signing means: I performed this step as written." />
@@ -51,6 +57,27 @@ function SignForm({ label, onSubmit, note }: { label: string; note?: string; onS
       {error ? <Alert>{error}</Alert> : null}
       <Button type="submit">{label}</Button>
     </form>
+  );
+}
+
+/** E12#3: yield and material reconciliation, once, before the batch is closed (r2-materials). */
+function Reconcile({ b, onDone }: { b: Batch; onDone: (b: Batch) => void }) {
+  const [done, setDone] = useState<{ yieldPct: number } | null | undefined>(undefined);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => { void api<{ yieldPct: number } | null>('GET', `/api/batches/${b.id}/reconciliation`).then(setDone).catch(() => setDone(null)); }, [b.id]);
+  if (done === undefined) return null;
+  if (done) return <Alert kind="info">Reconciled: yield {done.yieldPct}%.</Alert>;
+  return (
+    <Card title="Yield and material reconciliation">
+      <form className="flex flex-col gap-2" aria-label="Reconciliation" onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget);
+        void api('POST', `/api/batches/${b.id}/reconcile`, { outputQuantity: Number(f.get('output')), password: String(f.get('password') ?? '') })
+          .then(() => api<Batch>('GET', `/api/batches/${b.id}`)).then(nb => { onDone(nb); setDone({ yieldPct: 0 }); void api<{ yieldPct: number }>('GET', `/api/batches/${b.id}/reconciliation`).then(setDone); }).catch(err => setError(errorText(err))); }}>
+        <TextField label={`Output quantity (${String((b as Batch & { batchSize?: { unit: string } }).batchSize?.unit ?? '')}) *`} name="output" type="number" step="any" inputMode="decimal" required />
+        <TextField label="Your password (signature)" name="password" type="password" autoComplete="current-password" required />
+        {error ? <Alert>{error}</Alert> : null}
+        <Button type="submit">Sign the reconciliation</Button>
+      </form>
+    </Card>
   );
 }
 
@@ -88,6 +115,7 @@ function BatchView({ id, me, onBack }: { id: string; me: Me; onBack: () => void 
             <SignForm label="Close with justification" note="Justification" onSubmit={async (password, n) => setB(await api<Batch>('POST', `/api/batches/${b.id}/exceptions/${e.id}/close`, { version: e.version, note: n, password }))} />
           </div>
         </div>))}</Card> : null}
+      {b.status === 'in_progress' && !current && !b.waitingFor && can('batch.complete') && b.steps.some(s => s.definition.type === 'material') ? <Reconcile b={b} onDone={setB} /> : null}
       {b.status === 'in_progress' && !current && !b.waitingFor && !open.length && can('batch.complete') ? <Card title="All steps are recorded"><SignForm label="Close the batch" onSubmit={async (password) => setB(await api<Batch>('POST', `/api/batches/${b.id}/complete`, { version: b.version, password }))} /></Card> : null}
       <ol className="flex flex-col gap-2" aria-label="Steps">
         {b.steps.map(s => (
