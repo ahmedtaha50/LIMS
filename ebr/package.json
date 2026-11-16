@@ -1,0 +1,30 @@
+{
+  "name": "bpharma-ebr",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Electronic batch record and logbook system (GMP). One web application for tablets and desktops, on the factory server.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "tsx watch server/main.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server/main.js",
+    "migrate": "tsx server/migrate/cli.ts",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:routes:update": "UPDATE_ROUTE_TABLE=1 vitest run tests/api/core-routes.test.ts"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.13.1",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.4"
+  }
+}

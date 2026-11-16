@@ -1,0 +1,23 @@
+{
+  "comment": "Open items of the delivery plan. An item leaves this list only as resolved (with a reference) or dropped (by a named person).",
+  "items": [
+    {
+      "id": "OI-0001",
+      "kind": "not-done",
+      "source": "report:r1-core",
+      "text": "The CI workflow ebr.yml has not run yet; E01#4 is met only once its first run on the push is read",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "96d4fc25b0ca9d91"
+    },
+    {
+      "id": "OI-0002",
+      "kind": "acceptance",
+      "source": "report:r1-core",
+      "text": "E01#4 partly: A CI workflow runs the lint and the tests of ebr/ on every push that touches ebr/, against a PostgreSQL service",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "dd7565f678de4f14"
+    }
+  ]
+}

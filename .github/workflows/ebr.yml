@@ -1,0 +1,49 @@
+# B-Pharma EBR & Logbook (ebr/): lint, tests on a real PostgreSQL, build, and a start of the built server.
+# Runs only when ebr/ or this file changes; the LIMS workflows do not test ebr/, and this one does not test the LIMS.
+name: ebr
+on:
+  push:
+    paths: ['ebr/**', '.github/workflows/ebr.yml']
+  pull_request:
+    paths: ['ebr/**', '.github/workflows/ebr.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ebr
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ebr
+          POSTGRES_PASSWORD: ebr
+          POSTGRES_DB: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ebr" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      TEST_ADMIN_URL: postgres://ebr:ebr@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ebr/package-lock.json
+      - run: npm ci
+      - name: Type check
+        run: npm run lint
+      - name: Tests on PostgreSQL 16 (they fail, never skip, when the database is missing)
+        run: npm test
+      - name: Build
+        run: npm run build
+      - name: The built server starts, migrates and answers
+        run: |
+          psql "postgres://ebr:ebr@127.0.0.1:5432/postgres" -c "create database ebr_ci"
+          DATABASE_URL=postgres://ebr:ebr@127.0.0.1:5432/ebr_ci node dist/server/main.js > server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4100/api/health && break; sleep 1; done
+          curl -sf http://127.0.0.1:4100/api/health | grep '"status":"ok"' || { cat server.log; exit 1; }

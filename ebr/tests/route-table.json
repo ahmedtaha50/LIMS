@@ -1,0 +1,8 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/health",
+    "permission": "public",
+    "summary": "Is the server up and can it reach its database"
+  }
+]
