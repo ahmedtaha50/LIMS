@@ -4,3 +4,5 @@ node_modules/
 .env
 test-results/
 playwright-report/
+# the validation package sources live in validation/build (the top-level rule ignores every build/ folder)
+!/validation/build/
