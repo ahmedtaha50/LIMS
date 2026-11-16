@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="128" failures="0" errors="0" time="31.58013201">
+    <testsuite name="tests/api/audit.test.ts" timestamp="2026-11-16T09:02:37.616Z" hostname="vm" tests="7" failures="0" errors="0" skipped="0" time="1.51537452">
+        <testcase classname="tests/api/audit.test.ts" name="audit trail (E03) &gt; E03#1: the change and its entry commit together, and a failure after the change leaves neither" time="0.020308991">
+        </testcase>
+        <testcase classname="tests/api/audit.test.ts" name="audit trail (E03) &gt; E03#2: an entry carries user, server time in UTC, old and new value and reason" time="0.005234875">
+        </testcase>
+        <testcase classname="tests/api/audit.test.ts" name="audit trail (E03) &gt; E03#2: the application role cannot update, delete or truncate entries" time="0.01879375">
+        </testcase>
+        <testcase classname="tests/api/audit.test.ts" name="audit trail (E03) &gt; E03#3: the chain verifies, and altering one stored entry is reported at that entry" time="0.012627169">
+        </testcase>
+        <testcase classname="tests/api/audit.test.ts" name="audit trail (E03) &gt; E03#3: a removed entry breaks the link of the next one" time="0.405997679">
+        </testcase>
+        <testcase classname="tests/api/audit.test.ts" name="audit trail (E03) &gt; concurrent writers keep one unbroken chain" time="0.605746874">
+        </testcase>
+        <testcase classname="tests/api/audit.test.ts" name="audit trail (E03) &gt; canonical form does not depend on key order" time="0.000573785">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/batch.test.ts" timestamp="2026-11-16T09:02:37.618Z" hostname="vm" tests="8" failures="0" errors="0" skipped="0" time="2.794037601">
+        <testcase classname="tests/api/batch.test.ts" name="batch creation (E10#1) &gt; a batch is created only from an effective recipe and keeps that exact version" time="0.043821258">
+        </testcase>
+        <testcase classname="tests/api/batch.test.ts" name="executing a batch (E10#2, E10#3, E11) &gt; E10#2: the server refuses a step out of order" time="0.023436548">
+        </testcase>
+        <testcase classname="tests/api/batch.test.ts" name="executing a batch (E10#2, E10#3, E11) &gt; a verified step blocks the next one until a different person verifies it" time="0.293904735">
+        </testcase>
+        <testcase classname="tests/api/batch.test.ts" name="executing a batch (E10#2, E10#3, E11) &gt; E10#3: each value is stored with performer, server time and version; a second tablet with a stale version gets 409" time="0.121896754">
+        </testcase>
+        <testcase classname="tests/api/batch.test.ts" name="executing a batch (E10#2, E10#3, E11) &gt; E11#3: a calculated value is computed on the server; a value sent by the client is refused" time="0.005489179">
+        </testcase>
+        <testcase classname="tests/api/batch.test.ts" name="executing a batch (E10#2, E10#3, E11) &gt; E11#1: a value outside its limits is recorded, raised as an exception at once, and needs a comment" time="1.03293654">
+        </testcase>
+        <testcase classname="tests/api/batch.test.ts" name="executing a batch (E10#2, E10#3, E11) &gt; recorded steps cannot be changed in the database; every action is audited and the chain verifies" time="0.014687791">
+        </testcase>
+        <testcase classname="tests/api/batch.test.ts" name="executing a batch (E10#2, E10#3, E11) &gt; a step that cannot be recorded in this installation is refused with the reason, never skipped" time="0.026199795">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/core-app.test.ts" timestamp="2026-11-16T09:02:37.620Z" hostname="vm" tests="10" failures="0" errors="0" skipped="0" time="1.612967829">
+        <testcase classname="tests/api/core-app.test.ts" name="the application &gt; health answers from the database, with server time and the migrations applied" time="0.023360613">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="the application &gt; an unknown route is a JSON 404 with a request id, never an HTML page" time="0.012174741">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="fails closed and validates strictly &gt; without an authorizer, a route that is not public answers 401" time="0.022074558">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="fails closed and validates strictly &gt; an authorized user without the permission gets 403" time="0.287793634">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="fails closed and validates strictly &gt; an unknown field is refused, not dropped (AGENTS.md rule 9)" time="0.023896393">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="fails closed and validates strictly &gt; broken JSON is a 400 with its cause" time="0.006183739">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="fails closed and validates strictly &gt; an unexpected error is logged with the request id and the client sees no internals" time="0.013783462">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="core helpers &gt; withTx rolls back everything when the work fails half-way (the basis of &quot;audit entry in the same transaction&quot;)" time="0.156085498">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="core helpers &gt; a configuration error names the variable" time="0.00388086">
+        </testcase>
+        <testcase classname="tests/api/core-app.test.ts" name="core helpers &gt; the pool survives the database being dropped under an idle connection (it reports, it does not crash)" time="0.268468879">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/core-migrate.test.ts" timestamp="2026-11-16T09:02:37.622Z" hostname="vm" tests="6" failures="0" errors="0" skipped="0" time="1.498823175">
+        <testcase classname="tests/api/core-migrate.test.ts" name="migrations (E01#2) &gt; the project migrations apply on an empty database, and applying them twice changes nothing" time="0.448657087">
+        </testcase>
+        <testcase classname="tests/api/core-migrate.test.ts" name="migrations (E01#2) &gt; a migration edited after it was applied is refused at start-up" time="0.132166819">
+        </testcase>
+        <testcase classname="tests/api/core-migrate.test.ts" name="migrations (E01#2) &gt; an applied migration whose file was deleted is refused" time="0.111672821">
+        </testcase>
+        <testcase classname="tests/api/core-migrate.test.ts" name="migrations (E01#2) &gt; a failing migration leaves nothing behind: neither its tables nor its ledger row" time="0.145186625">
+        </testcase>
+        <testcase classname="tests/api/core-migrate.test.ts" name="migrations (E01#2) &gt; two instances starting at once apply each migration exactly once (advisory lock)" time="0.657218607">
+        </testcase>
+        <testcase classname="tests/api/core-migrate.test.ts" name="migrations (E01#2) &gt; badly named files and duplicate numbers are refused" time="0.002397325">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/core-routes.test.ts" timestamp="2026-11-16T09:02:37.624Z" hostname="vm" tests="3" failures="0" errors="0" skipped="0" time="0.13885399">
+        <testcase classname="tests/api/core-routes.test.ts" name="route registry (E01#3) &gt; the route table matches tests/route-table.json (UPDATE_ROUTE_TABLE=1 to accept a deliberate change)" time="0.088154841">
+        </testcase>
+        <testcase classname="tests/api/core-routes.test.ts" name="route registry (E01#3) &gt; a new file in the routes directory is mounted without editing any list" time="0.011006284">
+        </testcase>
+        <testcase classname="tests/api/core-routes.test.ts" name="route registry (E01#3) &gt; a route without a permission, outside /api/, or defined twice is refused when the server loads" time="0.038464452">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/directory.test.ts" timestamp="2026-11-16T09:02:37.624Z" hostname="vm" tests="7" failures="0" errors="0" skipped="0" time="1.195300847">
+        <testcase classname="tests/api/directory.test.ts" name="directory sign-on (E17) &gt; E17#1: a directory user signs in with the directory password; the role comes from the group" time="0.111962098">
+        </testcase>
+        <testcase classname="tests/api/directory.test.ts" name="directory sign-on (E17) &gt; a wrong directory password is refused like any wrong password, and audited" time="0.079003325">
+        </testcase>
+        <testcase classname="tests/api/directory.test.ts" name="directory sign-on (E17) &gt; a directory user in no mapped group is refused with the reason" time="0.05690708">
+        </testcase>
+        <testcase classname="tests/api/directory.test.ts" name="directory sign-on (E17) &gt; E17#1: a change of groups in the directory changes the roles at the next sign-in, audited" time="0.060619846">
+        </testcase>
+        <testcase classname="tests/api/directory.test.ts" name="directory sign-on (E17) &gt; an e-signature of a directory user is checked by the directory" time="0.097020796">
+        </testcase>
+        <testcase classname="tests/api/directory.test.ts" name="directory sign-on (E17) &gt; a user name that tries LDAP filter syntax finds nobody" time="0.010286416">
+        </testcase>
+        <testcase classname="tests/api/directory.test.ts" name="directory sign-on (E17) &gt; E17#2: when the directory cannot be reached, sign-in fails with a clear message and break-glass accounts still work" time="0.125283005">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/esign.test.ts" timestamp="2026-11-16T09:02:37.626Z" hostname="vm" tests="6" failures="0" errors="0" skipped="0" time="0.440042681">
+        <testcase classname="tests/api/esign.test.ts" name="electronic signatures (E04) &gt; E04#1: a signature records signer, meaning, server time and the record version; it is audited" time="0.013241664">
+        </testcase>
+        <testcase classname="tests/api/esign.test.ts" name="electronic signatures (E04) &gt; E04#1: a wrong password is refused, nothing is signed, and the attempt is audited although the signing rolled back" time="0.026202494">
+        </testcase>
+        <testcase classname="tests/api/esign.test.ts" name="electronic signatures (E04) &gt; E04#2: a record changed after signing shows the signature as invalid" time="0.001417605">
+        </testcase>
+        <testcase classname="tests/api/esign.test.ts" name="electronic signatures (E04) &gt; E04#3: the verifier cannot be the performer (server-side check)" time="0.001112651">
+        </testcase>
+        <testcase classname="tests/api/esign.test.ts" name="electronic signatures (E04) &gt; an unknown meaning is refused, and signatures cannot be changed afterwards" time="0.014565286">
+        </testcase>
+        <testcase classname="tests/api/esign.test.ts" name="electronic signatures (E04) &gt; the meanings catalogue has 9 entries (a new meaning is a deliberate change of this number)" time="0.00022269">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/identity.test.ts" timestamp="2026-11-16T09:02:37.627Z" hostname="vm" tests="15" failures="0" errors="0" skipped="0" time="5.05434915">
+        <testcase classname="tests/api/identity.test.ts" name="passwords and TOTP &gt; scrypt hashes verify, differ per salt, and keep their parameters" time="0.457640479">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="passwords and TOTP &gt; the password policy" time="0.000375292">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="passwords and TOTP &gt; TOTP matches the RFC 6238 test vectors (SHA-1)" time="0.001317279">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="sign-in and lockout (E02#1) &gt; a wrong password is refused; five failures in 15 minutes lock the account; every failure and the lock are audited" time="0.70773165">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="sign-in and lockout (E02#1) &gt; an unknown user name gets the same answer as a wrong password, and is audited" time="0.007633104">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="sign-in and lockout (E02#1) &gt; an administrator unlocks a locked account, with a reason" time="0.331757652">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="sessions in the database (E02#2) &gt; two instances accept the same session, and a session signed out on one is refused by the other" time="0.204965205">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="sessions in the database (E02#2) &gt; an idle session expires (sign-off after inactivity)" time="0.222079147">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="sessions in the database (E02#2) &gt; the cookie is HttpOnly and SameSite=Strict, and only its hash is stored" time="0.242630055">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="permissions (E02#3) and the second factor (E02#4) &gt; a user without the permission gets 403" time="0.269620707">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="permissions (E02#3) and the second factor (E02#4) &gt; a QA account without the second factor can only set it up; with it, it gets its permissions" time="0.275649796">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="permissions (E02#3) and the second factor (E02#4) &gt; a QA account with the second factor needs the code, and a wrong code counts as a failure" time="0.487970928">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="permissions (E02#3) and the second factor (E02#4) &gt; a first password must be changed before anything else; the new one follows the policy" time="0.542189616">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="account administration &gt; create, stale update refused with 409, disable revokes the sessions, every change audited with old and new value" time="0.433194302">
+        </testcase>
+        <testcase classname="tests/api/identity.test.ts" name="account administration &gt; the password check of e-signatures uses the current password of an active account" time="0.212744795">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/interlock.test.ts" timestamp="2026-11-16T09:02:37.629Z" hostname="vm" tests="3" failures="0" errors="0" skipped="0" time="1.856692095">
+        <testcase classname="tests/api/interlock.test.ts" name="equipment interlock (E13) &gt; E13#1: a step that uses dirty equipment is refused, with the reason" time="0.06156371">
+        </testcase>
+        <testcase classname="tests/api/interlock.test.ts" name="equipment interlock (E13) &gt; E13#1: equipment past its calibration due date is refused too" time="0.265277974">
+        </testcase>
+        <testcase classname="tests/api/interlock.test.ts" name="equipment interlock (E13) &gt; E13#2 and E13#3: using clean equipment writes start and end of use into its logbook; closing the batch leaves it dirty" time="0.578794215">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/lims-link.test.ts" timestamp="2026-11-16T09:02:37.630Z" hostname="vm" tests="4" failures="0" errors="0" skipped="0" time="1.371414301">
+        <testcase classname="tests/api/lims-link.test.ts" name="link to the LIMS (E18) &gt; E18#2: with the LIMS down the step shows the failure and is not recorded; the retry creates exactly one request" time="0.188332806">
+        </testcase>
+        <testcase classname="tests/api/lims-link.test.ts" name="link to the LIMS (E18) &gt; E18#2: a request the LIMS created but whose answer was lost is found at the retry, not created twice" time="0.143373513">
+        </testcase>
+        <testcase classname="tests/api/lims-link.test.ts" name="link to the LIMS (E18) &gt; E18#1: the LIMS result is shown on the batch only once it is approved there, and kept" time="0.027093334">
+        </testcase>
+        <testcase classname="tests/api/lims-link.test.ts" name="link to the LIMS (E18) &gt; a refused integration token is reported as such, not as &quot;down&quot;" time="0.015902709">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/logbook.test.ts" timestamp="2026-11-16T09:02:37.631Z" hostname="vm" tests="16" failures="0" errors="0" skipped="0" time="3.898229331">
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; E21#1: a supervisor creates a fridge temperature logbook type with its own fields" time="0.027455336">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; a definition with a mistake is refused with the reason (min above max, duplicate keys, unknown field type)" time="0.016270926">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; an operator cannot design types; QA cannot design them either" time="0.008935595">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; E21#2: a draft cannot be used; the author cannot approve; QA approves with a signature, then it is effective" time="0.351235682">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; E21#2: a person who may both design and approve still cannot approve their own version (two-person rule)" time="0.345662498">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; E21#3: a logbook of any object is created from the approved type, without a code change" time="0.008900469">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; E21#4: an entry is checked against its type: unknown fields refused, outside limits flagged and needs a comment" time="0.252721775">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="create any logbook type (E21) &gt; E21#2: a new version needs approval again, and entries keep the version they were written with" time="0.415956584">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; E06#1: equipment is created, changed with a reason and the version read, and retired (never deleted), all audited" time="0.164320501">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; E06#2: an entry is signed by its author and cannot be changed; a correction is a new entry with a reason" time="0.409213281">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; E07#1: status is derived from the entries (and a corrected entry counts through its correction)" time="0.219950817">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; E07#2: clean hold time and calibration due date change the status without anyone acting" time="0.001265757">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; E07#2 through the API: a calibration due date in the past shows the equipment out of calibration" time="0.115108732">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; E07#3: a status change by hand needs a reason and a signature" time="0.214501833">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; E06#3: entries are listed in time order with signer and meaning, and export as a PDF with a hash" time="0.015461855">
+        </testcase>
+        <testcase classname="tests/api/logbook.test.ts" name="equipment and room logbooks (E06) and status (E07) &gt; the built-in equipment and room types parse with the same schema as user types, and the audit chain still verifies" time="0.016627275">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/materials.test.ts" timestamp="2026-11-16T09:02:37.639Z" hostname="vm" tests="4" failures="0" errors="0" skipped="0" time="2.875372991">
+        <testcase classname="tests/api/materials.test.ts" name="materials and lots &gt; a lot is received in quarantine and released or rejected only by QA, with a signature" time="0.401369894">
+        </testcase>
+        <testcase classname="tests/api/materials.test.ts" name="dispensing (E12) &gt; E12#1: a material step accepts a lot only when it is the right material, released and not expired" time="0.21532374">
+        </testcase>
+        <testcase classname="tests/api/materials.test.ts" name="dispensing (E12) &gt; E12#2: a weight outside its tolerance is an exception (with a comment)" time="0.122283524">
+        </testcase>
+        <testcase classname="tests/api/materials.test.ts" name="dispensing (E12) &gt; E12#3: yield and reconciliation are calculated at the end; differences beyond limits are exceptions; the batch does not close without them" time="0.746675786">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/mbr-formula.test.ts" timestamp="2026-11-16T09:02:37.640Z" hostname="vm" tests="8" failures="0" errors="0" skipped="0" time="0.10789137">
+        <testcase classname="tests/api/mbr-formula.test.ts" name="formulas of calculation steps &gt; parses arithmetic with precedence, unary minus and references" time="0.00273631">
+        </testcase>
+        <testcase classname="tests/api/mbr-formula.test.ts" name="formulas of calculation steps &gt; refuses anything that is not arithmetic, with the reason" time="0.000856707">
+        </testcase>
+        <testcase classname="tests/api/mbr-formula.test.ts" name="formulas of calculation steps &gt; a division by zero or a missing value is an error, never Infinity or NaN" time="0.000927147">
+        </testcase>
+        <testcase classname="tests/api/mbr-formula.test.ts" name="formulas of calculation steps &gt; agrees with JavaScript arithmetic on 2,000 random formulas (seeded)" time="0.084437362">
+        </testcase>
+        <testcase classname="tests/api/mbr-formula.test.ts" name="MBR design validation (E08#1, E08#2) &gt; a recipe with every step type is accepted" time="0.012392707">
+        </testcase>
+        <testcase classname="tests/api/mbr-formula.test.ts" name="MBR design validation (E08#1, E08#2) &gt; a calculation that refers to a missing step is refused" time="0.001454765">
+        </testcase>
+        <testcase classname="tests/api/mbr-formula.test.ts" name="MBR design validation (E08#1, E08#2) &gt; a calculation placed before the value it uses is refused (the order of steps is checked)" time="0.00062037">
+        </testcase>
+        <testcase classname="tests/api/mbr-formula.test.ts" name="MBR design validation (E08#1, E08#2) &gt; limits above each other, limits without a unit, duplicate keys and unknown step types are refused" time="0.001986852">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/mbr.test.ts" timestamp="2026-11-16T09:02:37.642Z" hostname="vm" tests="6" failures="0" errors="0" skipped="0" time="2.66001568">
+        <testcase classname="tests/api/mbr.test.ts" name="master batch records (E09) &gt; a supervisor creates a recipe; an operator can read but not design" time="0.035612311">
+        </testcase>
+        <testcase classname="tests/api/mbr.test.ts" name="master batch records (E09) &gt; E09#1: draft -&gt; in review -&gt; approved -&gt; effective; approval by QA and not by the author" time="0.382311471">
+        </testcase>
+        <testcase classname="tests/api/mbr.test.ts" name="master batch records (E09) &gt; E09#1: someone who holds both roles cannot approve the version they wrote" time="0.140842105">
+        </testcase>
+        <testcase classname="tests/api/mbr.test.ts" name="master batch records (E09) &gt; E09#3: an approved version cannot be edited, by the API or directly in the database; a change is a new draft" time="0.052720222">
+        </testcase>
+        <testcase classname="tests/api/mbr.test.ts" name="master batch records (E09) &gt; E09#2: one effective version at a time; making the new one effective retires the old one" time="0.372082044">
+        </testcase>
+        <testcase classname="tests/api/mbr.test.ts" name="master batch records (E09) &gt; QA can send a version back with a signed reason; every step is in the audit trail" time="0.248817715">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/permission-matrix.test.ts" timestamp="2026-11-16T09:02:37.643Z" hostname="vm" tests="2" failures="0" errors="0" skipped="0" time="0.082389228">
+        <testcase classname="tests/api/permission-matrix.test.ts" name="permission matrix (derived file) &gt; docs/permission-matrix.csv is generated from server/identity/roles.ts (UPDATE_ROUTE_TABLE=1 to regenerate)" time="0.00128567">
+        </testcase>
+        <testcase classname="tests/api/permission-matrix.test.ts" name="permission matrix (derived file) &gt; every permission a route asks for is granted by some role, so no route is unreachable by mistake" time="0.079879164">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/api/review.test.ts" timestamp="2026-11-16T09:02:37.645Z" hostname="vm" tests="6" failures="0" errors="0" skipped="0" time="2.721930019">
+        <testcase classname="tests/api/review.test.ts" name="review by exception (E14) &gt; a batch is reviewed only once it is completed" time="0.011818622">
+        </testcase>
+        <testcase classname="tests/api/review.test.ts" name="review by exception (E14) &gt; E14#1: the review lists the exceptions and the comments, and nothing else" time="0.26189984">
+        </testcase>
+        <testcase classname="tests/api/review.test.ts" name="review by exception (E14) &gt; E14#2 and E14#3: the review completes only when every item is signed as reviewed; each action is audited" time="0.526835091">
+        </testcase>
+        <testcase classname="tests/api/review.test.ts" name="disposition and certified copy (E15) &gt; E15#1: release needs a QA signature (not a supervisor) and is final" time="0.247929542">
+        </testcase>
+        <testcase classname="tests/api/review.test.ts" name="disposition and certified copy (E15) &gt; E15#2: the certified copy holds the values, signatures, exceptions, review, disposition and the audit trail" time="0.016393432">
+        </testcase>
+        <testcase classname="tests/api/review.test.ts" name="disposition and certified copy (E15) &gt; E15#3: the system recognises its own copy, and a changed copy is not genuine" time="0.010449177">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/deploy/backup.test.ts" timestamp="2026-11-16T09:02:37.646Z" hostname="vm" tests="4" failures="0" errors="0" skipped="0" time="1.203118357">
+        <testcase classname="tests/deploy/backup.test.ts" name="backup and restore (E19#3) &gt; the build exists (restore.sh verifies the chain with the built application)" time="0.000834437">
+        </testcase>
+        <testcase classname="tests/deploy/backup.test.ts" name="backup and restore (E19#3) &gt; backup.sh writes a dump with its SHA-256" time="0.131097434">
+        </testcase>
+        <testcase classname="tests/deploy/backup.test.ts" name="backup and restore (E19#3) &gt; restore.sh restores into an empty database and the audit chain of the restored data verifies" time="0.347893788">
+        </testcase>
+        <testcase classname="tests/deploy/backup.test.ts" name="backup and restore (E19#3) &gt; a backup file that changed is not restored" time="0.009522689">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/perf/connection-lost.test.ts" timestamp="2026-11-16T09:02:37.647Z" hostname="vm" tests="1" failures="0" errors="0" skipped="0" time="0.520330001">
+        <testcase classname="tests/perf/connection-lost.test.ts" name="a database connection lost during a request &gt; does not crash the process: the query fails and the loss is reported" time="0.518976384">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/perf/no-user-limit.test.ts" timestamp="2026-11-16T09:02:37.649Z" hostname="vm" tests="1" failures="0" errors="0" skipped="0" time="0.005783767">
+        <testcase classname="tests/perf/no-user-limit.test.ts" name="no user limit (E16#3) &gt; the server code has no licence, seat count or maximum number of users" time="0.004721436">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/unit/validation-traceability.test.ts" timestamp="2026-11-16T09:02:37.649Z" hostname="vm" tests="11" failures="0" errors="0" skipped="0" time="0.027215077">
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the traceability gate (E20#2) &gt; E20#2: is quiet for a High requirement whose test passed and a Medium one under an open deviation" time="0.005896527">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the traceability gate (E20#2) &gt; E20#2: complains about a High requirement with no test and no deviation, and about P* without a deviation" time="0.000943885">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the traceability gate (E20#2) &gt; E20#2: accepts an open deviation instead of a test, and refuses a closed or an unknown one" time="0.000919584">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the traceability gate (E20#2) &gt; E20#2: turns red when a referenced test failed, or cannot be found in the executed run" time="0.000519844">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the traceability gate (E20#2) &gt; E20#2: names a requirement with no mechanism or no risk score, and a mechanism naming a file that does not exist" time="0.004448509">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the package is generated, nothing is typed as a result (E20#1) &gt; E20#1: the RTM result of a requirement follows the executed evidence given, not the content source" time="0.000925438">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the package is generated, nothing is typed as a result (E20#1) &gt; E20#1: the requirements are the acceptance criteria of the roadmap, one for one" time="0.000776761">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the package is generated, nothing is typed as a result (E20#1) &gt; E20#1: the content source holds no result: no Pass, Fail or NOT RUN is written in it" time="0.000415768">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the real validation package &gt; has no structural finding: every requirement has a verification, a mechanism and a risk score; every path exists" time="0.005539411">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the real validation package &gt; references only tests that exist: the file is there and the title fragment is in it" time="0.004094881">
+        </testcase>
+        <testcase classname="tests/unit/validation-traceability.test.ts" name="the real validation package &gt; numbers requirements and deviations without a duplicate" time="0.000266868">
+        </testcase>
+    </testsuite>
+</testsuites>

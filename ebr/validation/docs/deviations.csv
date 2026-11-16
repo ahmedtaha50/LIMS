@@ -1,0 +1,7 @@
+Deviation,Description,Action,Status
+"DEV-2026-11-16-01","Part of a requirement is supported by reading the code, not by an executed test of this package (URS-E01-1).","Add a test that runs the suite with PostgreSQL stopped and expects a failure, or accept the reading in writing.","OPEN"
+"DEV-2026-11-16-02","Evidence from GitHub Actions (another machine): the CI workflow and the docker compose job (URS-E01-4, URS-E19-1).","Run docker compose up on the plant server during IQ and record it; the CI results stay supporting evidence.","OPEN"
+"DEV-2026-11-16-03","The capacity test ran on a development machine, not on the plant reference server (URS-E16-1, URS-E16-2).","Run npm run test:perf on the plant server and behind the plant proxy during OQ; record the numbers.","OPEN"
+"DEV-2026-11-16-04","The Windows service installer has not been run on a Windows Server (URS-E19-2).","Run deploy/windows/install-service.ps1 on the target Windows Server during IQ, or choose the Docker installation.","OPEN"
+"DEV-2026-11-16-05","IQ was executed in a development sandbox, not on the plant server; no end-user PQ was performed.","IQ on the plant server; PQ by representative users with the plant's own logbook types and MBRs.","OPEN"
+"DEV-2026-11-16-06","Directory sign-on and the LIMS link were tested against a test LDAP server and a stand-in LIMS, not the plant's directory and LIMS (URS-E17-*, URS-E18-*).","Repeat the directory and LIMS tests against the plant systems once their settings are decided (open items register).","OPEN"
