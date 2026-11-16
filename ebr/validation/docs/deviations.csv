@@ -7,3 +7,4 @@ Deviation,Description,Action,Status
 "DEV-2026-11-16-06","Directory sign-on and the LIMS link were tested against a test LDAP server and a stand-in LIMS, not the plant's directory and LIMS (URS-E17-*, URS-E18-*).","Repeat the directory and LIMS tests against the plant systems once their settings are decided (open items register).","OPEN"
 "DEV-2026-11-16-07","Release R4 (URS-E22 to URS-E25) is planned and not yet built.","Closed: R4 built; URS-E22, E23, E25 have executed tests, URS-E24 the CI evidence under DEV-2026-11-16-02.","CLOSED"
 "DEV-2026-11-16-08","Release R5 (URS-E26 to URS-E31) is planned and not yet built.","Closed: R5 built; URS-E26 to URS-E31 have executed tests.","CLOSED"
+"DEV-2026-11-16-09","Release R6 (URS-E32, URS-E33) is planned and not yet built.","Closed: R6 built; URS-E32 and URS-E33 have executed tests.","CLOSED"

@@ -4,37 +4,37 @@
   "rampSeconds": 60,
   "thinkMs": 15000,
   "stepsPerUser": 4,
-  "elapsedSeconds": 126.8,
+  "elapsedSeconds": 127.9,
   "failures": [],
   "instanceStoppedAfterSeconds": 30,
   "byOperation": {
     "sign_in": {
       "n": 300,
       "failed": 0,
-      "p50": 93.4,
-      "p95": 115.2,
-      "max": 147.3
+      "p50": 85.2,
+      "p95": 101,
+      "max": 133.9
     },
     "batch_list": {
       "n": 300,
       "failed": 0,
-      "p50": 4.1,
-      "p95": 6.5,
-      "max": 11.6
+      "p50": 3.5,
+      "p95": 6.2,
+      "max": 12.1
     },
     "batch_open": {
       "n": 300,
       "failed": 0,
-      "p50": 4.1,
-      "p95": 6.3,
-      "max": 14.2
+      "p50": 3.3,
+      "p95": 5,
+      "max": 11.9
     },
     "step_record": {
       "n": 1200,
       "failed": 0,
-      "p50": 96.3,
-      "p95": 121.9,
-      "max": 225.2
+      "p50": 89.5,
+      "p95": 115.1,
+      "max": 178.1
     }
   },
   "recordedAnswered200": 1200,
