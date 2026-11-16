@@ -86,7 +86,8 @@
             "tests/e2e/shell*.spec.ts",
             "playwright.config.ts",
             "eslint.config.js",
-            "client/**"
+            "client/**",
+            "tests/e2e/support/**"
           ],
           "dependsOn": [
             "r1-core"
