@@ -130,9 +130,11 @@
       "kind": "not-done",
       "source": "report:r3-deploy",
       "text": "Windows service script not run on a Windows server",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "6d17344a1be515b1"
+      "key": "6d17344a1be515b1",
+      "by": "CI job windows (run 43872568098): the service installed, migrated, signed in, restarted and uninstalled on Windows Server 2025",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0014",
@@ -148,9 +150,11 @@
       "kind": "acceptance",
       "source": "report:r3-deploy",
       "text": "E19#2 partly: The Windows service installer runs the same build on a Windows Server without Docker",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "533230a2d8adac61"
+      "key": "533230a2d8adac61",
+      "by": "E19#2 met on a Windows Server 2025 runner (CI job windows); the plant server stays under DEV-2026-11-16-02",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0016",
