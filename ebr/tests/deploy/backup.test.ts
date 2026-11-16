@@ -14,7 +14,11 @@ import { freshDatabase } from '../helpers/db.js';
 // an installation uses (deploy/backup), run here against a real PostgreSQL with its own pg_dump and pg_restore.
 const BACKUP = fileURLToPath(new URL('../../deploy/backup/backup.sh', import.meta.url));
 const RESTORE = fileURLToPath(new URL('../../deploy/backup/restore.sh', import.meta.url));
-const built = (() => { try { readFileSync(fileURLToPath(new URL('../../dist/server/audit/index.js', import.meta.url))); return true; } catch { return false; } })();
+const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+const isBuilt = () => { try { readFileSync(join(ROOT, 'dist/server/audit/index.js')); return true; } catch { return false; } };
+// CI runs the tests before the build step: the server part is compiled here when it is missing (found on the first CI run)
+if (!isBuilt()) execFileSync(process.execPath, [join(ROOT, 'node_modules/typescript/bin/tsc'), '-p', join(ROOT, 'tsconfig.build.json')], { stdio: 'inherit' });
+const built = isBuilt();
 let src: Awaited<ReturnType<typeof freshDatabase>>, dst: Awaited<ReturnType<typeof freshDatabase>>, dir = '';
 
 beforeAll(async () => {
