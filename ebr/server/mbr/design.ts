@@ -27,8 +27,11 @@ export const STEP_TYPES = ['instruction', 'data', 'signature', 'verified', 'calc
 export const Phase = z.strictObject({ key, label, steps: z.array(Step).min(1).max(200) });
 export const Design = z.strictObject({
   batchSize: z.strictObject({ value: z.number().positive(), unit }),
+  // E29: the recipe's own yield limits (percent of the batch size); without them the site limits apply
+  yieldLimits: z.strictObject({ minPct: z.number().min(50).max(150), maxPct: z.number().min(50).max(150) }).optional(),   // a product may end below 100 %
   phases: z.array(Phase).min(1).max(50),
 }).superRefine((d, ctx) => {
+  if (d.yieldLimits && d.yieldLimits.minPct >= d.yieldLimits.maxPct) ctx.addIssue({ code: 'custom', path: ['yieldLimits'], message: 'the lowest yield must be below the highest' });
   const phases = new Set<string>(), numeric = new Set<string>();
   d.phases.forEach((ph, i) => {
     if (phases.has(ph.key)) ctx.addIssue({ code: 'custom', path: ['phases', i, 'key'], message: `two phases are called ${ph.key}` });

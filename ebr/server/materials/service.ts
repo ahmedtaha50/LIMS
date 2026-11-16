@@ -3,13 +3,12 @@ import type { Client, Pool } from '../core/db.js';
 import { HttpError, conflict, notFound } from '../core/errors.js';
 import type { Actor } from '../core/route.js';
 import { sign, type PasswordCheck } from '../esign/index.js';
+import { yieldLimitsFor } from './yield.js';
 
 export type Ctx = { c: Client; pool: Pool; check: PasswordCheck; actor: Actor & { displayName?: string }; requestId: string };
 const signer = (a: Ctx['actor']) => ({ userId: a.userId, username: a.username, displayName: a.displayName ?? a.username });
 const audit = (x: Ctx, action: string, entity: string, id: string, v: { oldValue?: unknown; newValue?: unknown; reason?: string | null } = {}) =>
   writeAudit(x.c, { actorId: x.actor.userId, actorName: x.actor.username, action, entity, entityId: id, requestId: x.requestId, ...v });
-/** Yield limits of the site until they are set per product (an open decision): percent of the theoretical batch size. */
-export const yieldLimits = () => ({ min: Number(process.env.EBR_YIELD_MIN_PCT ?? 95), max: Number(process.env.EBR_YIELD_MAX_PCT ?? 102) });
 
 type LotRow = { id: string; material_code: string; lot_number: string; status: string; expiry_date: string; created_by: string; decided_by: string | null; version: number };
 const lotView = (l: LotRow) => ({ id: l.id, material: l.material_code, lotNumber: l.lot_number, status: l.status, expiry: l.expiry_date, createdBy: l.created_by, decidedBy: l.decided_by, version: l.version });
@@ -66,12 +65,12 @@ export async function reconcile(x: Ctx, batchId: string, input: { outputQuantity
   }
   const materials = [...byMaterial.values()].map(m => ({ ...m, target: +m.target.toFixed(3), dispensed: +m.dispensed.toFixed(3), differencePct: +((100 * (m.dispensed - m.target)) / m.target).toFixed(2) }));
   const yieldPct = +((100 * input.outputQuantity) / b.batch_size.value).toFixed(2);
-  const lim = yieldLimits();
+  const lim = await yieldLimitsFor(x.c, batchId);   // E29: the recipe version's own limits, else the site's
   const exceptions = [
-    ...(yieldPct < lim.min || yieldPct > lim.max ? [{ kind: 'yield_out_of_limits', message: `Yield ${yieldPct}% (${input.outputQuantity} of ${b.batch_size.value} ${b.batch_size.unit}) is outside ${lim.min}% to ${lim.max}%` }] : []),
+    ...(yieldPct < lim.min || yieldPct > lim.max ? [{ kind: 'yield_out_of_limits', message: `Yield ${yieldPct}% (${input.outputQuantity} of ${b.batch_size.value} ${b.batch_size.unit}) is outside ${lim.min}% to ${lim.max}% (${lim.source})` }] : []),
     ...materials.filter(m => Math.abs(m.differencePct) > m.tolerancePct).map(m => ({ kind: 'reconciliation_difference', message: `Material ${m.material}: ${m.dispensed} ${m.unit} dispensed against ${m.target} ${m.unit} (${m.differencePct}%, limit ±${m.tolerancePct}%)` })),
   ];
-  const record = { batchId, outputQuantity: input.outputQuantity, unit: b.batch_size.unit, theoretical: b.batch_size.value, yieldPct, materials };
+  const record = { batchId, outputQuantity: input.outputQuantity, unit: b.batch_size.unit, theoretical: b.batch_size.value, yieldPct, yieldLimits: lim, materials };
   const sig = await sign(x.c, x.pool, x.check, { signer: signer(x.actor), password: input.password, meaning: 'performed', entity: 'batch_reconciliation', entityId: batchId, recordVersion: 1, record, requestId: x.requestId });
   await x.c.query('INSERT INTO batch_reconciliations (batch_id, output_quantity, unit, theoretical, yield_pct, materials, recorded_by, recorded_at, signature_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
     [batchId, input.outputQuantity, b.batch_size.unit, b.batch_size.value, yieldPct, JSON.stringify(materials), x.actor.username, sig.signedAt, sig.id]);
