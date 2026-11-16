@@ -27,7 +27,9 @@ const { cli } = require('./lib/runtime.cjs');
 function main(argv, io) {
   const console = io.console;
 
-  const { opt, flag } = args(argv, ['--repo', '--base', '--max-mb']);
+  const { opt, flag, positional } = args(argv, ['--repo', '--base', '--max-mb']);
+  // a bare argument was once taken for the project folder and silently ignored: the guard then checked the whole repository
+  if (positional.length) { console.error(`precommit-guard: unexpected argument ${positional.join(' ')} (the project is --repo <folder>)`); return io.exit(2); }
   const repo = path.resolve(opt('--repo', '.'));
   const base = opt('--base', 'HEAD');
   const maxBytes = (parseFloat(opt('--max-mb', '5')) || 5) * 1048576;
@@ -87,6 +89,7 @@ function main(argv, io) {
   const TOP_JUNK = /^(node_modules|dist|dist-server|build|release|coverage|out|target|\.cache|\.venv|venv|__pycache__|\.next|\.turbo|tmp|temp|backups?)\//;
   const swallowed = ignored.filter(f => !TOP_JUNK.test(f) && !/(^|\/)(node_modules|__pycache__|\.git)\//.test(f) && (f.endsWith('/') ? !/(^|\/)(dist|coverage|\.cache|logs?)\/$/.test(f) : isText(f) && !JUNK_FILE.test(f)));
   for (const f of swallowed.slice(0, 40)) W('SWALLOWED', f, 'hidden by a .gitignore rule: is that intended?');
+  if (swallowed.length > 40) W('SWALLOWED', `${swallowed.length - 40} more`, 'not listed: a source folder may be among them (git status --ignored)');
   const ASSERT = /\b(?:expect|assert[A-Za-z.]*|should)\s*[.(]/;
   const testFiles = new Set([...added, ...removed].filter(x => isTest(x.file)).map(x => x.file));
   for (const f of testFiles) {

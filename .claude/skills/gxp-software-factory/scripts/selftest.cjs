@@ -178,6 +178,9 @@ sec('precommit-guard');
   fault('an environment file', guard(), 1, /JUNK/); reset();
   w(p, 'src/key.js', "const k = `-----BEGIN " + "RSA PRIVATE KEY-----\nMIIEow\n-----END " + "RSA PRIVATE KEY-----`;\n");
   fault('a private key', guard(), 1, /SECRET/); reset();
+  fault('a bare project argument is refused, not ignored (it once checked the whole repository)', run('precommit-guard.cjs', [p]), 2, /unexpected argument/);
+  w(p, '.gitignore', 'build/\n'); for (let i = 0; i < 45; i++) w(p, `src/build/f${i}.js`, 'x\n');
+  fault('swallowed files beyond the list are counted, never dropped', guard(), 0, /5 more/); reset(); fs.rmSync(path.join(p, '.gitignore'), { force: true });
 }
 
 // ---------- 8. briefs come from the plan
