@@ -18,7 +18,9 @@
     "test:e2e": "playwright test",
     "create-admin": "tsx server/identity/cli.ts",
     "create-admin:built": "node dist/server/identity/cli.js",
-    "test:perf": "tsx tests/perf/load.ts"
+    "test:perf": "tsx tests/perf/load.ts",
+    "demo-data": "tsx server/demo/cli.ts",
+    "demo-data:built": "node dist/server/demo/cli.js"
   },
   "dependencies": {
     "bidi-js": "^1.1.0",

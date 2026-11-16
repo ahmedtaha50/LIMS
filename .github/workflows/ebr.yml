@@ -77,7 +77,12 @@ jobs:
           curl -sf http://127.0.0.1:4100/api/health | grep '"status":"ok"'
           curl -sf -H 'content-type: application/json' -d '{"username":"siteadmin","password":"ci first password 2026"}' http://127.0.0.1:4100/api/auth/login | tee login.json
           grep '"mustChangePassword":true' login.json
+          # E33: the demo data inside the container, as the run guide (README.md) says
+          docker compose -f deploy/compose/docker-compose.yml --env-file deploy/compose/.env exec -T -e EBR_DEMO_PASSWORD='ci demo accounts password' app node dist/server/demo/cli.js | tee demo.txt
+          grep 'demo data written' demo.txt
+          curl -sf -H 'content-type: application/json' -d '{"username":"demo-supervisor","password":"ci demo accounts password"}' http://127.0.0.1:4100/api/auth/login | grep '"username":"demo-supervisor"'
           mkdir -p $RUNNER_TEMP/evidence
+          echo "PASS compose-demo the demo data written inside the container; demo-supervisor signs in" > $RUNNER_TEMP/evidence/ci-demo.txt
           echo "PASS compose-up docker compose up on a clean runner: migrations applied, health ok, first administrator signs in (mustChangePassword)" > $RUNNER_TEMP/evidence/ci-compose.txt
       - name: Evidence of this job for the traceability gate
         uses: actions/upload-artifact@v4

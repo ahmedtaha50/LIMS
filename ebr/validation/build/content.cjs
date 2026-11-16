@@ -58,8 +58,6 @@ const PARTIAL = {
   'URS-E16-2': { type: 'P*', deviation: 'DEV-2026-11-16-03', note: 'Two instances behind a test proxy, one stopped halfway, no step lost; the plant proxy (deploy/proxy/nginx.conf) was not run.' },
   'URS-E19-1': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'docker compose up and the first administrator sign-in run in the compose job of the CI workflow; there is no Docker on the machine that produced this package.' },
   'URS-E19-2': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'The Windows service installation ran on a Windows Server 2025 runner of GitHub Actions (CI job windows, deploy/windows/ci-check.ps1); not yet on the plant server.' },
-  'URS-E33-1': { type: 'GAP', deviation: 'DEV-2026-11-16-09', note: 'Release R6 is in progress: not built yet.' },
-  'URS-E33-2': { type: 'GAP', deviation: 'DEV-2026-11-16-09', note: 'Release R6 is in progress: not built yet.' },
   'URS-E24-1': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows on Windows Server 2025 with PostgreSQL 16: installed, migrated, first administrator signs in (another machine).' },
   'URS-E24-2': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows: stop and start keep the data; uninstall removes the service and keeps the database (another machine).' },
 };
@@ -98,7 +96,7 @@ const FRS = [
   ['FRS-E30', 'server/lims/client.ts registers with POST /api/v1/samples:batch of the LIMS machine API, the EBR reference as Idempotency-Key (a repeat replays the stored answer), and reads GET /api/v1/samples/{id}; server/routes/lims.ts keeps the result on the batch once the state is Approved; tests/api/lims-link.test.ts checks the contract against the LIMS OpenAPI document (../docs/api/openapi.json, at the top of the repository).', all('E30')],
   ['FRS-E31', 'The directory address, search base, user filter, service account name and group-to-role map are site settings (server/settings/index.ts), read at each sign-in by server/directory/index.ts; the service account password only from the server environment; POST /api/settings/directory/test (server/routes/directory-settings.ts) binds the service account and searches the base, signing nobody in.', all('E31')],
   ['FRS-E32', 'tests/unit/screens-coverage.test.ts matches every route against the calls of the screens (two named exceptions); client/screens/users (accounts), client/screens/logbooks (create, change, retire), client/screens/logbook-types (new version, edit draft), client/screens/mbr (copy), client/screens/audit with server/routes/audit-review.ts (recent entries with filters, record history and signatures, chain verification, certified copy check), client/screens/batch (LIMS samples).', all('E32')],
-  ['FRS-E33', 'Demo data (server/).', all('E33')],
+  ['FRS-E33', 'server/demo/index.ts fills an empty installation through the services and with the signatures of the demo accounts (refuses a database with records; password from EBR_DEMO_PASSWORD); server/demo/cli.ts runs it from the sources or the build (npm run demo-data, inside the Docker container); README.md is the run guide.', all('E33')],
   ['FRS-E21', 'Logbook types are versioned data with typed fields, approved by a QA signature from someone other than the author; entries are validated on the server against the type version they were written with (server/logbook/definition.ts, server/logbook/service.ts).', all('E21')],
 ];
 
@@ -132,7 +130,7 @@ const DEVIATIONS = [
   ['DEV-2026-11-16-06', 'Directory sign-on and the LIMS link were tested against a test LDAP server and a stand-in LIMS, not the plant\'s directory and LIMS (URS-E17-*, URS-E18-*).', 'Repeat the directory and LIMS tests against the plant systems once their settings are decided (open items register).', 'OPEN'],
   ['DEV-2026-11-16-07', 'Release R4 (URS-E22 to URS-E25) is planned and not yet built.', 'Closed: R4 built; URS-E22, E23, E25 have executed tests, URS-E24 the CI evidence under DEV-2026-11-16-02.', 'CLOSED'],
   ['DEV-2026-11-16-08', 'Release R5 (URS-E26 to URS-E31) is planned and not yet built.', 'Closed: R5 built; URS-E26 to URS-E31 have executed tests.', 'CLOSED'],
-  ['DEV-2026-11-16-09', 'Release R6 (URS-E32, URS-E33) is planned and not yet built.', 'Build R6; each requirement moves to its executed tests.', 'OPEN'],
+  ['DEV-2026-11-16-09', 'Release R6 (URS-E32, URS-E33) is planned and not yet built.', 'Closed: R6 built; URS-E32 and URS-E33 have executed tests.', 'CLOSED'],
 ];
 
 const VERIF = (() => {
