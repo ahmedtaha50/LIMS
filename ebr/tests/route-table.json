@@ -319,6 +319,12 @@
   },
   {
     "method": "POST",
+    "path": "/api/mbrs/:id/versions/:versionId/copy",
+    "permission": "mbr.design",
+    "summary": "Copy this version into a new master batch record (version 1, draft; the source is recorded)"
+  },
+  {
+    "method": "POST",
     "path": "/api/mbrs/:id/versions/:versionId/make-effective",
     "permission": "mbr.approve",
     "summary": "Make an approved version the effective one (the previous one retires)"
