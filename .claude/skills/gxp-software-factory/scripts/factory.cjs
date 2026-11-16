@@ -15,7 +15,7 @@
 // argued away, and no check is removed or loosened to turn it green.
 const fs = require('fs');
 const path = require('path');
-const { args, loadConfig, loadRoadmap, gitTry, isGit, tool, parseCsv } = require('./lib/common.cjs');
+const { args, loadConfig, loadRoadmap, gitTry, isGit, statusEntries, workflowDirs, tool, parseCsv } = require('./lib/common.cjs');
 const { cli } = require('./lib/runtime.cjs');
 
 /** @param {string[]} argv @param {import('./lib/runtime.cjs').IO} io @returns {number | void} */
@@ -40,7 +40,7 @@ function main(argv, io) {
 
   // ---------- facts ----------
   function repoState() {
-    const dirty = (gitTry(repo, ['status', '--porcelain']) || '').split('\n').filter(Boolean).length;
+    const dirty = statusEntries(repo).length;   // this project's folder only
     const upstream = gitTry(repo, ['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}']);
     let ahead = null, behind = null;
     if (upstream) { const c = gitTry(repo, ['rev-list', '--left-right', '--count', '@{u}...HEAD']); if (c) [behind, ahead] = c.split(/\s+/).map(Number); }
@@ -72,15 +72,15 @@ function main(argv, io) {
     if (pb) { try { pin = JSON.parse(fs.readFileSync(path.join(repo, pb), 'utf8')).sha256; } catch { pin = undefined; } }
     let smokeBeforePublish = null;
     for (const w of workflows()) {
-      const t = fs.readFileSync(path.join(repo, '.github', 'workflows', w), 'utf8');
+      const t = fs.readFileSync(w, 'utf8');
       const smoke = t.search(/gui-smoke|smoke[-_ ]?test|Installed application starts/i), publish = t.search(/action-gh-release|gh release (?:create|upload)|Publish .*release/i);
       if (publish > -1) smokeBeforePublish = smokeBeforePublish === true || (smoke > -1 && smoke < publish);
     }
     return { afterPack: pkg.build.afterPack || null, asar: pkg.build.asar, bundleFile: pb || null, pin, smokeBeforePublish };
   }
+  /** Workflow files (full paths) of the project folder and, for a subfolder project, of the top of the repository. */
   function workflows() {
-    const d = path.join(repo, '.github', 'workflows');
-    return fs.existsSync(d) ? fs.readdirSync(d).filter(f => /\.ya?ml$/.test(f)).sort() : [];
+    return workflowDirs(repo).flatMap(d => fs.readdirSync(d).filter(f => /\.ya?ml$/.test(f)).sort().map(f => path.join(d, f)));
   }
   // A gate patch still in the changes folder: was it merged, and is it on the list?
   function leftoverPatches() {
@@ -172,7 +172,7 @@ function main(argv, io) {
     if (!manual) add('FAIL', 'the agent manual exists', 'AGENTS.md or CLAUDE.md');
     else { const mc = tool('manual-check.cjs', ['--repo', repo], repo); add(mc.code === 1 ? 'FAIL' : 'PASS', 'the agent manual describes the code that exists', mc.code === 1 ? tail(mc.out, 4).trim() : manual); }
     add(hasConfig ? 'PASS' : 'FAIL', 'project facts are written down', hasConfig ? 'factory.config.json' : 'copy assets/briefs/factory.config.example.json to factory.config.json and fill it');
-    add('MANUAL', 'the fact-check verdicts were applied', 'proof: every gap judged "partly" or "refuted" was corrected or removed in the roadmap');
+    add('MANUAL', 'the gaps were checked against reality', 'proof, existing code: every gap judged "partly" or "refuted" by the fact-check was corrected or removed; new project: every gap traces to a decision of the user or a regulatory requirement, and what was not chosen is in droppedOrDeferred');
     add('MANUAL', 'the user saw the plan', 'proof: a message with the releases, what was dropped and why, and the decisions that are theirs');
   }
   if (station === 'wave') {

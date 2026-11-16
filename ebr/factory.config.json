@@ -1,0 +1,17 @@
+{
+  "PROJECT": "B-Pharma EBR & Logbook", "BRANCH": "claude/project-implementation-tirr4j",
+  "ROADMAP": "docs/roadmap/roadmap.json", "CHANGES_DIR": "docs/changes", "OPEN_ITEMS": "docs/roadmap/open-items.json",
+  "HOUSE_RULES_FILE": "AGENTS.md",
+  "HOUSE_RULES_SUMMARY": "audit entry in the SAME transaction as the change, hash-chained; e-signatures with meaning, server time and record version, password re-entered; verifier different from performer, checked on the server; optimistic concurrency (WHERE id AND version, 409 on stale); strict Zod schemas, server-controlled fields never from the client; nothing deleted; always online, nothing stored offline; touch targets 44 px, tablet and desktop viewports.",
+  "DB_ENGINE": "PostgreSQL 16", "DB_PREFIX": "ebr_", "BASE_PORT": 4100,
+  "DB_ENV": "PGHOST=127.0.0.1 PGUSER=ebr PGPASSWORD=ebr PGDATABASE=<your db>",
+  "DB_CREATE": "PGPASSWORD=ebr psql -h 127.0.0.1 -U ebr postgres -c \"create database <your db>\"",
+  "DB_START": "pg_lsclusters; pg_ctlcluster 16 main start",
+  "EVIDENCE_CHECKS": "none yet: r1-core adds tests/evidence/ (shell checks against the built server); until then the API and Playwright tests are the evidence",
+  "MUST_KEEP_WORKING": "npm test and the Playwright tests at both viewports (tablet 820x1180, desktop 1440x900)",
+  "GATE_DB": "ebr_gate", "GATE_PORT": 4190,
+  "CHECKS": "a) npm run lint (type check, accessibility lint)  b) npm test on a fresh database  c) npm run build  d) start the built server, run the Playwright tests at both viewports  e) migrations applied twice change nothing  f) route-table snapshot",
+  "SHARED_COUNTERS": "the number of signature meanings and permissions asserted by the tests",
+  "DERIVED_FILES": "tests/route-table.json, docs/permission-matrix.csv",
+  "TRAILERS": "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01SauYmXNGWpk2yfK1rWQjao"
+}

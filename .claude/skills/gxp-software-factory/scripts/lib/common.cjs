@@ -63,6 +63,36 @@ const gitTry = (repo, a) => { try { return git(repo, a).trim(); } catch { return
 const isGit = (repo) => gitTry(repo, ['rev-parse', '--is-inside-work-tree']) === 'true';
 
 /**
+ * The project may be a folder inside a larger repository (`--repo ebr` in a monorepo). Git prints status paths from the top of
+ * the repository; these helpers return them relative to the project folder, limited to it.
+ * @param {string} repo
+ * @returns {string} "" at the top of the repository, else the folder with a trailing slash ("ebr/")
+ */
+const gitPrefix = (repo) => gitTry(repo, ['rev-parse', '--show-prefix']) || '';
+/**
+ * `git status --porcelain` limited to the project folder, with paths relative to it.
+ * @param {string} repo
+ * @param {string[]} [extra] more options, such as '-uall' or '--ignored'
+ * @returns {Array<{ code: string, file: string }>}
+ */
+function statusEntries(repo, extra = []) {
+  const prefix = gitPrefix(repo);
+  return git(repo, ['status', '--porcelain=v1', '--no-renames', ...extra, '--', '.']).split('\n').filter(l => l.trim())
+    .map(l => ({ code: l.slice(0, 2), file: l.slice(3).replace(/^"|"$/g, '') }))
+    .map(e => ({ ...e, file: prefix && e.file.startsWith(prefix) ? e.file.slice(prefix.length) : e.file }));
+}
+/**
+ * The workflow folders that run CI for this project: its own, and the one at the top of the repository when it is a subfolder.
+ * @param {string} repo
+ * @returns {string[]}
+ */
+function workflowDirs(repo) {
+  const top = gitTry(repo, ['rev-parse', '--show-toplevel']);
+  const dirs = [path.join(repo, '.github', 'workflows'), ...(top ? [path.join(top, '.github', 'workflows')] : [])];
+  return [...new Set(dirs.map(d => path.resolve(d)))].filter(d => fs.existsSync(d));
+}
+
+/**
  * Files that differ from `base` (default HEAD): committed since base, modified, staged, deleted and untracked.
  * @param {string} repo
  * @param {string} [base]
@@ -71,9 +101,8 @@ const isGit = (repo) => gitTry(repo, ['rev-parse', '--is-inside-work-tree']) ===
 function changedFiles(repo, base = 'HEAD') {
   /** @type {Set<string>} */
   const out = new Set();
-  const st = git(repo, ['status', '--porcelain=v1', '-uall', '--no-renames']);
-  for (const l of st.split('\n')) { if (!l.trim()) continue; out.add(l.slice(3).replace(/^"|"$/g, '')); }
-  if (base !== 'HEAD') { const d = gitTry(repo, ['diff', '--name-only', '--no-renames', base, 'HEAD']); if (d) for (const f of d.split('\n')) if (f) out.add(f); }
+  for (const e of statusEntries(repo, ['-uall'])) out.add(e.file);
+  if (base !== 'HEAD') { const d = gitTry(repo, ['diff', '--name-only', '--no-renames', '--relative', base, 'HEAD']); if (d) for (const f of d.split('\n')) if (f) out.add(f); }
   return [...out].sort();
 }
 
@@ -114,4 +143,4 @@ function parseCsv(text) {
 }
 /** @returns {string} the date of today, YYYY-MM-DD (UTC) */
 const today = () => new Date().toISOString().slice(0, 10);
-module.exports = { args, loadConfig, loadRoadmap, globToRegex, matcher, git, gitTry, isGit, changedFiles, tool, today, parseCsv };
+module.exports = { args, loadConfig, loadRoadmap, globToRegex, matcher, git, gitTry, isGit, gitPrefix, statusEntries, workflowDirs, changedFiles, tool, today, parseCsv };

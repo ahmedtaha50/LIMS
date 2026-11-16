@@ -49,7 +49,7 @@ function main(argv, io) {
   const mixedDays = new Set(Object.values(dates)).size > 1;
   if (!evidenceCommit) out({ verdict: 'UNKNOWN', head, dates, mixedDays, message: 'the evidence does not record its commit. Make the collection script write "git <sha>" (git rev-parse HEAD) into the IQ record.' });
   if (gitTry(repo, ['cat-file', '-e', evidenceCommit + '^{commit}']) === null) out({ verdict: 'UNKNOWN', evidenceCommit, source, head, dates, mixedDays, message: `commit ${evidenceCommit.slice(0, 10)} is not in this repository (shallow clone, or evidence from another history).` });
-  const diff = gitTry(repo, ['diff', '--name-only', '--no-renames', evidenceCommit, 'HEAD']) || '';
+  const diff = gitTry(repo, ['diff', '--name-only', '--no-renames', '--relative', evidenceCommit, 'HEAD']) || '';
   const changed = diff.split('\n').filter(Boolean).filter(f => !ignore(f));
   out(changed.length
     ? { verdict: 'STALE', evidenceCommit, source, head, dates, mixedDays, changed, message: 'the documents describe an older product. Collect the evidence again and regenerate, or state the commit the package describes.' }

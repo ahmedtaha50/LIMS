@@ -5,7 +5,16 @@ Script as it ran: `assets/workflows/discovery.workflow.js`. Shape of the result:
 Enter when there is no roadmap, the roadmap has lint errors, or the user asks what is missing. Leave through
 `node scripts/factory.cjs exit discovery`.
 
-## Three passes
+## A new project (no code yet)
+
+The reviews have nothing to read, so the first pass is the decisions: ask the questions that change the shape of the system
+(where it runs, online or offline, which users and how many, which systems it links to) once, with a recommendation each, and
+write the answers into the agent manual. Gaps come from the user's needs and the regulations instead of from defects, each with
+testable acceptance criteria; what was not chosen goes into `droppedOrDeferred` with who decided. The first track builds the
+skeleton alone (registries as directories from day one), so every later track can own its own files. A project may live in a
+folder of a larger repository: pass that folder as `--repo`.
+
+## Three passes (existing code)
 
 1. **Review (parallel, read-only).** Five specialists read the code, each returning 8 to 14 gaps and the concrete defects they saw:
    domain architect, QA/regulatory, security and identity, frontend/UX, platform/DevOps. Change the personas to fit the product.

@@ -72,5 +72,6 @@ only protection is that you have read this row.
 | The validation kit could not run in a new project | version 1 shipped without a file its content source requires | add the file | `skill-lint.cjs` (REQUIRE) |
 | The release kit's scripts could not find each other | files were flattened; their relative paths expect the project layout | kits mirror the target paths | `skill-lint.cjs`, `assets/kits/README.md` |
 | The same leftover was registered twice | import keyed on wording | one key per criterion | `selftest.cjs` (open-items) |
+| On a new project kept as a folder inside a repository, status counted changes outside it and the ownership audit missed a foreign edit | git prints paths from the top of the repository | paths relative to the project folder (`statusEntries`, `--relative`); workflows read from the top too | `selftest.cjs` (subfolder project) |
 | A folder named `release` inside a kit was flagged as build output | the junk rule matched any path segment | match build folders at the root only | `selftest.cjs` (precommit-guard) |
 | The roadmap linter warned about overlaps that could not happen | a wording heuristic for globs | compare the patterns exactly | `selftest.cjs` (roadmap-lint) |

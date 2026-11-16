@@ -315,6 +315,27 @@ sec('factory');
   fault('an unknown station', fac('exit', 'everything'), 2);
 }
 
+// ---------- 12b. a project that is a folder inside a larger repository (found when the skill was first tried on a new project)
+sec('subfolder project');
+{
+  const top = tmp(); git(top, 'init', '-q');
+  w(top, 'README.md', '# monorepo\n'); w(top, '.github/workflows/ci.yml', 'jobs: {}\n');
+  const p = path.join(top, 'ebr');
+  w(p, 'AGENTS.md', '# House rules\n'); w(p, 'docs/roadmap/roadmap.json', ROAD); w(p, 'factory.config.json', { ...CONFIG, REPO: p });
+  w(p, 'src/alpha/a.js', 'module.exports = 1;\n'); w(p, 'src/beta/b.js', 'module.exports = 2;\n');
+  commit(top, 'base');
+  fs.appendFileSync(path.join(top, 'README.md'), 'changed outside the project\n');
+  is('clean', 'status counts only the changes inside the project folder', /tree +clean/.test(run('factory.cjs', ['status', '--repo', p]).out), true);
+  is('clean', 'status sees the workflows at the top of the repository', /CI +1 workflow file/.test(run('factory.cjs', ['status', '--repo', p]).out), true);
+  clean('the pre-commit guard ignores changes outside the project folder', run('precommit-guard.cjs', ['--repo', p]));
+  fs.appendFileSync(path.join(p, 'src/alpha/a.js'), '// alpha work\n'); w(p, 'docs/changes/r1-alpha.md', '# r1-alpha\n');
+  clean('ownership is judged on paths relative to the project folder', run('ownership-audit.cjs', ['--tracks', 'r1-alpha', '--repo', p]));
+  fs.appendFileSync(path.join(p, 'src/beta/b.js'), '// edited by alpha\n');
+  fault('a foreign edit inside the project folder is still caught', run('ownership-audit.cjs', ['--tracks', 'r1-alpha', '--repo', p]), 1, /FOREIGN/);
+  w(p, 'src/alpha/t.js', 'if (true) { run(); }\n');
+  fault('a forced branch inside the project folder is still caught', run('precommit-guard.cjs', ['--repo', p]), 1, /TEMP/);
+}
+
 // ---------- 13. the skill itself
 sec('skill-lint');
 {

@@ -1,0 +1,524 @@
+{
+  "vision": "An electronic batch record and logbook system for a GMP plant: the same web application on shop-floor tablets and office computers, always online, on the factory's own server, with no limit on users. R1 makes it trustworthy and delivers the logbooks and recipe design, R2 runs and releases batches, R3 proves capacity, links to the LIMS and delivers it on site.",
+  "releases": [
+    {
+      "name": "R1 Foundation and logbooks",
+      "goal": "A trustworthy platform (accounts, audit trail, signatures) that runs the same on tablet and desktop, the equipment logbooks, and the design and approval of master batch records.",
+      "tracks": [
+        {
+          "track": "r1-core",
+          "gapIds": [
+            "E01"
+          ],
+          "ownsFiles": [
+            "package.json",
+            "tsconfig.json",
+            "vite.config.ts",
+            "vitest.config.ts",
+            "server/app.ts",
+            "server/main.ts",
+            "server/core/**",
+            "server/db/index.ts",
+            "server/migrate/**",
+            "server/routes/index.ts",
+            "migrations/000*",
+            "tests/helpers/**",
+            "tests/api/core*.test.ts",
+            "tests/route-table.json"
+          ],
+          "dependsOn": [],
+          "migrations": "0000-0009",
+          "summary": "Runs alone first: skeleton, migration runner, route registry as a directory, test harness on a real database."
+        },
+        {
+          "track": "r1-identity",
+          "gapIds": [
+            "E02"
+          ],
+          "ownsFiles": [
+            "server/identity/**",
+            "server/routes/auth.ts",
+            "server/routes/users.ts",
+            "migrations/001*",
+            "tests/api/identity*.test.ts"
+          ],
+          "dependsOn": [
+            "r1-core"
+          ],
+          "migrations": "0010-0019",
+          "summary": "Local accounts with scrypt, database sessions, roles and permissions, TOTP, lockout."
+        },
+        {
+          "track": "r1-audit-esign",
+          "gapIds": [
+            "E03",
+            "E04"
+          ],
+          "ownsFiles": [
+            "server/audit/**",
+            "server/esign/**",
+            "server/routes/audit.ts",
+            "server/routes/signatures.ts",
+            "migrations/002*",
+            "tests/api/audit*.test.ts",
+            "tests/api/esign*.test.ts"
+          ],
+          "dependsOn": [
+            "r1-core"
+          ],
+          "migrations": "0020-0029",
+          "summary": "Audit trail in the same transaction with a hash chain; signatures with meaning and record version."
+        },
+        {
+          "track": "r1-shell",
+          "gapIds": [
+            "E05"
+          ],
+          "ownsFiles": [
+            "index.html",
+            "public/**",
+            "client/main.tsx",
+            "client/shell/**",
+            "client/ui/**",
+            "client/screens/index.ts",
+            "tests/e2e/shell*.spec.ts",
+            "playwright.config.ts"
+          ],
+          "dependsOn": [
+            "r1-core"
+          ],
+          "summary": "Touch-first shell and UI primitives; screens are found by directory (client/screens/<name>/), so later tracks add folders, not lines."
+        },
+        {
+          "track": "r1-logbook",
+          "gapIds": [
+            "E06",
+            "E07"
+          ],
+          "ownsFiles": [
+            "server/logbook/**",
+            "server/routes/logbook.ts",
+            "migrations/003*",
+            "client/screens/logbook/**",
+            "tests/api/logbook*.test.ts",
+            "tests/e2e/logbook*.spec.ts"
+          ],
+          "dependsOn": [
+            "r1-identity",
+            "r1-audit-esign",
+            "r1-shell"
+          ],
+          "migrations": "0030-0039",
+          "summary": "Equipment and rooms, signed logbook entries, status derived from the entries."
+        },
+        {
+          "track": "r1-mbr",
+          "gapIds": [
+            "E08",
+            "E09"
+          ],
+          "ownsFiles": [
+            "server/mbr/**",
+            "server/routes/mbr.ts",
+            "migrations/004*",
+            "client/screens/mbr/**",
+            "tests/api/mbr*.test.ts",
+            "tests/e2e/mbr*.spec.ts"
+          ],
+          "dependsOn": [
+            "r1-identity",
+            "r1-audit-esign",
+            "r1-shell"
+          ],
+          "migrations": "0040-0049",
+          "summary": "Master batch record designer, versions and QA approval."
+        }
+      ]
+    },
+    {
+      "name": "R2 Batch execution and release",
+      "goal": "Run batches on the shop floor from approved recipes, with limits, materials, equipment interlocks, review by exception and release.",
+      "tracks": [
+        {
+          "track": "r2-execution",
+          "gapIds": [
+            "E10",
+            "E11"
+          ],
+          "ownsFiles": [
+            "server/batch/**",
+            "server/steps/core/**",
+            "server/routes/batch.ts",
+            "migrations/010*",
+            "client/screens/batch/**",
+            "tests/api/batch*.test.ts",
+            "tests/e2e/batch*.spec.ts"
+          ],
+          "dependsOn": [
+            "r1-mbr",
+            "r1-logbook"
+          ],
+          "migrations": "0100-0109",
+          "summary": "Batch from an effective MBR version, ordered steps, limits and exceptions; step types are files under server/steps/."
+        },
+        {
+          "track": "r2-materials",
+          "gapIds": [
+            "E12"
+          ],
+          "ownsFiles": [
+            "server/materials/**",
+            "server/steps/material/**",
+            "server/routes/materials.ts",
+            "migrations/011*",
+            "client/screens/materials/**",
+            "tests/api/materials*.test.ts"
+          ],
+          "dependsOn": [
+            "r2-execution"
+          ],
+          "migrations": "0110-0119",
+          "summary": "Released, unexpired lots by barcode or typing; weights with tolerance; yield and reconciliation."
+        },
+        {
+          "track": "r2-interlock",
+          "gapIds": [
+            "E13"
+          ],
+          "ownsFiles": [
+            "server/interlock/**",
+            "server/steps/equipment/**",
+            "tests/api/interlock*.test.ts"
+          ],
+          "dependsOn": [
+            "r2-execution"
+          ],
+          "summary": "Equipment status checked at the step; use entries written into the logbook automatically."
+        },
+        {
+          "track": "r2-review-release",
+          "gapIds": [
+            "E14",
+            "E15"
+          ],
+          "ownsFiles": [
+            "server/review/**",
+            "server/routes/review.ts",
+            "server/pdf/**",
+            "migrations/012*",
+            "client/screens/review/**",
+            "tests/api/review*.test.ts",
+            "tests/e2e/review*.spec.ts"
+          ],
+          "dependsOn": [
+            "r2-execution"
+          ],
+          "migrations": "0120-0129",
+          "summary": "Review by exception, disposition and the certified-copy PDF."
+        }
+      ]
+    },
+    {
+      "name": "R3 Scale, integration and delivery",
+      "goal": "Proven capacity for many users, directory sign-on, the LIMS link, on-premises installation, and the validation package.",
+      "tracks": [
+        {
+          "track": "r3-scale",
+          "gapIds": [
+            "E16"
+          ],
+          "ownsFiles": [
+            "tests/perf/**",
+            "deploy/proxy/**"
+          ],
+          "dependsOn": [
+            "r2-review-release",
+            "r2-materials",
+            "r2-interlock"
+          ],
+          "summary": "Load test with numbers, two instances behind a proxy."
+        },
+        {
+          "track": "r3-directory",
+          "gapIds": [
+            "E17"
+          ],
+          "ownsFiles": [
+            "server/directory/**",
+            "migrations/020*",
+            "tests/api/directory*.test.ts"
+          ],
+          "dependsOn": [
+            "r2-review-release"
+          ],
+          "migrations": "0200-0209",
+          "summary": "LDAP/AD sign-on with group-to-role mapping and break-glass accounts."
+        },
+        {
+          "track": "r3-lims-link",
+          "gapIds": [
+            "E18"
+          ],
+          "ownsFiles": [
+            "server/lims/**",
+            "server/steps/sample/**",
+            "migrations/021*",
+            "tests/api/lims*.test.ts"
+          ],
+          "dependsOn": [
+            "r2-review-release"
+          ],
+          "migrations": "0210-0219",
+          "summary": "Sample requests to the LIMS and results back, idempotent."
+        },
+        {
+          "track": "r3-deploy",
+          "gapIds": [
+            "E19"
+          ],
+          "ownsFiles": [
+            "deploy/compose/**",
+            "deploy/windows/**",
+            "Dockerfile",
+            "tests/deploy/**"
+          ],
+          "dependsOn": [
+            "r2-review-release"
+          ],
+          "summary": "Docker images and Compose, Windows service, tested backup and restore."
+        },
+        {
+          "track": "r3-validation",
+          "gapIds": [
+            "E20"
+          ],
+          "ownsFiles": [
+            "validation/**",
+            "tests/unit/validation*.test.ts"
+          ],
+          "dependsOn": [
+            "r3-scale",
+            "r3-directory",
+            "r3-lims-link",
+            "r3-deploy"
+          ],
+          "summary": "The validation package generated from requirements and executed evidence (kit: assets/kits/validation)."
+        }
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "E01",
+      "title": "Project skeleton, migration runner and test harness",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "`npm test` runs unit and API tests against a fresh PostgreSQL database created per run, and fails when PostgreSQL is not reachable instead of skipping",
+        "Migrations are forward-only: applying them twice changes nothing, and a migration file edited after it was applied is refused at start-up",
+        "A route added as a new file under server/routes/ is mounted without editing a shared list (route table snapshot test)"
+      ]
+    },
+    {
+      "id": "E02",
+      "title": "Accounts, sessions, roles and second factor",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A wrong password is refused and five failures in 15 minutes lock the account; the lock and each failure are in the audit trail",
+        "Sessions are stored in the database: two API instances on one database accept the same session, and a session revoked on one is refused by the other",
+        "Every route declares a permission; a route without one fails the route-table test, and a user without the permission gets 403",
+        "TOTP is required for roles flagged as privileged (QA, administrator)"
+      ]
+    },
+    {
+      "id": "E03",
+      "title": "Audit trail",
+      "gxpRisk": "High",
+      "acceptance": [
+        "Every create and update writes its audit entry in the same transaction: a failure injected after the change leaves neither the change nor the entry",
+        "Audit entries carry user, server time (UTC), old and new value and reason; the API offers no update or delete of an entry, and a database role used by the application cannot update or delete them",
+        "The hash chain verifies; altering one stored entry makes verification report that entry"
+      ]
+    },
+    {
+      "id": "E04",
+      "title": "Electronic signatures",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A signature records signer, meaning, server time and the record version; the password is re-entered at signing and a wrong one is refused and audited",
+        "A record changed after signing shows the signature as invalid",
+        "The verifier of a step cannot be its performer: the server refuses it even if the client allows it"
+      ]
+    },
+    {
+      "id": "E05",
+      "title": "Touch-first shell for tablet and desktop",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "The shell, sign-in and navigation pass Playwright tests at 820x1180 (tablet) and 1440x900 (desktop), with no horizontal scroll",
+        "Every interactive element is at least 44x44 px and reachable by keyboard; the accessibility lint has no error",
+        "The app is installable (manifest and service worker) but records nothing offline: with the network off, a save shows an error and nothing is stored locally"
+      ]
+    },
+    {
+      "id": "E06",
+      "title": "Equipment and rooms master data and logbook entries",
+      "gxpRisk": "High",
+      "acceptance": [
+        "Equipment and rooms are created, changed and retired (never deleted) with audit entries",
+        "A logbook entry (use, cleaning, maintenance, calibration, status change) is signed by its author and cannot be changed afterwards; a correction is a new entry that references the old one with a reason",
+        "The logbook of one item lists its entries in time order with signer and meaning, and exports as a signed PDF"
+      ]
+    },
+    {
+      "id": "E07",
+      "title": "Equipment status engine",
+      "gxpRisk": "High",
+      "acceptance": [
+        "Status (clean, dirty, in use, on hold, out of calibration) is derived from the logbook entries, not stored by hand",
+        "Clean hold time and calibration due date are configurable per item; when either passes, the status turns to dirty or out of calibration without anyone acting",
+        "A status change by hand needs a reason and a signature"
+      ]
+    },
+    {
+      "id": "E08",
+      "title": "Master batch record designer",
+      "gxpRisk": "High",
+      "acceptance": [
+        "An MBR is built from phases and steps of the types instruction, data entry with limits, signature, verified step, calculation, material, equipment and sample",
+        "Limits, units and the order of steps are validated when the MBR is saved; an MBR with a calculation that refers to a missing step is refused",
+        "The designer works on a tablet and on a desktop (Playwright at both viewports)"
+      ]
+    },
+    {
+      "id": "E09",
+      "title": "MBR versions and approval",
+      "gxpRisk": "High",
+      "acceptance": [
+        "An MBR version moves draft to in review to approved to effective; approval needs a QA signature from someone other than the author",
+        "Only one version of an MBR is effective at a time; making a new one effective retires the previous one",
+        "An approved version cannot be edited; a change creates a new draft version with the history kept"
+      ]
+    },
+    {
+      "id": "E10",
+      "title": "Batch creation and step execution",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A batch can be created only from an effective MBR version, and keeps a reference to that exact version",
+        "Steps run in the order the MBR defines; the server refuses a step out of order or a step whose phase is not started",
+        "Each recorded value is stored with performer, server time and the version read; a second tablet writing the same step with a stale version gets 409"
+      ]
+    },
+    {
+      "id": "E11",
+      "title": "Limits and exceptions during execution",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A value outside its limits is recorded, flagged as an exception at once and requires a comment; the batch cannot be closed while an exception is open",
+        "An exception can be raised as a deviation with its number, and the link is kept on the batch record",
+        "Calculated values are computed on the server from recorded values; the client cannot send them"
+      ]
+    },
+    {
+      "id": "E12",
+      "title": "Materials: dispensing, lot verification and reconciliation",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A material step accepts a lot only when it is released and not expired; the lot is read by typing or by the tablet camera scanning its barcode",
+        "Weights are checked against target and tolerance; an out-of-tolerance weight is an exception",
+        "Yield and material reconciliation are calculated at the end of the batch and differences beyond limits are exceptions"
+      ]
+    },
+    {
+      "id": "E13",
+      "title": "Equipment interlock and automatic logbook entries",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A batch step that uses equipment is refused when the equipment status is not clean or is out of calibration, with the reason shown",
+        "Starting and ending use in a batch writes the use entries into the equipment logbook automatically, with the batch number",
+        "Releasing the equipment after the batch sets it to dirty"
+      ]
+    },
+    {
+      "id": "E14",
+      "title": "Review by exception",
+      "gxpRisk": "High",
+      "acceptance": [
+        "The review screen lists every exception, correction and late entry of a batch, and nothing else unless asked",
+        "QA cannot complete the review while an exception has no comment or open deviation link",
+        "Every review action is audited and signed with meaning reviewed"
+      ]
+    },
+    {
+      "id": "E15",
+      "title": "Batch disposition and certified copy",
+      "gxpRisk": "High",
+      "acceptance": [
+        "Release or reject needs a QA signature and is refused while the review is not complete",
+        "The batch record exports as a PDF certified copy with all values, signatures, exceptions and the audit trail, generated from the stored record",
+        "The PDF carries a hash that the system can verify later"
+      ]
+    },
+    {
+      "id": "E16",
+      "title": "Capacity for an unlimited number of users",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "A load test with 300 simulated users (each one signing in, opening batches and recording steps) holds p95 below 500 ms on the reference server, with zero failed writes",
+        "Two API instances behind a reverse proxy share load and sessions; stopping one does not lose a recorded step",
+        "No component counts users or enforces a user limit"
+      ]
+    },
+    {
+      "id": "E17",
+      "title": "Directory sign-on (LDAP/AD)",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "Users can sign in with their directory account; roles are mapped from directory groups",
+        "When the directory is not reachable, sign-in fails with a clear message and local break-glass accounts still work"
+      ]
+    },
+    {
+      "id": "E18",
+      "title": "Link to the LIMS",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "A sample step of a batch creates a sample request in the LIMS through its API, and the LIMS result is shown on the batch when it is approved there",
+        "When the LIMS is down the step shows the failure and can be retried without creating the request twice"
+      ]
+    },
+    {
+      "id": "E19",
+      "title": "On-premises delivery",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "`docker compose up` on a clean server starts the application and PostgreSQL with migrations applied and a first administrator created",
+        "The Windows service installer runs the same build on a Windows Server without Docker",
+        "Backup and restore are tested: a restored backup passes the audit chain verification"
+      ]
+    },
+    {
+      "id": "E20",
+      "title": "Validation package",
+      "gxpRisk": "High",
+      "acceptance": [
+        "URS, FRS, risk assessment, RTM, IQ, OQ and the summary report are generated from the requirements and executed tests; nothing is typed as a result",
+        "Every Critical or High requirement links to a passed executed test or an open deviation"
+      ]
+    }
+  ],
+  "droppedOrDeferred": [
+    {
+      "idea": "Offline recording on tablets with later sync",
+      "why": "Decided by the user: always online. Offline signing would need its own QA decision and a much larger design."
+    },
+    {
+      "idea": "Paper and electronic hybrid records",
+      "why": "Not chosen; the record is fully electronic."
+    },
+    {
+      "idea": "Integration with the LIMS from R1",
+      "why": "Decided by the user: standalone first, link in R3."
+    }
+  ]
+}

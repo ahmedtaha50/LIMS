@@ -26,7 +26,7 @@ const a11yRules = (level) => Object.fromEntries(Object.entries(jsxA11y.flatConfi
 }));
 
 export default [
-  { ignores: ['dist/**', 'dist-server/**', 'release/**', 'node_modules/**', 'src/server/**', 'src/db/**'] },
+  { ignores: ['dist/**', 'dist-server/**', 'release/**', 'node_modules/**', 'src/server/**', 'src/db/**', 'ebr/**'] },   // ebr/: a separate project with its own checks
   {
     files: ['src/**/*.tsx'],
     languageOptions: {

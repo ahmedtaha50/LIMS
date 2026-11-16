@@ -20,7 +20,7 @@
 // Why: each of these went wrong, or nearly did, on the source project, and none of them makes a test fail.
 const fs = require('fs');
 const path = require('path');
-const { args, git, gitTry, isGit } = require('./lib/common.cjs');
+const { args, gitTry, isGit, statusEntries } = require('./lib/common.cjs');
 const { cli } = require('./lib/runtime.cjs');
 
 /** @param {string[]} argv @param {import('./lib/runtime.cjs').IO} io @returns {number | void} */
@@ -39,7 +39,7 @@ function main(argv, io) {
 
   // added and removed lines per file (tracked changes), and the whole text of untracked files
   const added = [], removed = [];
-  const diff = gitTry(repo, ['diff', '--no-color', '--unified=0', '--no-renames', base]) || '';
+  const diff = gitTry(repo, ['diff', '--no-color', '--unified=0', '--no-renames', '--relative', base]) || '';   // --relative: this project's folder only
   let file = null, ln = 0;
   for (const l of diff.split('\n')) {
     if (l.startsWith('+++ ')) { file = l.slice(4).replace(/^b\//, ''); continue; }
@@ -50,7 +50,7 @@ function main(argv, io) {
     if (l.startsWith('+')) { added.push({ file, ln, text: l.slice(1) }); ln++; }
     else if (l.startsWith('-')) removed.push({ file, text: l.slice(1) });
   }
-  const status = git(repo, ['status', '--porcelain=v1', '-uall', '--no-renames', '--ignored']).split('\n').filter(Boolean);
+  const status = statusEntries(repo, ['-uall', '--ignored']).map(e => `${e.code} ${e.file}`);
   const untracked = status.filter(l => l.startsWith('?? ')).map(l => l.slice(3).replace(/^"|"$/g, ''));
   const ignored = status.filter(l => l.startsWith('!! ')).map(l => l.slice(3).replace(/^"|"$/g, ''));
   const changedFiles = [...new Set([...added.map(a => a.file), ...untracked])];
