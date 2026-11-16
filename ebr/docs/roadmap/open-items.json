@@ -28,9 +28,11 @@
       "kind": "not-done",
       "source": "report:r1-shell",
       "text": "Signed-in layout tests stand in for /api/auth/me until r1-identity provides sign-in; then a test signs in for real",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "d259bafe52b66846"
+      "key": "d259bafe52b66846",
+      "by": "R1 wave 3 gate: tests/e2e/shell-signin.spec.ts signs in for real on the built server (both viewports)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0004",
@@ -40,6 +42,15 @@
       "status": "open",
       "opened": "2026-11-16",
       "key": "5a3cbf3456138a94"
+    },
+    {
+      "id": "OI-0005",
+      "kind": "decision",
+      "source": "report:r1-identity",
+      "text": "Sign-off after 15 minutes without activity, 12 hours at most, lock for 30 minutes after 5 failures in 15 minutes: confirm these numbers for the plant (they are settings)",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "46f5dd0aada00db8"
     }
   ]
 }

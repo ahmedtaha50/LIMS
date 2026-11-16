@@ -1,0 +1,15 @@
+role,permission,privileged
+operator,session,false
+operator,signatures.read,false
+supervisor,audit.read,false
+supervisor,session,false
+supervisor,signatures.read,false
+qa,audit.read,true
+qa,audit.verify,true
+qa,session,true
+qa,signatures.read,true
+admin,audit.read,true
+admin,audit.verify,true
+admin,session,true
+admin,signatures.read,true
+admin,users.manage,true

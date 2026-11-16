@@ -2,20 +2,22 @@ import { useEffect, useState } from 'react';
 import { api, ApiError } from '../api.js';
 import { screens } from '../screens/registry.js';
 import { Alert, Button } from '../ui/index.js';
+import { ChangePassword, SecondFactorSetup } from './Account.js';
 import { SignIn } from './SignIn.js';
 
-export type Me = { userId: string; username: string; displayName: string; permissions: string[] };
+export type Me = { userId: string; username: string; displayName: string; permissions: string[]; mustChangePassword?: boolean; mustSetUpSecondFactor?: boolean };
 
 /** The frame of every screen: a top bar and, on wide screens, a side list; on a tablet in portrait, a bottom bar. */
 export function Shell() {
   const [me, setMe] = useState<Me | null | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [current, setCurrent] = useState('home');
-  useEffect(() => {
-    api<Me>('GET', '/api/auth/me').then(setMe).catch((e) => { if (e instanceof ApiError && e.status !== 401) setError(e.message); setMe(null); });
-  }, []);
+  const load = () => api<Me>('GET', '/api/auth/me').then(setMe).catch((e) => { if (e instanceof ApiError && e.status !== 401) setError(e.message); setMe(null); });
+  useEffect(() => { void load(); }, []);
   if (me === undefined) return <p className="p-4 text-base" role="status">Loading…</p>;
   if (me === null) return <>{error ? <div className="p-4"><Alert>{error}</Alert></div> : null}<SignIn onSignedIn={setMe} /></>;
+  if (me.mustChangePassword) return <ChangePassword onDone={() => void load()} />;
+  if (me.mustSetUpSecondFactor) return <SecondFactorSetup onDone={() => void load()} />;
 
   const allowed = screens.filter(s => s.permission === 'session' || me.permissions.includes(s.permission));
   const Active = (allowed.find(s => s.id === current) ?? allowed[0])?.Component;

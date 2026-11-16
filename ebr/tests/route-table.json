@@ -12,6 +12,42 @@
     "summary": "Recompute the hash chain of the whole audit trail"
   },
   {
+    "method": "POST",
+    "path": "/api/auth/login",
+    "permission": "public",
+    "summary": "Sign in with user name, password and, for QA and administrators, the authenticator code"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/logout",
+    "permission": "session",
+    "summary": "Sign out: the session is revoked on every server"
+  },
+  {
+    "method": "GET",
+    "path": "/api/auth/me",
+    "permission": "session",
+    "summary": "Who is signed in, with the permissions of this session"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/password",
+    "permission": "session",
+    "summary": "Change your own password"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/totp/confirm",
+    "permission": "session",
+    "summary": "Finish setting up the authenticator app with a code from it"
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/totp/enroll",
+    "permission": "session",
+    "summary": "Start setting up the authenticator app (returns the secret once)"
+  },
+  {
     "method": "GET",
     "path": "/api/health",
     "permission": "public",
@@ -28,5 +64,29 @@
     "path": "/api/signatures/meanings",
     "permission": "session",
     "summary": "The signature meanings the system knows"
+  },
+  {
+    "method": "GET",
+    "path": "/api/users",
+    "permission": "users.manage",
+    "summary": "List the accounts"
+  },
+  {
+    "method": "POST",
+    "path": "/api/users",
+    "permission": "users.manage",
+    "summary": "Create an account (the user changes the first password at sign-in)"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/users/:id",
+    "permission": "users.manage",
+    "summary": "Change name, roles or status of an account (states the version read)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/users/:id/unlock",
+    "permission": "users.manage",
+    "summary": "Unlock an account locked after failed sign-ins"
   }
 ]
