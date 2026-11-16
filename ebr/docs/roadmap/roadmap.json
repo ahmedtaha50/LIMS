@@ -186,7 +186,9 @@
             "migrations/011*",
             "client/screens/materials/**",
             "tests/api/materials*.test.ts",
-            "client/step-inputs/material.tsx"
+            "client/step-inputs/material.tsx",
+            "client/step-inputs/types.ts",
+            "tests/e2e/materials*.spec.ts"
           ],
           "dependsOn": [
             "r2-execution"
@@ -203,7 +205,8 @@
             "server/interlock/**",
             "server/steps/equipment/**",
             "tests/api/interlock*.test.ts",
-            "client/step-inputs/equipment.tsx"
+            "client/step-inputs/equipment.tsx",
+            "tests/e2e/interlock*.spec.ts"
           ],
           "dependsOn": [
             "r2-execution"
