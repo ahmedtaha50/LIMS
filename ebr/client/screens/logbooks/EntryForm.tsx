@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { api, ApiError } from '../../api.js';
+import { errorText, useT } from '../../i18n/index.js';
 import { Alert, Button, TextField } from '../../ui/index.js';
 
 export type FieldDef = { key: string; label: string; type: 'text' | 'number' | 'datetime' | 'choice' | 'boolean'; required?: boolean; unit?: string; min?: number; max?: number; choices?: string[] };
@@ -7,6 +8,7 @@ export type KindDef = { key: string; label: string; fields: FieldDef[] };
 
 /** The form of an entry is built from the type version: a new type needs no new screen (E21#3). */
 export function EntryForm({ logbookId, kinds, correcting, onSaved, onCancel }: { logbookId: string; kinds: KindDef[]; correcting?: { id: string; kind: string; values: Record<string, unknown> }; onSaved: () => void; onCancel: () => void }) {
+  const t = useT();
   const [kindKey, setKindKey] = useState(correcting?.kind ?? kinds[0]?.key ?? '');
   const [error, setError] = useState<string | null>(null);
   const [details, setDetails] = useState<string[]>([]);
@@ -29,15 +31,16 @@ export function EntryForm({ logbookId, kinds, correcting, onSaved, onCancel }: {
       await api('POST', correcting ? `/api/logbooks/${logbookId}/entries/${correcting.id}/correct` : `/api/logbooks/${logbookId}/entries`, body);
       onSaved();
     } catch (err) {
-      if (err instanceof ApiError) { setError(err.message); setDetails(Array.isArray(err.details) ? err.details.map(d => (typeof d === 'string' ? d : `${d.path}: ${d.message}`)) : []); } else setError('The entry was not saved.');
+      setError(errorText(t, err, 'The entry was not saved.'));
+      setDetails(err instanceof ApiError && Array.isArray(err.details) ? err.details.map(d => (typeof d === 'string' ? d : `${d.path}: ${d.message}`)) : []);
     }
   }
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4 rounded-xl border border-slate-300 bg-white p-4" aria-label={correcting ? 'Correct entry' : 'New entry'}>
-      <h3 className="text-lg font-bold">{correcting ? `Correct entry #${correcting.id}` : 'New entry'}</h3>
+    <form onSubmit={submit} className="flex flex-col gap-4 rounded-xl border border-slate-300 bg-white p-4" aria-label={correcting ? t('Correct entry') : t('New entry')}>
+      <h3 className="text-lg font-bold">{correcting ? t('Correct entry #{id}', { id: correcting.id }) : t('New entry')}</h3>
       {!correcting ? (
         <div className="flex flex-col gap-1">
-          <label htmlFor="entry-kind" className="text-sm font-semibold text-slate-700">Kind of entry</label>
+          <label htmlFor="entry-kind" className="text-sm font-semibold text-slate-700">{t('Kind of entry')}</label>
           <select id="entry-kind" value={kindKey} onChange={e => setKindKey(e.target.value)} className="min-h-11 rounded-lg border border-slate-400 bg-white px-3 text-base">
             {kinds.map(k => <option key={k.key} value={k.key}>{k.label}</option>)}
           </select>
@@ -46,23 +49,23 @@ export function EntryForm({ logbookId, kinds, correcting, onSaved, onCancel }: {
       {kind?.fields.map(fd => {
         const def = correcting?.values[fd.key];
         const label = `${fd.label}${fd.unit ? ` (${fd.unit})` : ''}${fd.required ? ' *' : ''}`;
-        const limits = fd.type === 'number' && (fd.min !== undefined || fd.max !== undefined) ? `Limits: ${fd.min ?? '…'} to ${fd.max ?? '…'}${fd.unit ? ' ' + fd.unit : ''}` : undefined;
+        const limits = fd.type === 'number' && (fd.min !== undefined || fd.max !== undefined) ? t('Limits: {min} to {max}{unit}', { min: fd.min ?? '…', max: fd.max ?? '…', unit: fd.unit ? ' ' + fd.unit : '' }) : undefined;
         if (fd.type === 'choice') return (
           <div key={fd.key} className="flex flex-col gap-1"><label htmlFor={`f-${fd.key}`} className="text-sm font-semibold text-slate-700">{label}</label>
             <select id={`f-${fd.key}`} name={fd.key} defaultValue={typeof def === 'string' ? def : ''} className="min-h-11 rounded-lg border border-slate-400 bg-white px-3 text-base">
-              <option value="">Choose…</option>{fd.choices?.map(c => <option key={c} value={c}>{c}</option>)}
+              <option value="">{t('Choose…')}</option>{fd.choices?.map(c => <option key={c} value={c}>{c}</option>)}
             </select></div>);
         if (fd.type === 'boolean') return (
           <fieldset key={fd.key} className="flex flex-col gap-1"><legend className="text-sm font-semibold text-slate-700">{label}</legend>
-            <div className="flex gap-3">{['yes', 'no'].map(v => <label key={v} className="flex min-h-11 min-w-11 items-center gap-2 rounded-lg border border-slate-400 px-3"><input type="radio" name={fd.key} value={v} defaultChecked={def === (v === 'yes')} className="size-5" />{v === 'yes' ? 'Yes' : 'No'}</label>)}</div>
+            <div className="flex gap-3">{['yes', 'no'].map(v => <label key={v} className="flex min-h-11 min-w-11 items-center gap-2 rounded-lg border border-slate-400 px-3"><input type="radio" name={fd.key} value={v} defaultChecked={def === (v === 'yes')} className="size-5" />{v === 'yes' ? t('Yes') : t('No')}</label>)}</div>
           </fieldset>);
         return <TextField key={fd.key} label={label} name={fd.key} type={fd.type === 'number' ? 'number' : fd.type === 'datetime' ? 'datetime-local' : 'text'} step={fd.type === 'number' ? 'any' : undefined} inputMode={fd.type === 'number' ? 'decimal' : undefined} defaultValue={def === undefined ? undefined : String(def)} {...(limits ? { hint: limits } : {})} />;
       })}
-      <TextField label="Comment" name="comment" hint="Required when a value is outside its limits." />
-      {correcting ? <TextField label="Reason for the correction *" name="reason" required /> : null}
-      <TextField label="Your password (signature) *" name="password" type="password" autoComplete="current-password" required hint="Signing means: I performed this and the values are true." />
-      {error ? <Alert>{error}{details.length ? <ul className="mt-1 list-disc pl-5">{details.map(d => <li key={d}>{d}</li>)}</ul> : null}</Alert> : null}
-      <div className="flex flex-wrap gap-3"><Button type="submit">Sign and save</Button><Button variant="secondary" onClick={onCancel}>Cancel</Button></div>
+      <TextField label={t('Comment')} name="comment" hint={t('Required when a value is outside its limits.')} />
+      {correcting ? <TextField label={t('Reason for the correction *')} name="reason" required /> : null}
+      <TextField label={t('Your password (signature) *')} name="password" type="password" autoComplete="current-password" required hint={t('Signing means: I performed this and the values are true.')} dir="ltr" />
+      {error ? <Alert>{error}{details.length ? <ul className="mt-1 list-disc ps-5">{details.map(d => <li key={d}>{d}</li>)}</ul> : null}</Alert> : null}
+      <div className="flex flex-wrap gap-3"><Button type="submit">{t('Sign and save')}</Button><Button variant="secondary" onClick={onCancel}>{t('Cancel')}</Button></div>
     </form>
   );
 }

@@ -26,7 +26,7 @@ export function TextField({ label, hint, id, className = '', ...p }: FieldProps)
 
 export function Alert({ kind = 'error', children }: { kind?: 'error' | 'info'; children: ReactNode }) {
   const look = kind === 'error' ? 'border-red-700 bg-red-50 text-red-900' : 'border-sky-700 bg-sky-50 text-sky-900';
-  return <div role={kind === 'error' ? 'alert' : 'status'} className={`rounded-lg border-l-4 p-3 text-base ${look}`}>{children}</div>;
+  return <div role={kind === 'error' ? 'alert' : 'status'} className={`rounded-lg border-s-4 p-3 text-base ${look}`}>{children}</div>;
 }
 
 export function Card({ title, children }: { title: string; children: ReactNode }) {

@@ -1,3 +1,5 @@
+import { useT } from '../../i18n/index.js';
+
 /** Status is shown with words and an icon-like mark, never by colour alone (colour-blind operators, glare on the floor). */
 const LOOK: Record<string, [string, string]> = {
   clean: ['Clean', 'bg-emerald-100 text-emerald-900 border-emerald-700'],
@@ -9,7 +11,8 @@ const LOOK: Record<string, [string, string]> = {
   not_tracked: ['No status', 'bg-slate-100 text-slate-800 border-slate-500'],
 };
 export function StatusBadge({ status }: { status: string }) {
+  const t = useT();
   const [label, look] = LOOK[status] ?? [status, 'bg-slate-100 text-slate-800 border-slate-500'];
   const ok = status === 'clean' || status === 'not_tracked';
-  return <span className={`inline-flex min-h-8 items-center gap-1 rounded-full border px-3 text-sm font-bold ${look}`}><span aria-hidden="true">{ok ? "✓" : status === "in_use" ? "●" : "!"}</span><span>{label}</span></span>;
+  return <span className={`inline-flex min-h-8 items-center gap-1 rounded-full border px-3 text-sm font-bold ${look}`}><span aria-hidden="true">{ok ? "✓" : status === "in_use" ? "●" : "!"}</span><span>{t(label)}</span></span>;
 }

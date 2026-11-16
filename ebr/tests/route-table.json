@@ -349,6 +349,18 @@
   },
   {
     "method": "GET",
+    "path": "/api/me/preferences",
+    "permission": "session",
+    "summary": "The preferences of the signed-in user (interface language)"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/me/preferences",
+    "permission": "session",
+    "summary": "Choose the interface language (English or Arabic)"
+  },
+  {
+    "method": "GET",
     "path": "/api/settings",
     "permission": "settings.read",
     "summary": "Site settings with their values, defaults and last change"

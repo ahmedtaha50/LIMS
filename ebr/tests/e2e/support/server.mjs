@@ -23,6 +23,8 @@ const { hashPassword } = await import('../../../dist/server/identity/password.js
   await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password, totp_secret, totp_enabled) VALUES ('e2e-supervisor', 'E2E Supervisor', $1, '{supervisor}', false, NULL, false), ('e2e-qa', 'E2E QA', $1, '{qa}', false, 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', true)", [pw]);
   // batches (r2-execution): a second operator for verifications, and one effective recipe per viewport
   await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password) VALUES ('e2e-operator2', 'E2E Operator Two', $1, '{operator}', false)", [pw]);
+  // r5-i18n (E26): one account per viewport with every role, to walk every screen in Arabic (the language belongs to the account)
+  await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password, totp_secret, totp_enabled) VALUES ('e2e-ar-tablet', 'مستخدم تجربة لوحي', $1, '{supervisor,qa,admin}', false, 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', true), ('e2e-ar-desktop', 'مستخدم تجربة مكتبي', $1, '{supervisor,qa,admin}', false, 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', true)", [pw]);
   const steps = [{ key: 'clearance', label: 'Line clearance', type: 'verified', text: 'Room and mixer free of the previous product', critical: false },
     { key: 'water', label: 'Water added', type: 'data', unit: 'L', min: 10, max: 14, decimals: 1, critical: false },
     { key: 'ratio', label: 'Water per kg', type: 'calculation', formula: 'water / 60', unit: 'L/kg', min: 0.15, max: 0.25, decimals: 3, critical: false }];

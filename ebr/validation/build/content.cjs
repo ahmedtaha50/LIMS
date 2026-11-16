@@ -58,9 +58,6 @@ const PARTIAL = {
   'URS-E16-2': { type: 'P*', deviation: 'DEV-2026-11-16-03', note: 'Two instances behind a test proxy, one stopped halfway, no step lost; the plant proxy (deploy/proxy/nginx.conf) was not run.' },
   'URS-E19-1': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'docker compose up and the first administrator sign-in run in the compose job of the CI workflow; there is no Docker on the machine that produced this package.' },
   'URS-E19-2': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'The Windows service installation ran on a Windows Server 2025 runner of GitHub Actions (CI job windows, deploy/windows/ci-check.ps1); not yet on the plant server.' },
-  'URS-E26-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
-  'URS-E26-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
-  'URS-E26-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
   'URS-E24-1': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows on Windows Server 2025 with PostgreSQL 16: installed, migrated, first administrator signs in (another machine).' },
   'URS-E24-2': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows: stop and start keep the data; uninstall removes the service and keeps the database (another machine).' },
 };
@@ -92,7 +89,7 @@ const FRS = [
   ['FRS-E23', 'Any version is copied into a new master as version 1 in draft (server/mbr/copy.ts, POST /api/mbrs/:id/versions/:versionId/copy in server/routes/mbr-copy.ts): the design is checked again, based_on points to the source version, the audit entry names the source; the source is only read.', all('E23')],
   ['FRS-E24', 'The Windows service scripts: install-service.ps1 (pinned WinSW SHA-256, waits for the first start, shows the server error), uninstall-service.ps1 (database untouched), ci-check.ps1 (E24 end to end) in deploy/windows/.', all('E24')],
   ['FRS-E25', 'The global setup stops the run with the reason when PostgreSQL is not reachable (tests/helpers/global-setup.ts), and the helper refuses too (tests/helpers/db.ts); tests/unit/harness.test.ts runs the suite against an unreachable server.', all('E25')],
-  ['FRS-E26', 'The client interface (client/).', all('E26')],
+  ['FRS-E26', 'Every screen goes through t() (client/i18n/index.tsx, client/i18n/translate.ts): the English text is the key, client/i18n/ar.ts holds the Arabic, client/i18n/en.ts the keys made from server codes; the page direction follows the language (right to left in Arabic) and directional styles are logical; the language is kept with the account (migrations/0330_user_language.sql, server/routes/preferences.ts); server errors are translated by code.', all('E26')],
   ['FRS-E27', 'Site settings (server/settings/index.ts, migrations/0300_site_settings.sql, server/routes/settings.ts): bounds per setting, the version read, a signature with the meaning approved and a reason, audit with old and new value, never deleted; the session check reads idle and maximum length in its own query (server/identity/sessions.ts) and sign-in reads the lockout numbers at each failure (server/routes/auth.ts).', all('E27')],
   ['FRS-E28', 'The installed built-in type versions are marked as waiting for a QA review (migrations/0310_builtin_type_review.sql); writing an entry and using equipment in a batch check it first (server/logbook/review.ts, called by server/logbook/service.ts and server/interlock/index.ts), and a database trigger refuses any other path; QA reviews with a signature, meaning reviewed (server/routes/logbook-review.ts).', all('E28')],
   ['FRS-E29', 'A recipe may carry yieldLimits in its design (server/mbr/design.ts, 50 to 150 percent, lower below upper), approved with its version; server/materials/yield.ts takes the limits of the version the batch was made from, else the site settings yield.minPct and yield.maxPct; the reconciliation (server/materials/service.ts) names the limits and their source in the exception.', all('E29')],
@@ -129,7 +126,7 @@ const DEVIATIONS = [
   ['DEV-2026-11-16-05', 'IQ was executed in a development sandbox, not on the plant server; no end-user PQ was performed.', 'IQ on the plant server; PQ by representative users with the plant\'s own logbook types and MBRs.', 'OPEN'],
   ['DEV-2026-11-16-06', 'Directory sign-on and the LIMS link were tested against a test LDAP server and a stand-in LIMS, not the plant\'s directory and LIMS (URS-E17-*, URS-E18-*).', 'Repeat the directory and LIMS tests against the plant systems once their settings are decided (open items register).', 'OPEN'],
   ['DEV-2026-11-16-07', 'Release R4 (URS-E22 to URS-E25) is planned and not yet built.', 'Closed: R4 built; URS-E22, E23, E25 have executed tests, URS-E24 the CI evidence under DEV-2026-11-16-02.', 'CLOSED'],
-  ['DEV-2026-11-16-08', 'Release R5 (URS-E26 to URS-E31) is planned and not yet built.', 'Build R5; each requirement moves to its executed tests.', 'OPEN'],
+  ['DEV-2026-11-16-08', 'Release R5 (URS-E26 to URS-E31) is planned and not yet built.', 'Closed: R5 built; URS-E26 to URS-E31 have executed tests.', 'CLOSED'],
 ];
 
 const VERIF = (() => {
