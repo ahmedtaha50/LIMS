@@ -280,6 +280,7 @@
           "ownsFiles": [
             "server/lims/**",
             "server/steps/sample/**",
+            "server/routes/lims.ts",
             "migrations/021*",
             "tests/api/lims*.test.ts"
           ],
