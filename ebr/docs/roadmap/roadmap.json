@@ -389,6 +389,118 @@
           "summary": "Proof that the suite fails, never skips, without PostgreSQL."
         }
       ]
+    },
+    {
+      "name": "R5 Decisions implemented",
+      "goal": "The six decisions of the plan, built with safe defaults that the plant can change: settings with signatures, QA review of the built-in logbooks, yield limits per product, the LIMS machine API, directory settings, and the Arabic interface.",
+      "tracks": [
+        {
+          "track": "r5-settings",
+          "gapIds": [
+            "E27"
+          ],
+          "ownsFiles": [
+            "server/settings/**",
+            "server/routes/settings.ts",
+            "migrations/030*",
+            "tests/api/settings*.test.ts"
+          ],
+          "dependsOn": [
+            "r4-pdf",
+            "r4-mbr-copy",
+            "r4-harness",
+            "r4-windows"
+          ],
+          "migrations": "0300-0309",
+          "summary": "Site settings table, signed and audited changes, sessions and lockout read from it."
+        },
+        {
+          "track": "r5-builtin-review",
+          "gapIds": [
+            "E28"
+          ],
+          "ownsFiles": [
+            "server/logbook/review.ts",
+            "server/routes/logbook-review.ts",
+            "migrations/031*",
+            "tests/api/logbook-review*.test.ts"
+          ],
+          "dependsOn": [
+            "r4-pdf",
+            "r4-mbr-copy",
+            "r4-harness",
+            "r4-windows"
+          ],
+          "migrations": "0310-0319",
+          "summary": "Built-in logbook types need a QA review signature before use."
+        },
+        {
+          "track": "r5-lims-v1",
+          "gapIds": [
+            "E30"
+          ],
+          "ownsFiles": [
+            "server/lims/**",
+            "server/steps/sample/**",
+            "server/routes/lims.ts",
+            "migrations/032*",
+            "tests/api/lims*.test.ts"
+          ],
+          "dependsOn": [
+            "r4-pdf",
+            "r4-mbr-copy",
+            "r4-harness",
+            "r4-windows"
+          ],
+          "migrations": "0320-0329",
+          "summary": "The sample step on the LIMS machine API, checked against its OpenAPI document."
+        },
+        {
+          "track": "r5-yield",
+          "gapIds": [
+            "E29"
+          ],
+          "ownsFiles": [
+            "server/materials/yield.ts",
+            "tests/api/yield*.test.ts"
+          ],
+          "dependsOn": [
+            "r5-settings"
+          ],
+          "summary": "Yield limits from the MBR version, else the site setting."
+        },
+        {
+          "track": "r5-directory-settings",
+          "gapIds": [
+            "E31"
+          ],
+          "ownsFiles": [
+            "server/directory/**",
+            "tests/api/directory*.test.ts"
+          ],
+          "dependsOn": [
+            "r5-settings"
+          ],
+          "summary": "Directory settings in the site settings, connection test."
+        },
+        {
+          "track": "r5-i18n",
+          "gapIds": [
+            "E26"
+          ],
+          "ownsFiles": [
+            "client/**",
+            "tests/e2e/i18n*.spec.ts",
+            "tests/unit/i18n*.test.ts"
+          ],
+          "dependsOn": [
+            "r5-yield",
+            "r5-directory-settings",
+            "r5-builtin-review"
+          ],
+          "summary": "Arabic and English for every screen, right to left, per user."
+        }
+      ]
     }
   ],
   "gaps": [
@@ -636,6 +748,65 @@
       "gxpRisk": "Medium",
       "acceptance": [
         "Running the suite with PostgreSQL unreachable fails with the reason and runs no test; nothing is skipped silently"
+      ]
+    },
+    {
+      "id": "E26",
+      "title": "Arabic and English interface",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "Every screen is available in Arabic (right to left) and English; each user chooses the language, and the choice is kept with the account",
+        "No text of the interface is missing in either language (a test compares the two dictionaries and the keys used by the screens)",
+        "The Arabic interface passes the layout tests at tablet and desktop size (no horizontal scroll, 44 px targets)"
+      ]
+    },
+    {
+      "id": "E27",
+      "title": "Site settings for sessions and sign-in",
+      "gxpRisk": "High",
+      "acceptance": [
+        "Idle sign-off, maximum session length, failed sign-ins before a lock, the window they are counted in, and the lock duration are site settings with the defaults 15 minutes, 12 hours, 5, 15 minutes and 30 minutes",
+        "Only an administrator changes a setting, within safe bounds, with a reason and an electronic signature; the change is audited with the old and new value",
+        "Sessions and sign-in use the current settings without a restart"
+      ]
+    },
+    {
+      "id": "E28",
+      "title": "QA review of the built-in logbook types",
+      "gxpRisk": "High",
+      "acceptance": [
+        "The built-in equipment and room logbook types cannot be written to until QA has reviewed them with a signature (meaning reviewed)",
+        "The refusal says why; equipment cannot be used in a batch until its logbook type is reviewed",
+        "The review is audited and shown with the type"
+      ]
+    },
+    {
+      "id": "E29",
+      "title": "Yield limits per product",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A master batch record may set its own yield limits; without them the site limits apply (site setting, default 95 to 102 percent)",
+        "The batch end check uses the limits of the MBR version the batch was made from, and the exception names them"
+      ]
+    },
+    {
+      "id": "E30",
+      "title": "LIMS link over the LIMS machine API",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "A sample step registers the sample through the LIMS machine API (POST /api/v1/samples:batch with an Idempotency-Key from the EBR reference), with a token issued by the LIMS administrator (scopes samples:write and samples:read)",
+        "A retry after a lost answer or an outage never registers twice (the LIMS replays its stored answer); the approved result is read from GET /api/v1/samples/{id}",
+        "A test checks every operation and field the EBR uses against the OpenAPI document the LIMS publishes (docs/api/openapi.json)"
+      ]
+    },
+    {
+      "id": "E31",
+      "title": "Directory settings managed in the application",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "The directory address, search base, user filter, service account name and the group-to-role map are site settings an administrator changes with a reason and a signature; the service account password stays in the server environment",
+        "A test of the connection reports whether the directory answers and the service account can search, without signing anyone in",
+        "Changes take effect for the next sign-in and are audited"
       ]
     }
   ],

@@ -58,6 +58,23 @@ const PARTIAL = {
   'URS-E16-2': { type: 'P*', deviation: 'DEV-2026-11-16-03', note: 'Two instances behind a test proxy, one stopped halfway, no step lost; the plant proxy (deploy/proxy/nginx.conf) was not run.' },
   'URS-E19-1': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'docker compose up and the first administrator sign-in run in the compose job of the CI workflow; there is no Docker on the machine that produced this package.' },
   'URS-E19-2': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'The Windows service installation ran on a Windows Server 2025 runner of GitHub Actions (CI job windows, deploy/windows/ci-check.ps1); not yet on the plant server.' },
+  'URS-E26-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E26-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E26-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E27-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E27-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E27-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E28-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E28-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E28-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E29-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E29-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E30-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E30-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E30-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E31-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E31-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
+  'URS-E31-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
   'URS-E24-1': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows on Windows Server 2025 with PostgreSQL 16: installed, migrated, first administrator signs in (another machine).' },
   'URS-E24-2': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows: stop and start keep the data; uninstall removes the service and keeps the database (another machine).' },
 };
@@ -89,6 +106,12 @@ const FRS = [
   ['FRS-E23', 'Any version is copied into a new master as version 1 in draft (server/mbr/copy.ts, POST /api/mbrs/:id/versions/:versionId/copy in server/routes/mbr-copy.ts): the design is checked again, based_on points to the source version, the audit entry names the source; the source is only read.', all('E23')],
   ['FRS-E24', 'The Windows service scripts: install-service.ps1 (pinned WinSW SHA-256, waits for the first start, shows the server error), uninstall-service.ps1 (database untouched), ci-check.ps1 (E24 end to end) in deploy/windows/.', all('E24')],
   ['FRS-E25', 'The global setup stops the run with the reason when PostgreSQL is not reachable (tests/helpers/global-setup.ts), and the helper refuses too (tests/helpers/db.ts); tests/unit/harness.test.ts runs the suite against an unreachable server.', all('E25')],
+  ['FRS-E26', 'The client interface (client/).', all('E26')],
+  ['FRS-E27', 'Sessions and sign-in (server/identity/sessions.ts, server/identity/index.ts).', all('E27')],
+  ['FRS-E28', 'Logbook types and entries (server/logbook/service.ts).', all('E28')],
+  ['FRS-E29', 'Yield at batch end (server/materials/service.ts).', all('E29')],
+  ['FRS-E30', 'The LIMS client (server/lims/client.ts).', all('E30')],
+  ['FRS-E31', 'Directory sign-in (server/directory/index.ts).', all('E31')],
   ['FRS-E21', 'Logbook types are versioned data with typed fields, approved by a QA signature from someone other than the author; entries are validated on the server against the type version they were written with (server/logbook/definition.ts, server/logbook/service.ts).', all('E21')],
 ];
 
@@ -104,6 +127,9 @@ const GRA = [
   ['Review and release (E14, E15)', 5, 2, 3, 'A batch released with an open exception, or a copy that differs from the record.', [...all('E14'), ...all('E15')]],
   ['Capacity, integration and delivery (E16, E18, E19)', 3, 3, 2, 'A lost step under load, a duplicated sample, or a restore that loses data.', [...all('E16'), ...all('E18'), ...all('E19')]],
   ['Platform and the package itself (E01, E05, E20, E25)', 3, 2, 2, 'A defect in the harness or the package hides defects elsewhere.', [...all('E01'), ...all('E05'), ...all('E20'), ...all('E25')]],
+  ['Site settings and the directory (E27, E31)', 5, 2, 3, 'A weakened sign-in or session rule exposes every record; a wrong group map gives the wrong roles.', [...all('E27'), ...all('E31')]],
+  ['Built-in logbooks and yield limits (E28, E29)', 4, 2, 3, 'An unreviewed definition records the wrong things; a wrong yield limit hides a loss.', [...all('E28'), ...all('E29')]],
+  ['LIMS link and the interface language (E30, E26)', 3, 2, 2, 'A duplicated sample, or a label misread in another language.', [...all('E30'), ...all('E26')]],
   ['Exports and certified copies (E22)', 5, 3, 4, 'A character lost in a certified copy changes the record without anyone seeing it on screen.', all('E22')],
   ['Recipe copy and Windows installation (E23, E24)', 3, 2, 2, 'A copy that alters its source, or an installation that loses data on restart.', [...all('E23'), ...all('E24')]],
 ];
@@ -117,6 +143,7 @@ const DEVIATIONS = [
   ['DEV-2026-11-16-05', 'IQ was executed in a development sandbox, not on the plant server; no end-user PQ was performed.', 'IQ on the plant server; PQ by representative users with the plant\'s own logbook types and MBRs.', 'OPEN'],
   ['DEV-2026-11-16-06', 'Directory sign-on and the LIMS link were tested against a test LDAP server and a stand-in LIMS, not the plant\'s directory and LIMS (URS-E17-*, URS-E18-*).', 'Repeat the directory and LIMS tests against the plant systems once their settings are decided (open items register).', 'OPEN'],
   ['DEV-2026-11-16-07', 'Release R4 (URS-E22 to URS-E25) is planned and not yet built.', 'Closed: R4 built; URS-E22, E23, E25 have executed tests, URS-E24 the CI evidence under DEV-2026-11-16-02.', 'CLOSED'],
+  ['DEV-2026-11-16-08', 'Release R5 (URS-E26 to URS-E31) is planned and not yet built.', 'Build R5; each requirement moves to its executed tests.', 'OPEN'],
 ];
 
 const VERIF = (() => {
