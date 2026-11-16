@@ -326,6 +326,68 @@
           "summary": "The validation package generated from requirements and executed evidence (kit: assets/kits/validation)."
         }
       ]
+    },
+    {
+      "name": "R4 Hardening",
+      "goal": "Close what the R1 to R3 package left open and that needs no decision from the plant: every character in certified copies, recipe copy, the Windows service proven, the harness proven.",
+      "tracks": [
+        {
+          "track": "r4-pdf",
+          "gapIds": [
+            "E22"
+          ],
+          "ownsFiles": [
+            "server/pdf/**",
+            "server/logbook/pdf.ts",
+            "tests/api/pdf*.test.ts"
+          ],
+          "dependsOn": [
+            "r3-validation"
+          ],
+          "summary": "PDF writer with an embedded Unicode font, Arabic shaping and right-to-left order."
+        },
+        {
+          "track": "r4-mbr-copy",
+          "gapIds": [
+            "E23"
+          ],
+          "ownsFiles": [
+            "server/mbr/copy.ts",
+            "server/routes/mbr-copy.ts",
+            "tests/api/mbr-copy*.test.ts"
+          ],
+          "dependsOn": [
+            "r3-validation"
+          ],
+          "summary": "Copy a master version into a new draft master, audited, source recorded."
+        },
+        {
+          "track": "r4-windows",
+          "gapIds": [
+            "E24"
+          ],
+          "ownsFiles": [
+            "deploy/windows/**"
+          ],
+          "dependsOn": [
+            "r3-validation"
+          ],
+          "summary": "The service script exercised on a Windows Server runner: install, migrate, sign in, restart, uninstall."
+        },
+        {
+          "track": "r4-harness",
+          "gapIds": [
+            "E25"
+          ],
+          "ownsFiles": [
+            "tests/unit/harness*.test.ts"
+          ],
+          "dependsOn": [
+            "r3-validation"
+          ],
+          "summary": "Proof that the suite fails, never skips, without PostgreSQL."
+        }
+      ]
     }
   ],
   "gaps": [
@@ -537,6 +599,42 @@
         "A logbook type is versioned and is used only after a QA signature by someone other than its author; changing it creates a new version, and entries keep the version they were written with",
         "Logbooks are created from an approved type for any object (equipment, room, area, instrument, process) without a code change; equipment and room logbooks are built-in types made the same way",
         "An entry is validated on the server against its type version: unknown fields are refused, a number outside its limits is flagged at once and needs a comment"
+      ]
+    },
+    {
+      "id": "E22",
+      "title": "Every character in exports and certified copies",
+      "gxpRisk": "High",
+      "acceptance": [
+        "The logbook PDF and the batch certified copy print any text of the record, Arabic (joined letters, right to left) and accented Latin included; no character is replaced or dropped",
+        "The text extracted from the PDF equals the stored text, for an Arabic, an English and a mixed line",
+        "A certified copy made before this change still verifies against its registered hash"
+      ]
+    },
+    {
+      "id": "E23",
+      "title": "Copy a recipe into a new master",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "A user with the MBR design permission copies any version of a master into a new master in draft; the copy carries the design and records the source master and version",
+        "The copy is audited, needs its own review and QA approval, and changes nothing in the source"
+      ]
+    },
+    {
+      "id": "E24",
+      "title": "Windows service installation proven on Windows Server",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "On a Windows Server runner, install-service.ps1 installs the built application as a service against PostgreSQL 16; it migrates, answers health, and the first administrator signs in",
+        "Stopping the service and starting it again keeps the data; uninstalling removes the service and leaves the database"
+      ]
+    },
+    {
+      "id": "E25",
+      "title": "The test harness refuses to run without its database",
+      "gxpRisk": "Medium",
+      "acceptance": [
+        "Running the suite with PostgreSQL unreachable fails with the reason and runs no test; nothing is skipped silently"
       ]
     }
   ],
