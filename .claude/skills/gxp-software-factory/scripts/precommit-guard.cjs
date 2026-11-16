@@ -7,6 +7,7 @@
 // FAIL (exit 1):
 //   TEMP          a line carrying the marker FACTORY-TEMP, or a forced branch "if (true)" / "if (false)" added in this change.
 //                 Convention: every temporary edit made for an experiment carries the comment FACTORY-TEMP, so it cannot be committed.
+//                 (A manual may name the marker: in a Markdown file, the marker written inside backticks is not a finding.)
 //   FOCUSED       .only( / fit( / fdescribe( added: the rest of the suite silently stops running
 //   SKIPPED       .skip( / xit( / xdescribe( / it.todo( / @pytest.mark.skip added (allowed only with --allow-skip, and then named in the gate record)
 //   DEBUGGER      a "debugger" statement added
@@ -60,7 +61,7 @@ const selfSkill = (f) => /(^|\/)skills\/[^/]+\/(scripts|references|assets)\//.te
 for (const a of added) {
   const where = `${a.file}:${a.ln}`, t = a.text;
   if (selfSkill(a.file)) continue;
-  if (/FACTORY-TEMP/.test(t)) F('TEMP', where, t);
+  if (/FACTORY-TEMP/.test(/\.(md|markdown)$/i.test(a.file) ? t.replace(/`[^`]*`/g, '') : t)) F('TEMP', where, t);   // in a Markdown file, the marker inside backticks is a mention of the rule, not a use of it
   if (/\bif\s*\(\s*(true|false)\s*\)/.test(t) && !/^\s*(\/\/|\*|#)/.test(t)) F('TEMP', where, t);
   if (/\b(?:it|test|describe)\.only\s*\(|\bfit\s*\(|\bfdescribe\s*\(/.test(t)) F('FOCUSED', where, t);
   if (/\b(?:it|test|describe)\.skip\s*\(|\bxit\s*\(|\bxdescribe\s*\(|\b(?:it|test)\.todo\s*\(|@pytest\.mark\.skip|@unittest\.skip|@Disabled\b|@Ignore\b/.test(t) && !flag('--allow-skip')) F('SKIPPED', where, t);
