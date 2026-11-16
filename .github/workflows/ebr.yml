@@ -3,9 +3,9 @@
 name: ebr
 on:
   push:
-    paths: ['ebr/**', '.github/workflows/ebr.yml']
+    paths: ['ebr/**', '.github/workflows/ebr.yml', 'docs/api/openapi.json']   # the LIMS contract the EBR uses (E30#3)
   pull_request:
-    paths: ['ebr/**', '.github/workflows/ebr.yml']
+    paths: ['ebr/**', '.github/workflows/ebr.yml', 'docs/api/openapi.json']   # the LIMS contract the EBR uses (E30#3)
   workflow_dispatch:
 
 jobs:

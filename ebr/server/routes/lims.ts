@@ -1,6 +1,6 @@
 import { writeAudit } from '../audit/index.js';
 import { route } from '../core/route.js';
-import { findByRef, limsConfig } from '../lims/client.js';
+import { APPROVED, getSample, limsConfig } from '../lims/client.js';
 
 type Row = { external_ref: string; step_key: string; lims_sample_id: string; test: string; status: string; result: unknown; result_at: Date | null };
 
@@ -12,13 +12,13 @@ export const routes = [
       const rows = (await pool.query<Row>('SELECT * FROM lims_requests WHERE batch_id = $1 ORDER BY created_at', [id])).rows;
       const cfg = limsConfig();
       let reachable = true;
-      for (const r of rows.filter(x => x.status !== 'approved')) {
+      for (const r of rows.filter(x => x.status !== APPROVED)) {
         if (!cfg) { reachable = false; break; }
         try {
-          const s = await findByRef(cfg, r.external_ref);
-          if (s && s.status !== r.status) {
+          const s = await getSample(cfg, r.lims_sample_id);   // E30: the sample as the LIMS machine API has it
+          if (s.status !== r.status) {
             // E18#1: the result is kept on the batch only once it is APPROVED in the LIMS
-            const approved = s.status === 'approved';
+            const approved = s.status === APPROVED;
             await pool.query('UPDATE lims_requests SET status = $2, result = CASE WHEN $3 THEN $4::jsonb ELSE result END, result_at = CASE WHEN $3 THEN now() ELSE result_at END WHERE external_ref = $1', [r.external_ref, s.status, approved, JSON.stringify(s.result ?? null)]);
             if (approved) {
               const c = await pool.connect();
@@ -29,7 +29,7 @@ export const routes = [
           }
         } catch { reachable = false; break; }
       }
-      return { limsReachable: reachable, samples: rows.map(r => ({ externalRef: r.external_ref, step: r.step_key, limsSampleId: r.lims_sample_id, test: r.test, status: r.status, result: r.status === 'approved' ? r.result : null })) };
+      return { limsReachable: reachable, samples: rows.map(r => ({ externalRef: r.external_ref, step: r.step_key, limsSampleId: r.lims_sample_id, test: r.test, status: r.status, result: r.status === APPROVED ? r.result : null })) };
     },
   }),
 ];
