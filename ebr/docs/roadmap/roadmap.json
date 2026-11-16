@@ -506,6 +506,44 @@
           "migrations": "0330-0339"
         }
       ]
+    },
+    {
+      "name": "R6 Complete screens and demo",
+      "goal": "Nothing a person needs is reachable only through the API; an empty installation can be filled with demo data to test a whole batch.",
+      "tracks": [
+        {
+          "track": "r6-screens",
+          "gapIds": [
+            "E32"
+          ],
+          "ownsFiles": [
+            "client/**",
+            "server/routes/audit-review.ts",
+            "tests/unit/screens*.test.ts",
+            "tests/api/audit-review*.test.ts",
+            "tests/e2e/admin*.spec.ts"
+          ],
+          "dependsOn": [
+            "r5-i18n"
+          ],
+          "summary": "Users, logbooks, logbook type versions, recipe copy, audit trail review, certified copy check, LIMS samples on the batch."
+        },
+        {
+          "track": "r6-demo",
+          "gapIds": [
+            "E33"
+          ],
+          "ownsFiles": [
+            "server/demo/**",
+            "tests/api/demo*.test.ts",
+            "README.md"
+          ],
+          "dependsOn": [
+            "r5-i18n"
+          ],
+          "summary": "npm run demo-data and the run guide."
+        }
+      ]
     }
   ],
   "gaps": [
@@ -812,6 +850,26 @@
         "The directory address, search base, user filter, service account name and the group-to-role map are site settings an administrator changes with a reason and a signature; the service account password stays in the server environment",
         "A test of the connection reports whether the directory answers and the service account can search, without signing anyone in",
         "Changes take effect for the next sign-in and are audited"
+      ]
+    },
+    {
+      "id": "E32",
+      "title": "Every function a person uses has a screen",
+      "gxpRisk": "High",
+      "acceptance": [
+        "A test lists every route a person can call and fails when no screen calls it; the only exceptions are named with their reason (health check, machine use)",
+        "An administrator manages accounts in the application: creates one with its roles and first password, changes roles, disables, unlocks; each change states a reason and is audited",
+        "QA and administrators review the audit trail in the application: recent entries filtered by record, action, user and date, the history and signatures of one record, the hash chain verified on request, and a certified copy checked against the registry",
+        "Supervisors create, change and retire logbooks, start and edit a new version of a logbook type, and copy a recipe in the application; a batch shows its LIMS samples and their approved results"
+      ]
+    },
+    {
+      "id": "E33",
+      "title": "Demo installation and run guide",
+      "gxpRisk": "Low",
+      "acceptance": [
+        "One command fills an empty installation with demo accounts for every role, equipment and rooms whose built-in logbook types QA reviewed, released material lots and an effective recipe, through the same services and signatures people use; it refuses a database that already holds records",
+        "A run guide explains how to start the system (Docker or Windows service), sign in the first time, and test a whole batch with the demo data"
       ]
     }
   ],
