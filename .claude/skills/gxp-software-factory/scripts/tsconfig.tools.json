@@ -1,0 +1,6 @@
+{
+  "//": "The tools: checked for real errors (unknown names, wrong calls, impossible types) without requiring a type on every parameter.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "strict": false, "noImplicitAny": false, "strictNullChecks": false },
+  "include": ["*.cjs"]
+}

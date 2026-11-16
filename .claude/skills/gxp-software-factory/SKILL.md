@@ -117,6 +117,14 @@ Three references serve every station:
 | `manual-check.cjs` | does the agent manual describe the code that exists |
 | `skill-lint.cjs` | does this skill point only at files that ship with it, and are its kits complete |
 | `selftest.cjs`, `selftest.sh` | do all of the above work here: clean cases pass, planted faults are caught |
+| `typecheck.sh` | optional, for whoever edits the tools: strict TypeScript check of the JavaScript (JSDoc types, data shapes in `scripts/lib/types.d.ts`); installs a pinned TypeScript into a cache folder |
+
+How the tools are built, so that changing one stays safe: every tool is a module that exports `main(argv, io)` and returns its
+exit code (`scripts/lib/runtime.cjs`); none touches `process.exit` or the console directly. The conductor and the drill call the
+tools as functions in one process, which is why the drill runs in about 3 seconds instead of 8. Pure logic (glob matching and
+overlap, CSV, arguments, the runner) lives in `scripts/lib/` with unit tests in `scripts/tests/` (`node:test`), including
+randomised tests checked against brute force. After editing a tool: `node scripts/selftest.cjs`, and `bash scripts/typecheck.sh`
+when Node can reach the npm registry.
 
 Templates and kits: `assets/briefs/` (track and gate briefs, report schema, project facts), `assets/workflows/` (discovery and
 release scripts for a Workflow tool), `assets/examples/roadmap.example.json`, `assets/kits/` (release integrity, built-in

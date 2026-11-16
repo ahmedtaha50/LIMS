@@ -18,7 +18,9 @@ let n = 0;
 const tmp = () => { const d = path.join(tmpRoot, 't' + (++n)); fs.mkdirSync(d, { recursive: true }); return d; };
 const w = (dir, rel, text) => { const f = path.join(dir, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, typeof text === 'string' ? text : JSON.stringify(text, null, 2) + '\n'); return f; };
 const rm = (dir, rel) => fs.rmSync(path.join(dir, rel), { force: true });
-const run = (tool, args = [], input) => { const r = spawnSync(process.execPath, [path.join(S, tool), ...args], { encoding: 'utf8', input, maxBuffer: 64 << 20 }); return { code: r.status, out: (r.stdout || '') + (r.stderr || '') }; };
+const { invoke, sibling } = require('./lib/runtime.cjs');
+/** Each tool runs as a function in this process (lib/runtime.cjs): the same code path as the command line, without a Node start per check. */
+const run = (tool, args = [], input) => { const main = sibling(tool); if (!main) throw new Error(`${tool} does not export main()`); return invoke(main, args, { input }); };
 const git = (dir, ...a) => execFileSync('git', ['-c', 'user.name=drill', '-c', 'user.email=drill@example.invalid', '-c', 'commit.gpgsign=false', '-c', 'init.defaultBranch=main', '-c', 'core.hooksPath=/dev/null', '-c', 'advice.detachedHead=false', ...a], { cwd: dir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const commit = (dir, msg, ...extra) => { git(dir, 'add', '-A'); git(dir, 'commit', '-q', ...extra, '-m', msg); return git(dir, 'rev-parse', 'HEAD'); };
 
@@ -322,6 +324,15 @@ sec('skill-lint');
   fault('a tool whose require does not ship', run('skill-lint.cjs', [d]), 1, /REQUIRE/);
   w(d, 'scripts/tool.cjs', 'module.exports = 1;\n'); w(d, 'SKILL.md', '---\nname: mini-skill\ndescription: a drill\n---\n# Mini\nRun `scripts/tool.cjs`, then read `references/gone.md`.\n');
   fault('a manual that points at a file that is not there', run('skill-lint.cjs', [d]), 1, /PATH/);
+}
+
+// ---------- 14. the unit tests of the shared libraries (node:test; randomised cases print the seed that reproduces them)
+sec('unit tests');
+{
+  const dir = path.join(S, 'tests'), files = fs.readdirSync(dir).filter(f => f.endsWith('.test.cjs')).map(f => path.join(dir, f));
+  const r = spawnSync(process.execPath, ['--test', ...files], { encoding: 'utf8', maxBuffer: 64 << 20 });
+  const count = (k) => Number((new RegExp('^# ' + k + ' (\\d+)', 'm').exec(r.stdout || '') || [])[1] || 0);
+  record('clean', `${count('pass')} unit test(s) in ${files.length} file(s), ${count('fail')} failed`, r.status === 0 && count('pass') > 0 && count('fail') === 0, (r.stdout || '') + (r.stderr || ''));
 }
 
 // ---------- summary
