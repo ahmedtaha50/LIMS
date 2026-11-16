@@ -45,9 +45,34 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Interface tests on the built application (tablet 820x1180 and desktop 1440x900)
         run: npx playwright test
+      - name: Capacity test (300 users, two instances, one stopped halfway) - informative until seen green
+        continue-on-error: true
+        timeout-minutes: 8
+        run: npm run test:perf
       - name: The built server starts, migrates and answers
         run: |
           psql "postgres://ebr:ebr@127.0.0.1:5432/postgres" -c "create database ebr_ci"
           DATABASE_URL=postgres://ebr:ebr@127.0.0.1:5432/ebr_ci node dist/server/main.js > server.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://127.0.0.1:4100/api/health && break; sleep 1; done
           curl -sf http://127.0.0.1:4100/api/health | grep '"status":"ok"' || { cat server.log; exit 1; }
+
+  compose:
+    # E19#1: a clean server: docker compose up builds the image, starts PostgreSQL, migrates, creates the first administrator
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ebr
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker compose up on a clean runner
+        run: |
+          printf 'EBR_DB_PASSWORD=ci-database-password\nEBR_BOOTSTRAP_ADMIN_USER=siteadmin\nEBR_BOOTSTRAP_ADMIN_PASSWORD=ci first password 2026\nEBR_COOKIE_SECURE=0\nEBR_PORT=4100\n' > deploy/compose/.env
+          docker compose -f deploy/compose/docker-compose.yml --env-file deploy/compose/.env up -d --build
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:4100/api/health && break; sleep 2; done
+          curl -sf http://127.0.0.1:4100/api/health | grep '"status":"ok"'
+          curl -sf -H 'content-type: application/json' -d '{"username":"siteadmin","password":"ci first password 2026"}' http://127.0.0.1:4100/api/auth/login | tee login.json
+          grep '"mustChangePassword":true' login.json
+      - name: Logs when it failed
+        if: failure()
+        run: docker compose -f deploy/compose/docker-compose.yml --env-file deploy/compose/.env logs --no-color

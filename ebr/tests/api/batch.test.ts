@@ -130,10 +130,12 @@ describe('executing a batch (E10#2, E10#3, E11)', () => {
     expect(actions).toEqual(['batch.created', 'batch.step_recorded', 'batch.step_verified', 'batch.step_recorded']);
     expect(await verifyChain(db.pool)).toMatchObject({ ok: true });
   });
-  it('a step type this version cannot record yet is refused with the reason, not skipped', async () => {
-    // a type whose handler comes in a later release (sample: r3-lims-link); material and equipment have theirs since R2 wave 2
+  it('a step that cannot be recorded in this installation is refused with the reason, never skipped', async () => {
+    // every step type has a handler since R3; a sample step needs the LIMS link, which this test does not configure
     const m = await recipe('SAMPLE-1', 'effective', [{ key: 'ipc', label: 'Moisture sample', type: 'sample', test: 'LOD', quantity: 10, unit: 'g' }]);
     const bm = (await call('sup-b', 'POST', '/api/batches', { mbrMasterId: m, batchNumber: 'B-SAMPLE-1' })).body;
-    expect((await rec('op-b1', bm, 1, {})).body.code).toBe('step_type_not_available');
+    const r = await rec('op-b1', bm, 1, {});
+    expect(r.body.code).toBe('lims_not_configured');
+    expect((await call('sup-b', 'GET', `/api/batches/${bm.id}`)).body.steps[0].state).toBe('pending');
   });
 });

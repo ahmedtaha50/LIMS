@@ -105,6 +105,87 @@
       "status": "open",
       "opened": "2026-11-16",
       "key": "54351b3081e2d745"
+    },
+    {
+      "id": "OI-0012",
+      "kind": "not-done",
+      "source": "report:r3-deploy",
+      "text": "docker compose up not run here (no daemon): CI job",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "44730c24c96e1141"
+    },
+    {
+      "id": "OI-0013",
+      "kind": "not-done",
+      "source": "report:r3-deploy",
+      "text": "Windows service script not run on a Windows server",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "6d17344a1be515b1"
+    },
+    {
+      "id": "OI-0014",
+      "kind": "acceptance",
+      "source": "report:r3-deploy",
+      "text": "E19#1 partly: `docker compose up` on a clean server starts the application and PostgreSQL with migrations applied and a first administrator created",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "a4281c7769f0898e"
+    },
+    {
+      "id": "OI-0015",
+      "kind": "acceptance",
+      "source": "report:r3-deploy",
+      "text": "E19#2 partly: The Windows service installer runs the same build on a Windows Server without Docker",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "533230a2d8adac61"
+    },
+    {
+      "id": "OI-0016",
+      "kind": "decision",
+      "source": "report:r3-directory",
+      "text": "Directory settings of the plant: server, service account, group names for each role",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "846cd68be09c3d40"
+    },
+    {
+      "id": "OI-0017",
+      "kind": "not-done",
+      "source": "report:r3-lims-link",
+      "text": "The LIMS does not yet offer /api/integration/samples nor integration tokens: E18 is tested against a stand-in only",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "7623677a40b09a9b"
+    },
+    {
+      "id": "OI-0018",
+      "kind": "decision",
+      "source": "report:r3-lims-link",
+      "text": "Build the integration endpoints in the LIMS (and who issues the integration token)?",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "839ec1189de8efa5"
+    },
+    {
+      "id": "OI-0019",
+      "kind": "acceptance",
+      "source": "report:r3-lims-link",
+      "text": "E18#1 partly: A sample step of a batch creates a sample request in the LIMS through its API, and the LIMS result is shown on the batch when it is approved there",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "5659120c7d99a31f"
+    },
+    {
+      "id": "OI-0020",
+      "kind": "not-done",
+      "source": "report:r3-scale",
+      "text": "The capacity numbers are from this 4-core shared machine; the plant's server must repeat the test at OQ",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "ac8fb76d10f5fa28"
     }
   ]
 }

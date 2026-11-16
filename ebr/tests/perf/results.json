@@ -1,0 +1,44 @@
+{
+  "machine": "4 cores, 16 GiB, shared by both instances, PostgreSQL, the proxy and the simulated users",
+  "users": 300,
+  "rampSeconds": 60,
+  "thinkMs": 15000,
+  "stepsPerUser": 4,
+  "elapsedSeconds": 127.8,
+  "failures": [],
+  "instanceStoppedAfterSeconds": 30,
+  "byOperation": {
+    "sign_in": {
+      "n": 300,
+      "failed": 0,
+      "p50": 113.7,
+      "p95": 148.5,
+      "max": 222.9
+    },
+    "batch_list": {
+      "n": 300,
+      "failed": 0,
+      "p50": 4.7,
+      "p95": 8.7,
+      "max": 18.6
+    },
+    "batch_open": {
+      "n": 300,
+      "failed": 0,
+      "p50": 5.1,
+      "p95": 8.2,
+      "max": 14.5
+    },
+    "step_record": {
+      "n": 1200,
+      "failed": 0,
+      "p50": 116.4,
+      "p95": 161.7,
+      "max": 479.1
+    }
+  },
+  "recordedAnswered200": 1200,
+  "recordedInDatabase": 1200,
+  "expectedSteps": 1200,
+  "verdict": "PASS"
+}

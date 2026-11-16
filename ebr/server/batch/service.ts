@@ -50,13 +50,14 @@ export async function detail(c: Client | Pool, id: string) {
     exceptions: exceptions.map(e => ({ id: e.id, stepId: e.step_id, kind: e.kind, message: e.message, comment: e.comment, status: e.status, deviationNumber: e.deviation_number, raisedBy: e.raised_by, raisedAt: e.raised_at.toISOString(), closedBy: e.closed_by, closedAt: iso(e.closed_at), closeNote: e.close_note, version: e.version })),
   };
 }
-export async function list(pool: Pool) {
+/** The batch list: the latest 200, or the one batch with this number (r3-scale: with many batches, the list alone cannot find one). */
+export async function list(pool: Pool, filter: { number?: string | undefined } = {}) {
   const r = await pool.query<{ id: string; batch_number: string; product_name: string; status: string; created_at: Date; done: number; total: number; open_exceptions: number }>(
     `SELECT b.id, b.batch_number, b.product_name, b.status, b.created_at,
             (SELECT count(*)::int FROM batch_steps s WHERE s.batch_id = b.id AND s.state = 'done') AS done,
             (SELECT count(*)::int FROM batch_steps s WHERE s.batch_id = b.id) AS total,
             (SELECT count(*)::int FROM batch_exceptions e WHERE e.batch_id = b.id AND e.status = 'open') AS open_exceptions
-       FROM batches b ORDER BY b.created_at DESC LIMIT 200`);
+       FROM batches b WHERE ($1::text IS NULL OR lower(b.batch_number) = lower($1)) ORDER BY b.created_at DESC LIMIT 200`, [filter.number ?? null]);
   return r.rows.map(b => ({ id: b.id, batchNumber: b.batch_number, productName: b.product_name, status: b.status, createdAt: b.created_at.toISOString(), stepsDone: b.done, stepsTotal: b.total, openExceptions: b.open_exceptions }));
 }
 

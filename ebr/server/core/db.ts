@@ -9,7 +9,14 @@ export type Client = pg.PoolClient;
  */
 export function createPool(connectionString: string, max = 20, onError: (e: Error) => void = () => undefined): Pool {
   const pool = new pg.Pool({ connectionString, max, application_name: 'bpharma-ebr' });
-  pool.on('error', onError);
+  // the same loss can reach both listeners (pool and client): it is reported once
+  const seen = new WeakSet<Error>();
+  const report = (e: Error) => { if (!seen.has(e)) { seen.add(e); onError(e); } };
+  pool.on('error', report);
+  // A connection that the database ends WHILE it is checked out (restart, failover) emits 'error' on the client, not on
+  // the pool. Without a listener that crashes the whole process; with it, the query in progress fails and the request
+  // answers 500, which the client sees as "not saved". Found by the capacity test (r3-scale).
+  pool.on('connect', (client) => { client.on('error', report); });
   return pool;
 }
 

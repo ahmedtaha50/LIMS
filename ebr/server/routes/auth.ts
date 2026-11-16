@@ -6,12 +6,13 @@ import { route } from '../core/route.js';
 import { strict } from '../core/validate.js';
 import { hashPassword, passwordProblem, verifyPassword } from '../identity/password.js';
 import { isPrivileged } from '../identity/roles.js';
+import { directoryConfig, directorySignIn } from '../directory/index.js';
 import { clearCookie, openSession, sessionOf, setCookie, type SessionActor } from '../identity/sessions.js';
 import { newSecret, otpauthUrl, verifyTotp } from '../identity/totp.js';
 
 const MAX_FAILURES = 5, WINDOW_MINUTES = 15, LOCK_MINUTES = 30;
 const wrong = () => new HttpError(401, 'bad_credentials', 'The user name or the password is not correct.');
-type U = { id: string; username: string; display_name: string; password_hash: string; roles: string[]; status: string; totp_secret: string | null; totp_enabled: boolean; locked_until: Date | null; must_change_password: boolean };
+type U = { id: string; username: string; display_name: string; password_hash: string; roles: string[]; status: string; totp_secret: string | null; totp_enabled: boolean; locked_until: Date | null; must_change_password: boolean; auth_source: string; break_glass: boolean };
 const me = (a: SessionActor) => ({ userId: a.userId, username: a.username, displayName: a.displayName, permissions: [...a.permissions].sort(), mustChangePassword: a.restricted === 'password', mustSetUpSecondFactor: a.restricted === 'mfa' });
 
 export const routes = [
@@ -20,7 +21,7 @@ export const routes = [
     input: strict({ username: z.string().min(1).max(100), password: z.string().min(1).max(200), totp: z.string().max(10).optional() }),
     handler: async ({ pool, input, req, res }) => {
       const rid = String(res.locals.requestId);
-      const u = (await pool.query<U>('SELECT * FROM users WHERE lower(username) = lower($1)', [input.username])).rows[0];
+      let u = (await pool.query<U>('SELECT * FROM users WHERE lower(username) = lower($1)', [input.username])).rows[0];
       const fail = async (why: string, user: U | undefined) => withTx(pool, async (c) => {
         let locked = false;
         if (user) {
@@ -34,20 +35,32 @@ export const routes = [
         await writeAudit(c, { actorId: user?.id ?? null, actorName: user?.username ?? input.username, action: 'auth.failed', entity: 'user', entityId: user?.id ?? `unknown:${input.username.toLowerCase()}`, newValue: { why }, requestId: rid });
         if (locked) await writeAudit(c, { actorId: null, actorName: 'system', action: 'auth.locked', entity: 'user', entityId: user!.id, newValue: { minutes: LOCK_MINUTES, after: `${MAX_FAILURES} failed sign-ins within ${WINDOW_MINUTES} minutes` }, requestId: rid });
       });
-      if (!u || u.status !== 'active') { await fail(!u ? 'unknown user' : 'account disabled', u); throw wrong(); }
-      if (u.locked_until && u.locked_until > new Date()) throw new HttpError(423, 'locked', `The account is locked until ${u.locked_until.toISOString().slice(11, 16)} UTC, or until an administrator unlocks it.`);
-      if (!(await verifyPassword(input.password, u.password_hash))) { await fail('wrong password', u); throw wrong(); }
+      // r3-directory (E17): with a directory configured, every account that is not local (or break-glass) signs in there
+      const dir = directoryConfig();
+      if (dir && (!u || u.auth_source === 'directory')) {
+        if (u?.locked_until && u.locked_until > new Date()) throw new HttpError(423, 'locked', `The account is locked until ${u.locked_until.toISOString().slice(11, 16)} UTC, or until an administrator unlocks it.`);
+        const id = await directorySignIn(pool, dir, input.username, input.password, rid);
+        if (!id) { await fail('wrong directory user name or password', u); throw wrong(); }
+        u = (await pool.query<U>('SELECT * FROM users WHERE id = $1', [id])).rows[0];
+        if (!u || u.status !== 'active') { await fail('account disabled', u); throw wrong(); }
+      } else {
+        if (!u || u.status !== 'active') { await fail(!u ? 'unknown user' : 'account disabled', u); throw wrong(); }
+        if (u.locked_until && u.locked_until > new Date()) throw new HttpError(423, 'locked', `The account is locked until ${u.locked_until.toISOString().slice(11, 16)} UTC, or until an administrator unlocks it.`);
+        if (!(await verifyPassword(input.password, u.password_hash))) { await fail('wrong password', u); throw wrong(); }
+      }
+      if (!u) throw wrong();
+      const user: U = u;
       let mfa = false;
-      if (isPrivileged(u.roles) && u.totp_enabled) {
+      if (isPrivileged(user.roles) && user.totp_enabled) {
         if (!input.totp) throw new HttpError(401, 'totp_required', 'Enter the code of your authenticator app.');
-        if (!verifyTotp(u.totp_secret!, input.totp)) { await fail('wrong authenticator code', u); throw new HttpError(401, 'totp_invalid', 'The authenticator code is not correct.'); }
+        if (!verifyTotp(user.totp_secret!, input.totp)) { await fail('wrong authenticator code', user); throw new HttpError(401, 'totp_invalid', 'The authenticator code is not correct.'); }
         mfa = true;
       }
       const s = await withTx(pool, async (c) => {
-        await c.query('DELETE FROM login_failures WHERE user_id = $1', [u.id]);
-        if (u.locked_until) await c.query('UPDATE users SET locked_until = NULL WHERE id = $1', [u.id]);
-        const opened = await openSession(c, u.id, mfa, req.headers['user-agent']);
-        await writeAudit(c, { actorId: u.id, actorName: u.username, action: 'auth.signed_in', entity: 'user', entityId: u.id, newValue: { sessionId: opened.id, secondFactor: mfa }, requestId: rid });
+        await c.query('DELETE FROM login_failures WHERE user_id = $1', [user.id]);
+        if (user.locked_until) await c.query('UPDATE users SET locked_until = NULL WHERE id = $1', [user.id]);
+        const opened = await openSession(c, user.id, mfa, req.headers['user-agent']);
+        await writeAudit(c, { actorId: user.id, actorName: user.username, action: 'auth.signed_in', entity: 'user', entityId: user.id, newValue: { sessionId: opened.id, secondFactor: mfa }, requestId: rid });
         return opened;
       });
       setCookie(res, s.token);

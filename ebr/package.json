@@ -17,10 +17,12 @@
     "test:routes:update": "UPDATE_ROUTE_TABLE=1 vitest run tests/api/core-routes.test.ts tests/api/permission-matrix.test.ts",
     "test:e2e": "playwright test",
     "create-admin": "tsx server/identity/cli.ts",
-    "create-admin:built": "node dist/server/identity/cli.js"
+    "create-admin:built": "node dist/server/identity/cli.js",
+    "test:perf": "tsx tests/perf/load.ts"
   },
   "dependencies": {
     "express": "^5.1.0",
+    "ldapts": "^9.2.0",
     "pg": "^8.13.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -30,6 +32,7 @@
     "@playwright/test": "^1.63.0",
     "@tailwindcss/vite": "^4.3.5",
     "@types/express": "^5.0.0",
+    "@types/ldapjs": "^3.0.6",
     "@types/node": "^22.10.2",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.3.0",
@@ -37,6 +40,7 @@
     "@vitejs/plugin-react": "^5.2.0",
     "eslint": "^9.39.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
+    "ldapjs": "^3.0.7",
     "tailwindcss": "^4.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",

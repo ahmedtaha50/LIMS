@@ -13,7 +13,11 @@ const tx = <T>(pool: Pool, actor: Actor | null, res: Response, fn: (x: svc.Ctx) 
 const p = (params: Record<string, string>, k: string) => params[k] as string;
 
 export const routes = [
-  route({ method: 'GET', path: '/api/batches', permission: 'batch.read', summary: 'Batches with their progress and open exceptions', handler: ({ pool }) => svc.list(pool) }),
+  route({
+    method: 'GET', path: '/api/batches', permission: 'batch.read', summary: 'Batches with their progress and open exceptions (the latest 200, or one by its number)',
+    input: strict({ number: z.string().max(40).optional() }),
+    handler: ({ pool, input }) => svc.list(pool, input),
+  }),
   route({ method: 'GET', path: '/api/batches/:id', permission: 'batch.read', summary: 'A batch: its steps in order, the next step, its exceptions', handler: ({ pool, params }) => svc.detail(pool, p(params, 'id')) }),
   route({
     method: 'POST', path: '/api/batches', permission: 'batch.create', summary: 'Create a batch from the effective version of a recipe', status: 201,

@@ -30,7 +30,7 @@ An electronic batch record (EBR) and electronic logbook system for a pharmaceuti
 
 ## 3. Stack
 
-TypeScript everywhere. Client: React 19, Vite, Tailwind CSS. Server: Express, Zod for every input, Drizzle ORM on PostgreSQL 16.
+TypeScript everywhere. Client: React 19, Vite, Tailwind CSS. Server: Express, Zod for every input, SQL through `pg` (node-postgres) on PostgreSQL 16: no ORM, every query parameterised.
 Tests: Vitest (unit and API, against a real PostgreSQL, never a mock of it) and Playwright (two viewports: tablet 820x1180 and
 desktop 1440x900). Authentication: local accounts with scrypt password hashes, TOTP second factor, optional LDAP/AD.
 Not used, do not add: any cloud database or identity service (Firebase included), any per-seat licensed component,

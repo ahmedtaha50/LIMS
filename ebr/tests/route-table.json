@@ -51,7 +51,7 @@
     "method": "GET",
     "path": "/api/batches",
     "permission": "batch.read",
-    "summary": "Batches with their progress and open exceptions"
+    "summary": "Batches with their progress and open exceptions (the latest 200, or one by its number)"
   },
   {
     "method": "POST",
@@ -88,6 +88,12 @@
     "path": "/api/batches/:id/exceptions/:exceptionId/deviation",
     "permission": "batch.exception",
     "summary": "Hand an exception to a deviation (its number stays on the batch)"
+  },
+  {
+    "method": "GET",
+    "path": "/api/batches/:id/lims",
+    "permission": "batch.read",
+    "summary": "The LIMS samples of a batch; approved results are fetched from the LIMS and kept on the batch"
   },
   {
     "method": "POST",

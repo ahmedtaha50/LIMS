@@ -1,0 +1,35 @@
+# B-Pharma EBR on one factory server: the application and PostgreSQL 16.
+#   cp deploy/compose/.env.example deploy/compose/.env    (and set the passwords there)
+#   docker compose -f deploy/compose/docker-compose.yml --env-file deploy/compose/.env up -d --build
+# Migrations run when the application starts. The first administrator is created from EBR_BOOTSTRAP_ADMIN_* only when the
+# database has no account yet; that person changes the password at the first sign-in and sets up the authenticator.
+# For more instances behind nginx (deploy/proxy/nginx.conf): `--scale app=2` with the ports removed below.
+name: bpharma-ebr
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ebr
+      POSTGRES_PASSWORD: ${EBR_DB_PASSWORD:?set EBR_DB_PASSWORD in .env}
+      POSTGRES_DB: ebr
+    volumes:
+      - ebr-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ebr -d ebr"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  app:
+    build: { context: ../.., dockerfile: Dockerfile }
+    restart: unless-stopped
+    depends_on: { db: { condition: service_healthy } }
+    environment:
+      DATABASE_URL: postgres://ebr:${EBR_DB_PASSWORD}@db:5432/ebr
+      EBR_BOOTSTRAP_ADMIN_USER: ${EBR_BOOTSTRAP_ADMIN_USER:-admin}
+      EBR_BOOTSTRAP_ADMIN_PASSWORD: ${EBR_BOOTSTRAP_ADMIN_PASSWORD:?set EBR_BOOTSTRAP_ADMIN_PASSWORD in .env}
+      EBR_COOKIE_SECURE: ${EBR_COOKIE_SECURE:-1}
+    ports:
+      - "${EBR_PORT:-4100}:4100"
+volumes:
+  ebr-db:
