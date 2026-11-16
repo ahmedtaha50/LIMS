@@ -185,7 +185,8 @@
             "server/routes/materials.ts",
             "migrations/011*",
             "client/screens/materials/**",
-            "tests/api/materials*.test.ts"
+            "tests/api/materials*.test.ts",
+            "client/step-inputs/material.tsx"
           ],
           "dependsOn": [
             "r2-execution"
@@ -201,12 +202,13 @@
           "ownsFiles": [
             "server/interlock/**",
             "server/steps/equipment/**",
-            "tests/api/interlock*.test.ts"
+            "tests/api/interlock*.test.ts",
+            "client/step-inputs/equipment.tsx"
           ],
           "dependsOn": [
             "r2-execution"
           ],
-          "summary": "Equipment status checked at the step; use entries written into the logbook automatically."
+          "summary": "Equipment status checked at the step; use entries written into the logbook automatically. Carries the engine extension both step groups need (effects after the signature, hooks at batch completion) as a gate patch to r2-execution's files."
         },
         {
           "track": "r2-review-release",
