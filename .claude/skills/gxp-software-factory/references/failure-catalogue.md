@@ -24,6 +24,7 @@ only protection is that you have read this row.
 
 | Symptom | It was | Move | Guard |
 |---|---|---|---|
+| A commit went through although the pre-commit guard refused it | the guard ran as `guard | tail -1 && git commit`: the pipe kept the exit code of `tail`, not of the guard (my mistake, EBR wave 4) | run the guard on its own, or `set -o pipefail`; never pipe a gate's output into the condition of the next step | `factory.cjs exit gate` (runs the guard again on HEAD and reported it) |
 | A forced `if (true)` nearly went into a commit | a temporary edit to exercise the Windows branch on Linux | mark every temporary edit `FACTORY-TEMP`; restore and check before committing | `precommit-guard.cjs` |
 | New folders never reached the repository | `.gitignore` rules `release/` and `build/` also hid `scripts/release/` and `validation/build/` | `git status --ignored`; anchor the rules (`/release/`) | `precommit-guard.cjs` (SWALLOWED) |
 | An accessibility check failed on one colour | a real contrast defect in one component | fixed the component; the baseline did not grow | `ratchet.cjs`, `references/judgement.md` section 7 |

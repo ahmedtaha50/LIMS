@@ -19,7 +19,7 @@ was corrected and committed separately (bf28486).
 | `npm test` | 79 passed, 0 failed (10 files) |
 | `npx playwright test` | 26 passed (13 tests x tablet 820x1180 and desktop 1440x900), built server |
 | built server, empty database | migrations 0000 to 0040 applied (7); `/api/health` ok |
-| planted fault | the two-person rule switched off at MBR approval: `tests/api/mbr.test.ts` failed 1 test, and `precommit-guard` refused the FACTORY-TEMP line; restored |
+| planted fault | the two-person rule switched off at MBR approval: `tests/api/mbr.test.ts` failed 1 test, and `precommit-guard` refused the `FACTORY-TEMP` line; restored |
 | planted fault (track) | flags switched off in the logbook limit check: 2 tests failed; restored |
 
 ## Counters
