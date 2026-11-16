@@ -47,10 +47,11 @@
             "tests/api/identity*.test.ts"
           ],
           "dependsOn": [
-            "r1-core"
+            "r1-core",
+            "r1-audit-esign"
           ],
           "migrations": "0010-0019",
-          "summary": "Local accounts with scrypt, database sessions, roles and permissions, TOTP, lockout."
+          "summary": "Local accounts with scrypt, database sessions, roles and permissions, TOTP, lockout. Writes its audit entries through server/audit (so it follows r1-audit-esign); provides the password check that e-signatures use (injected, so r1-audit-esign does not depend on it)."
         },
         {
           "track": "r1-audit-esign",
@@ -81,12 +82,11 @@
           "ownsFiles": [
             "index.html",
             "public/**",
-            "client/main.tsx",
-            "client/shell/**",
-            "client/ui/**",
             "client/screens/index.ts",
             "tests/e2e/shell*.spec.ts",
-            "playwright.config.ts"
+            "playwright.config.ts",
+            "eslint.config.js",
+            "client/**"
           ],
           "dependsOn": [
             "r1-core"
