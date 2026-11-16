@@ -360,6 +360,12 @@
     "summary": "Change a site setting (within bounds, signed, with a reason)"
   },
   {
+    "method": "POST",
+    "path": "/api/settings/directory/test",
+    "permission": "settings.manage",
+    "summary": "Test the connection to the directory with the current settings (signs nobody in)"
+  },
+  {
     "method": "GET",
     "path": "/api/signatures",
     "permission": "signatures.read",

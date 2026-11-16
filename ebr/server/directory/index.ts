@@ -1,32 +1,51 @@
 import { Client, InvalidCredentialsError } from 'ldapts';
 import { writeAudit } from '../audit/index.js';
-import type { Pool } from '../core/db.js';
+import type { Client as DbClient, Pool } from '../core/db.js';
 import { withTx } from '../core/db.js';
 import { HttpError } from '../core/errors.js';
 import { ROLE_NAMES } from '../identity/roles.js';
+import { settingsOf } from '../settings/index.js';
 
 /**
  * Sign-on with the company directory (LDAP / Active Directory, E17). The password is checked by the directory (a bind as
  * the user); the roles come from the user's groups at every sign-in, so removing someone from a group takes effect at
- * their next sign-in. Configuration (all from the environment; no directory configured = local accounts only):
- *   EBR_LDAP_URL            ldaps://dc1.plant.local:636
- *   EBR_LDAP_BIND_DN        the service account that searches, and EBR_LDAP_BIND_PASSWORD
- *   EBR_LDAP_BASE_DN        where users are searched
- *   EBR_LDAP_USER_FILTER    default (sAMAccountName={username}); {username} is escaped
- *   EBR_LDAP_GROUP_ROLES    JSON: {"cn=ebr-qa,ou=groups,dc=plant,dc=local": "qa", ...}
+ * their next sign-in. Configuration (E31): site settings an administrator changes in the application, signed and audited
+ * (server/settings/index.ts: directory.url, directory.baseDn, directory.userFilter, directory.bindDn, directory.groupRoles);
+ * each takes its default from the old environment variable (EBR_LDAP_URL, _BASE_DN, _USER_FILTER, _BIND_DN, _GROUP_ROLES).
+ * The service account's password is a secret and stays in the server environment only: EBR_LDAP_BIND_PASSWORD.
+ * An empty address means no directory: local accounts only. Read at each sign-in, so a change holds for the next one.
  */
 export type DirectoryConfig = { url: string; bindDn: string; bindPassword: string; baseDn: string; userFilter: string; groupRoles: Record<string, string> };
 export class DirectoryUnavailable extends Error {}
 
-export function directoryConfig(env: NodeJS.ProcessEnv = process.env): DirectoryConfig | null {
-  if (!env.EBR_LDAP_URL) return null;
-  const groupRoles = JSON.parse(env.EBR_LDAP_GROUP_ROLES ?? '{}') as Record<string, string>;
-  for (const [g, r] of Object.entries(groupRoles)) if (!(ROLE_NAMES as string[]).includes(r)) throw new Error(`EBR_LDAP_GROUP_ROLES: ${g} maps to an unknown role ${r}`);
+export async function directoryConfig(db: Pool | DbClient, env: NodeJS.ProcessEnv = process.env): Promise<DirectoryConfig | null> {
+  const s = await settingsOf(db, ['directory.url', 'directory.baseDn', 'directory.userFilter', 'directory.bindDn', 'directory.groupRoles'] as const);
+  if (!s['directory.url']) return null;
+  const groupRoles = s['directory.groupRoles'] as Record<string, string>;
+  for (const [g, r] of Object.entries(groupRoles)) if (!(ROLE_NAMES as string[]).includes(r)) throw new Error(`directory.groupRoles: ${g} maps to an unknown role ${r}`);
   return {
-    url: env.EBR_LDAP_URL, bindDn: env.EBR_LDAP_BIND_DN ?? '', bindPassword: env.EBR_LDAP_BIND_PASSWORD ?? '', baseDn: env.EBR_LDAP_BASE_DN ?? '',
-    userFilter: env.EBR_LDAP_USER_FILTER ?? '(sAMAccountName={username})',
+    url: String(s['directory.url']), bindDn: String(s['directory.bindDn']), bindPassword: env.EBR_LDAP_BIND_PASSWORD ?? '', baseDn: String(s['directory.baseDn']),
+    userFilter: String(s['directory.userFilter']),
     groupRoles: Object.fromEntries(Object.entries(groupRoles).map(([g, r]) => [normalizeDn(g), r])),
   };
+}
+
+/**
+ * E31#2: does the directory answer, and can the service account search the base? Signs nobody in. Each part is reported
+ * on its own, so the administrator sees which setting is wrong.
+ */
+export async function testConnection(cfg: DirectoryConfig): Promise<{ reachable: boolean; serviceAccount: boolean; baseFound: boolean; message: string }> {
+  const c = client(cfg);
+  try {
+    try { await c.bind(cfg.bindDn, cfg.bindPassword); }
+    catch (e) {
+      if (e instanceof InvalidCredentialsError) return { reachable: true, serviceAccount: false, baseFound: false, message: 'The directory answers, but refused the service account: check its name (directory.bindDn) and EBR_LDAP_BIND_PASSWORD on the server.' };
+      return { reachable: false, serviceAccount: false, baseFound: false, message: `The directory does not answer at ${cfg.url}: ${e instanceof Error ? e.message : String(e)}` };
+    }
+    try { await c.search(cfg.baseDn, { scope: 'base', filter: '(objectClass=*)', attributes: ['dn'], sizeLimit: 1 }); }
+    catch (e) { return { reachable: true, serviceAccount: true, baseFound: false, message: `The service account signs in, but the search base ${cfg.baseDn} was not found: ${e instanceof Error ? e.message : String(e)}` }; }
+    return { reachable: true, serviceAccount: true, baseFound: true, message: 'The directory answers, the service account signs in and the search base exists.' };
+  } finally { await c.unbind().catch(() => undefined); }
 }
 
 /** RFC 4515: a user name is data, never filter syntax. */
@@ -55,7 +74,7 @@ export async function authenticate(cfg: DirectoryConfig, username: string, passw
     try { await u.bind(e.dn, password); } catch (err) { if (err instanceof InvalidCredentialsError) return null; throw err; } finally { await u.unbind().catch(() => undefined); }
     return { dn: e.dn, username, displayName: String(e.displayname ?? e.cn ?? username), roles };
   } catch (err) {
-    if (err instanceof InvalidCredentialsError) throw new DirectoryUnavailable('the directory refused the service account: check EBR_LDAP_BIND_DN');
+    if (err instanceof InvalidCredentialsError) throw new DirectoryUnavailable('the directory refused the service account: check directory.bindDn and EBR_LDAP_BIND_PASSWORD');
     if (unavailable(err)) throw new DirectoryUnavailable(err instanceof Error ? err.message : String(err));
     throw err;
   } finally { await c.unbind().catch(() => undefined); }

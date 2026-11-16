@@ -30,6 +30,6 @@ export const passwordCheck = (pool: Pool): PasswordCheck => async (userId, passw
   const r = await pool.query<{ password_hash: string; username: string; auth_source: string }>("SELECT password_hash, username, auth_source FROM users WHERE id = $1 AND status = 'active'", [userId]);
   const u = r.rows[0];
   if (!u) return false;
-  if (u.auth_source === 'directory') { const cfg = directoryConfig(); return cfg ? directoryPasswordOk(cfg, u.username, password) : false; }   // r3-directory
+  if (u.auth_source === 'directory') { const cfg = await directoryConfig(pool); return cfg ? directoryPasswordOk(cfg, u.username, password) : false; }   // r3-directory
   return verifyPassword(password, u.password_hash);
 };

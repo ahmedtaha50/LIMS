@@ -39,7 +39,7 @@ export const routes = [
         if (locked) await writeAudit(c, { actorId: null, actorName: 'system', action: 'auth.locked', entity: 'user', entityId: user!.id, newValue: { minutes: LOCK_MINUTES, after: `${MAX_FAILURES} failed sign-ins within ${WINDOW_MINUTES} minutes` }, requestId: rid });
       });
       // r3-directory (E17): with a directory configured, every account that is not local (or break-glass) signs in there
-      const dir = directoryConfig();
+      const dir = await directoryConfig(pool);   // E31: the site settings, read at each sign-in
       if (dir && (!u || u.auth_source === 'directory')) {
         if (u?.locked_until && u.locked_until > new Date()) throw new HttpError(423, 'locked', `The account is locked until ${u.locked_until.toISOString().slice(11, 16)} UTC, or until an administrator unlocks it.`);
         const id = await directorySignIn(pool, dir, input.username, input.password, rid);

@@ -61,9 +61,6 @@ const PARTIAL = {
   'URS-E26-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
   'URS-E26-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
   'URS-E26-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
-  'URS-E31-1': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
-  'URS-E31-2': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
-  'URS-E31-3': { type: 'GAP', deviation: 'DEV-2026-11-16-08', note: 'Release R5 is in progress: not built yet.' },
   'URS-E24-1': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows on Windows Server 2025 with PostgreSQL 16: installed, migrated, first administrator signs in (another machine).' },
   'URS-E24-2': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'CI job windows: stop and start keep the data; uninstall removes the service and keeps the database (another machine).' },
 };
@@ -100,7 +97,7 @@ const FRS = [
   ['FRS-E28', 'The installed built-in type versions are marked as waiting for a QA review (migrations/0310_builtin_type_review.sql); writing an entry and using equipment in a batch check it first (server/logbook/review.ts, called by server/logbook/service.ts and server/interlock/index.ts), and a database trigger refuses any other path; QA reviews with a signature, meaning reviewed (server/routes/logbook-review.ts).', all('E28')],
   ['FRS-E29', 'A recipe may carry yieldLimits in its design (server/mbr/design.ts, 50 to 150 percent, lower below upper), approved with its version; server/materials/yield.ts takes the limits of the version the batch was made from, else the site settings yield.minPct and yield.maxPct; the reconciliation (server/materials/service.ts) names the limits and their source in the exception.', all('E29')],
   ['FRS-E30', 'server/lims/client.ts registers with POST /api/v1/samples:batch of the LIMS machine API, the EBR reference as Idempotency-Key (a repeat replays the stored answer), and reads GET /api/v1/samples/{id}; server/routes/lims.ts keeps the result on the batch once the state is Approved; tests/api/lims-link.test.ts checks the contract against the LIMS OpenAPI document (../docs/api/openapi.json, at the top of the repository).', all('E30')],
-  ['FRS-E31', 'Directory sign-in (server/directory/index.ts).', all('E31')],
+  ['FRS-E31', 'The directory address, search base, user filter, service account name and group-to-role map are site settings (server/settings/index.ts), read at each sign-in by server/directory/index.ts; the service account password only from the server environment; POST /api/settings/directory/test (server/routes/directory-settings.ts) binds the service account and searches the base, signing nobody in.', all('E31')],
   ['FRS-E21', 'Logbook types are versioned data with typed fields, approved by a QA signature from someone other than the author; entries are validated on the server against the type version they were written with (server/logbook/definition.ts, server/logbook/service.ts).', all('E21')],
 ];
 
