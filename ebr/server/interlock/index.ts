@@ -1,4 +1,5 @@
 import type { Client, Pool } from '../core/db.js';
+import { assertLogbookTypeReviewed, assertTypeReviewed } from '../logbook/review.js';
 import { HttpError } from '../core/errors.js';
 import type { Definition } from '../logbook/definition.js';
 import { logbookDetail } from '../logbook/service.js';
@@ -19,6 +20,7 @@ export async function lockFor(c: Client, kind: 'equipment' | 'room', code: strin
 
 /** E13#1: only clean (and, through the derived status, calibrated) equipment may start a batch step. */
 export async function assertReady(pool: Pool, lb: Lb) {
+  await assertLogbookTypeReviewed(pool, lb.type_id, `${lb.object_code} cannot be used`);   // E28#2: the real reason first
   const d = await logbookDetail(pool, lb.id);
   if (d.derived.status !== 'clean') {
     const why = d.derived.reasons.length ? ` (${d.derived.reasons.join('; ')})` : '';
@@ -30,6 +32,7 @@ export async function assertReady(pool: Pool, lb: Lb) {
 export async function writeUse(c: Client, lb: Lb, kind: 'use_start' | 'use_end', values: Record<string, string>, by: { userId: string; username: string }, signatureId: string, signedAt: string, comment: string) {
   const v = (await c.query<{ id: string; definition: Definition }>("SELECT id, definition FROM logbook_type_versions WHERE type_id = $1 AND status = 'effective'", [lb.type_id])).rows[0];
   if (!v) throw new HttpError(409, 'no_effective_type', `The logbook type of ${lb.object_code} has no effective version.`);
+  await assertTypeReviewed(c, v.id, `${lb.object_code} cannot be used`);   // E28
   const k = v.definition.entryKinds.find(e => e.key === kind);
   if (!k) throw new HttpError(409, 'no_use_entry', `The logbook of ${lb.object_code} has no "${kind}" entry kind, so its use cannot be recorded.`);
   const keep = Object.fromEntries(Object.entries(values).filter(([key]) => k.fields.some(f => f.key === key)));

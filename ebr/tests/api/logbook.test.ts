@@ -10,6 +10,7 @@ import { deriveStatus } from '../../server/logbook/status.js';
 import { migrate } from '../../server/migrate/runner.js';
 import { loadRoutes } from '../../server/routes/index.js';
 import { MIGRATIONS, ROUTES } from '../helpers/app.js';
+import { builtInTypesReviewed } from '../helpers/builtin.js';
 import { freshDatabase } from '../helpers/db.js';
 
 const PW = 'logbook test password';
@@ -34,7 +35,7 @@ const TEMP_LOG = { entryKinds: [{ key: 'reading', label: 'Reading', fields: [
   { key: 'note', label: 'Note', type: 'text' }] }] };
 
 beforeAll(async () => {
-  db = await freshDatabase('logbook'); await migrate(db.pool, MIGRATIONS);
+  db = await freshDatabase('logbook'); await migrate(db.pool, MIGRATIONS); await builtInTypesReviewed(db.pool);   // E28: the QA review at IQ
   const server = createApp({ pool: db.pool, routes: await loadRoutes(ROUTES), authorize: authorizer(db.pool), log: () => undefined }).listen(0, '127.0.0.1');
   await new Promise<void>(r => server.once('listening', () => r()));
   base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;

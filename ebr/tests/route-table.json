@@ -199,6 +199,12 @@
   },
   {
     "method": "POST",
+    "path": "/api/logbook-types/:typeId/versions/:versionId/qa-review",
+    "permission": "logbook.type.approve",
+    "summary": "QA reviews a built-in logbook type version before it is used (signed, meaning reviewed)"
+  },
+  {
+    "method": "POST",
     "path": "/api/logbook-types/:typeId/versions/:versionId/reject",
     "permission": "logbook.type.approve",
     "summary": "QA sends a version back to draft, with a reason"

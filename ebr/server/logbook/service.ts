@@ -1,4 +1,5 @@
 import { writeAudit } from '../audit/index.js';
+import { assertTypeReviewed } from './review.js';
 import type { Client, Pool } from '../core/db.js';
 import { HttpError, conflict, notFound } from '../core/errors.js';
 import type { Actor } from '../core/route.js';
@@ -11,8 +12,9 @@ const signer = (a: Ctx['actor']) => ({ userId: a.userId, username: a.username, d
 const audit = (x: Ctx, action: string, entity: string, entityId: string, v: { oldValue?: unknown; newValue?: unknown; reason?: string | null } = {}) =>
   writeAudit(x.c, { actorId: x.actor.userId, actorName: x.actor.username, action, entity, entityId, requestId: x.requestId, ...v });
 
-type VersionRow = { id: string; type_id: string; version_no: number; status: string; definition: Definition; author_id: string; author_name: string; approved_by: string | null; approved_at: Date | null; version: number };
-const versionView = (v: VersionRow) => ({ id: v.id, typeId: v.type_id, versionNo: v.version_no, status: v.status, definition: v.definition, authorId: v.author_id, authorName: v.author_name, approvedBy: v.approved_by, approvedAt: v.approved_at?.toISOString() ?? null, rowVersion: v.version });
+type VersionRow = { id: string; type_id: string; version_no: number; status: string; definition: Definition; author_id: string; author_name: string; approved_by: string | null; approved_at: Date | null; version: number; needs_qa_review?: boolean; qa_reviewed_by?: string | null; qa_reviewed_at?: Date | string | null };
+const versionView = (v: VersionRow) => ({ id: v.id, typeId: v.type_id, versionNo: v.version_no, status: v.status, definition: v.definition, authorId: v.author_id, authorName: v.author_name, approvedBy: v.approved_by, approvedAt: v.approved_at?.toISOString() ?? null, rowVersion: v.version,
+  needsQaReview: v.needs_qa_review ?? false, qaReviewedBy: v.qa_reviewed_by ?? null, qaReviewedAt: v.qa_reviewed_at ? new Date(v.qa_reviewed_at).toISOString() : null });   // E28
 
 async function lockVersion(c: Client, typeId: string, vid: string): Promise<VersionRow> {
   const v = (await c.query<VersionRow>('SELECT * FROM logbook_type_versions WHERE id = $1 AND type_id = $2 FOR UPDATE', [vid, typeId])).rows[0];
@@ -137,6 +139,7 @@ export async function writeEntry(x: Ctx, logbookId: string, input: { kind: strin
   if (lb.status !== 'active') throw new HttpError(409, 'retired', 'This logbook is retired: nothing can be written in it.');
   const v = (await x.c.query<VersionRow>("SELECT * FROM logbook_type_versions WHERE type_id = $1 AND status = 'effective'", [lb.type_id])).rows[0];
   if (!v) throw new HttpError(409, 'no_effective_type', 'The type of this logbook has no effective version.');
+  await assertTypeReviewed(x.c, v.id, 'Nothing can be written in this logbook');   // E28
   if (input.correctsEntryId) {
     const orig = (await x.c.query<{ kind: string; corrected: boolean }>('SELECT kind, EXISTS (SELECT 1 FROM logbook_entries c WHERE c.corrects_entry_id = e.id) AS corrected FROM logbook_entries e WHERE e.id = $1 AND e.logbook_id = $2', [input.correctsEntryId, logbookId])).rows[0];
     if (!orig) throw notFound('The entry to correct is not in this logbook.');

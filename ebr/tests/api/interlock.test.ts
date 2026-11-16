@@ -6,6 +6,7 @@ import { hashPassword } from '../../server/identity/password.js';
 import { migrate } from '../../server/migrate/runner.js';
 import { loadRoutes } from '../../server/routes/index.js';
 import { MIGRATIONS, ROUTES } from '../helpers/app.js';
+import { builtInTypesReviewed } from '../helpers/builtin.js';
 import { freshDatabase } from '../helpers/db.js';
 
 const PW = 'interlock test password';
@@ -35,7 +36,7 @@ const status = async (id: string) => (await call('op-i', 'GET', `/api/logbooks/$
 
 let mixer = '', m = '';
 beforeAll(async () => {
-  db = await freshDatabase('interlock'); await migrate(db.pool, MIGRATIONS);
+  db = await freshDatabase('interlock'); await migrate(db.pool, MIGRATIONS); await builtInTypesReviewed(db.pool);   // E28: the QA review at IQ
   const server = createApp({ pool: db.pool, routes: await loadRoutes(ROUTES), authorize: authorizer(db.pool), log: () => undefined }).listen(0, '127.0.0.1');
   await new Promise<void>(r => server.once('listening', () => r()));
   base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;

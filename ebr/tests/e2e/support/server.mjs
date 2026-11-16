@@ -14,6 +14,8 @@ const { hashPassword } = await import('../../../dist/server/identity/password.js
 {
   const c = new pg.Pool({ connectionString: url.toString(), max: 2 });
   await migrate(c, new URL('../../../migrations', import.meta.url).pathname);
+  // E28: the built-in logbook types as reviewed by QA at installation qualification (the review itself is an API test)
+  await c.query("UPDATE logbook_type_versions SET needs_qa_review = false, qa_reviewed_by = 'e2e setup (QA review at IQ)', qa_reviewed_at = now() WHERE needs_qa_review");
   const pw = await hashPassword('e2e password long enough');
   await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password) VALUES ('e2e-operator', 'E2E Operator', $1, '{operator}', false), ('e2e-new-tablet', 'E2E New tablet', $1, '{operator}', true), ('e2e-new-desktop', 'E2E New desktop', $1, '{operator}', true)", [pw]);
   // logbooks (r1-logbook): a supervisor, a QA account with a known authenticator secret, and one equipment and one room
