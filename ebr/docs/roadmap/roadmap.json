@@ -80,14 +80,21 @@
             "E05"
           ],
           "ownsFiles": [
-            "index.html",
-            "public/**",
-            "client/screens/index.ts",
+            "client/index.html",
+            "client/main.tsx",
+            "client/index.css",
+            "client/api.ts",
+            "client/tsconfig.json",
+            "client/public/**",
+            "client/shell/**",
+            "client/ui/**",
+            "client/screens/registry.ts",
+            "client/screens/home/**",
             "tests/e2e/shell*.spec.ts",
+            "tests/e2e/support/**",
+            "tests/e2e/tsconfig.json",
             "playwright.config.ts",
-            "eslint.config.js",
-            "client/**",
-            "tests/e2e/support/**"
+            "eslint.config.js"
           ],
           "dependsOn": [
             "r1-core"
@@ -105,7 +112,7 @@
             "server/logbook/**",
             "server/routes/logbook.ts",
             "migrations/003*",
-            "client/screens/logbook/**",
+            "client/screens/logbook*/**",
             "tests/api/logbook*.test.ts",
             "tests/e2e/logbook*.spec.ts"
           ],
@@ -127,7 +134,7 @@
             "server/mbr/**",
             "server/routes/mbr.ts",
             "migrations/004*",
-            "client/screens/mbr/**",
+            "client/screens/mbr*/**",
             "tests/api/mbr*.test.ts",
             "tests/e2e/mbr*.spec.ts"
           ],
