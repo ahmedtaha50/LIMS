@@ -339,7 +339,8 @@
           "ownsFiles": [
             "server/pdf/**",
             "server/logbook/pdf.ts",
-            "tests/api/pdf*.test.ts"
+            "tests/api/pdf*.test.ts",
+            "tests/api/fixtures/certified-copy*"
           ],
           "dependsOn": [
             "r3-validation"
@@ -607,7 +608,7 @@
       "gxpRisk": "High",
       "acceptance": [
         "The logbook PDF and the batch certified copy print any text of the record, Arabic (joined letters, right to left) and accented Latin included; no character is replaced or dropped",
-        "The text extracted from the PDF equals the stored text, for an Arabic, an English and a mixed line",
+        "For an Arabic, an English and a mixed line: the text the PDF carries for the line (what a reader copies and searches) equals the stored text, and an independent PDF reader finds every one of its characters",
         "A certified copy made before this change still verifies against its registered hash"
       ]
     },
