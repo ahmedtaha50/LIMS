@@ -11,7 +11,8 @@ $base = "http://127.0.0.1:$Port"
 function Pass($id, $what) { Write-Host "PASS $id $what" }
 function Health { for ($i = 0; $i -lt 60; $i++) { try { return Invoke-RestMethod "$base/api/health" } catch { Start-Sleep -Seconds 2 } }; throw "no health answer at $base" }
 function SignIn($user, $pw) { Invoke-RestMethod -Method Post -Uri "$base/api/auth/login" -ContentType 'application/json' -Body (@{ username = $user; password = $pw } | ConvertTo-Json) }
-function Sql($q) { (& $Psql $DatabaseUrl -Atc $q).Trim() }
+# options before the address: psql on Windows ignores options that follow it
+function Sql($q) { $r = & $Psql -v ON_ERROR_STOP=1 -Atc $q $DatabaseUrl; if ($LASTEXITCODE -ne 0) { throw "psql failed: $q" }; "$r".Trim() }
 
 # 1. install as a service: it starts, migrates and answers
 & (Join-Path $here 'install-service.ps1') -DatabaseUrl $DatabaseUrl -Port $Port

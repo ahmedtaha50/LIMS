@@ -44,5 +44,10 @@ Set-Content -Path (Join-Path $here "$ServiceName.xml") -Value $xml -Encoding UTF
 # the first start migrates the database: wait for the health answer (up to two minutes)
 $health = $null
 for ($i = 0; $i -lt 60 -and -not $health; $i++) { try { $health = Invoke-RestMethod "http://127.0.0.1:$Port/api/health" } catch { Start-Sleep -Seconds 2 } }
-if (-not $health -or $health.status -ne 'ok') { throw "the service was started but /api/health did not answer ok (see the logs next to $svc)" }
+if (-not $health -or $health.status -ne 'ok') {
+  # the reason is in the server's own error log (a database that does not exist, a wrong password...): show its end
+  $err = Join-Path $here "$ServiceName.err.log"
+  $tail = if (Test-Path $err) { (Get-Content $err -Tail 15) -join "`n" } else { '(no error log)' }
+  throw "the service was started but /api/health did not answer ok. End of ${err}:`n$tail"
+}
 Write-Host "service $ServiceName running: $($health.migrations) migrations applied"

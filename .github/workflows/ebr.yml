@@ -98,8 +98,11 @@ jobs:
       - name: PostgreSQL 16 (port 5433, beside the image's own PostgreSQL)
         run: |
           choco install postgresql16 --no-progress -y --params '/Password:ebr-ci-windows /Port:5433'
-          & 'C:\Program Files\PostgreSQL\16\bin\psql.exe' 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/postgres' -Atc 'select version()'
-          & 'C:\Program Files\PostgreSQL\16\bin\psql.exe' 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/postgres' -c 'create database ebr'
+          # options BEFORE the address: psql on Windows ignores options that follow it (seen: "extra command-line argument ignored")
+          $psql = 'C:\Program Files\PostgreSQL\16\bin\psql.exe'
+          & $psql -v ON_ERROR_STOP=1 -Atc 'select version()' 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/postgres'
+          & $psql -v ON_ERROR_STOP=1 -c 'create database ebr' 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/postgres'
+          if ((& $psql -Atc 'select 1' 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/ebr') -ne '1') { throw 'the database ebr was not created' }
       - run: npm ci
       - run: npm run build
       - name: WinSW 2.12.0 (its SHA-256 is checked by install-service.ps1)
