@@ -12,6 +12,8 @@
 //   SKIPPED       .skip( / xit( / xdescribe( / it.todo( / @pytest.mark.skip added (allowed only with --allow-skip, and then named in the gate record)
 //   DEBUGGER      a "debugger" statement added
 //   SECRET        a private key block or a token-shaped string added
+//   HIDDEN        a folder or file hidden by a .gitignore rule right next to files of this commit (the rule "build/" left a kit's
+//                 validation/build/ out of a commit that added the rest of the kit)
 //   JUNK          .env, key and certificate files, logs, dumps, backups, dependency or build output, or a file larger than --max-mb
 // WARN:
 //   SWALLOWED     source-like files that a .gitignore rule hides (the rule "build/" once hid validation/build/)
@@ -87,9 +89,16 @@ function main(argv, io) {
   }
   // source-like files hidden by an ignore rule: only when their FIRST path segment is not a junk folder
   const TOP_JUNK = /^(node_modules|dist|dist-server|build|release|coverage|out|target|\.cache|\.venv|venv|__pycache__|\.next|\.turbo|tmp|temp|backups?)\//;
-  const swallowed = ignored.filter(f => !TOP_JUNK.test(f) && !/(^|\/)(node_modules|__pycache__|\.git)\//.test(f) && (f.endsWith('/') ? !/(^|\/)(dist|coverage|\.cache|logs?)\/$/.test(f) : isText(f) && !JUNK_FILE.test(f)));
-  for (const f of swallowed.slice(0, 40)) W('SWALLOWED', f, 'hidden by a .gitignore rule: is that intended?');
-  if (swallowed.length > 40) W('SWALLOWED', `${swallowed.length - 40} more`, 'not listed: a source folder may be among them (git status --ignored)');
+  // build output at any depth too: a project kept in a subfolder has its own dist/ (ebr/dist/ once crowded the list)
+  const DEEP_JUNK = /(^|\/)(node_modules|__pycache__|\.git|dist|dist-server|coverage|\.cache|test-results|playwright-report|logs?)\//;
+  const swallowed = ignored.filter(f => !TOP_JUNK.test(f) && !DEEP_JUNK.test(f) && (f.endsWith('/') || (isText(f) && !JUNK_FILE.test(f))));
+  // hidden right next to the work of this commit (a folder up to three levels above it holds a changed file, the top of the
+  // repository aside): a kit or source folder is being left out, as kits/validation-roadmap/validation/build/ was by the rule
+  // "build/" while the rest of the kit was committed. Re-include it in .gitignore.
+  const near = (/** @type {string} */ f) => { const up = f.replace(/\/$/, '').split('/').slice(0, -1); return [1, 2, 3].map(k => up.slice(0, up.length + 1 - k)).some(d => d.length > 0 && changedFiles.some(c => c.startsWith(d.join('/') + '/'))); };
+  for (const f of swallowed.filter(near)) F('HIDDEN', f, 'hidden by a .gitignore rule, next to files of this commit: re-include it (!path in .gitignore) or move it');
+  for (const f of swallowed.filter(f => !near(f)).slice(0, 40)) W('SWALLOWED', f, 'hidden by a .gitignore rule: is that intended?');
+  if (swallowed.filter(f => !near(f)).length > 40) W('SWALLOWED', `${swallowed.filter(f => !near(f)).length - 40} more`, 'not listed: a source folder may be among them (git status --ignored)');
   const ASSERT = /\b(?:expect|assert[A-Za-z.]*|should)\s*[.(]/;
   const testFiles = new Set([...added, ...removed].filter(x => isTest(x.file)).map(x => x.file));
   for (const f of testFiles) {

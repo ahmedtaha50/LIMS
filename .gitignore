@@ -10,3 +10,5 @@ coverage/
 /release/
 backups/
 !/validation/build/
+# the validation engine of a skill kit is source, not build output
+!/.claude/skills/gxp-software-factory/assets/kits/*/validation/build/

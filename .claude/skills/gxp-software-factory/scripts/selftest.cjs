@@ -181,6 +181,11 @@ sec('precommit-guard');
   fault('a bare project argument is refused, not ignored (it once checked the whole repository)', run('precommit-guard.cjs', [p]), 2, /unexpected argument/);
   w(p, '.gitignore', 'build/\n'); for (let i = 0; i < 45; i++) w(p, `src/build/f${i}.js`, 'x\n');
   fault('swallowed files beyond the list are counted, never dropped', guard(), 0, /5 more/); reset(); fs.rmSync(path.join(p, '.gitignore'), { force: true });
+  w(p, '.gitignore', 'build/\n'); commit(p, 'ignore build');
+  w(p, 'kits/val/ci/job.yml', 'jobs: {}\n'); w(p, 'kits/val/validation/build/check.cjs', 'module.exports = 1;\n'); w(p, 'app/dist/server/main.js', 'x\n');
+  fault('a kit folder hidden by "build/" while the rest of the kit is committed', guard(), 1, /HIDDEN\s+kits\/val\/validation\/build\//);
+  w(p, '.gitignore', 'build/\n!kits/*/validation/build/\n');
+  clean('re-included; the build output of a project in a subfolder (app/dist/) is not a finding', guard()); reset();
 }
 
 // ---------- 8. briefs come from the plan
