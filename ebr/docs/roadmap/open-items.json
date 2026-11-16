@@ -39,18 +39,22 @@
       "kind": "decision",
       "source": "report:r1-shell",
       "text": "The interface is in English. Should it also be in Arabic (right to left) for the shop floor?",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "5a3cbf3456138a94"
+      "key": "5a3cbf3456138a94",
+      "by": "Decided by the user ('implement all'): Arabic and English, per user (r5-i18n, E26)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0005",
       "kind": "decision",
       "source": "report:r1-identity",
       "text": "Sign-off after 15 minutes without activity, 12 hours at most, lock for 30 minutes after 5 failures in 15 minutes: confirm these numbers for the plant (they are settings)",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "46f5dd0aada00db8"
+      "key": "46f5dd0aada00db8",
+      "by": "Built as signed site settings with these defaults (r5-settings, E27): the plant changes them in Settings",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0006",
@@ -68,9 +72,11 @@
       "kind": "decision",
       "source": "report:r1-logbook",
       "text": "The built-in equipment and room logbook definitions are effective from installation: QA reviews them at IQ, or approves changed versions first",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "c739827d989c6b86"
+      "key": "c739827d989c6b86",
+      "by": "Built-in types need a QA review signature before use (r5-builtin-review, E28)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0008",
@@ -99,9 +105,11 @@
       "kind": "decision",
       "source": "report:r2-materials",
       "text": "Yield limits are a site setting (95 to 102%): set them per product?",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "d1a3755fd0791e86"
+      "key": "d1a3755fd0791e86",
+      "by": "Yield limits per recipe version, site limits as default (r5-yield, E29)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0011",
@@ -161,27 +169,33 @@
       "kind": "decision",
       "source": "report:r3-directory",
       "text": "Directory settings of the plant: server, service account, group names for each role",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "846cd68be09c3d40"
+      "key": "846cd68be09c3d40",
+      "by": "Directory settings entered by an administrator in Settings, signed, with a connection test (r5-directory-settings, E31); the plant enters its own values",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0017",
       "kind": "not-done",
       "source": "report:r3-lims-link",
       "text": "The LIMS does not yet offer /api/integration/samples nor integration tokens: E18 is tested against a stand-in only",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "7623677a40b09a9b"
+      "key": "7623677a40b09a9b",
+      "by": "The EBR uses the endpoints the LIMS already offers (/api/v1/samples:batch, /api/v1/samples/{id}), checked against its OpenAPI document (r5-lims-v1)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0018",
       "kind": "decision",
       "source": "report:r3-lims-link",
       "text": "Build the integration endpoints in the LIMS (and who issues the integration token)?",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "839ec1189de8efa5"
+      "key": "839ec1189de8efa5",
+      "by": "No new LIMS endpoints: the LIMS machine API v1 is used; the token is issued by the LIMS administrator in API clients (r5-lims-v1, E30)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0019",
