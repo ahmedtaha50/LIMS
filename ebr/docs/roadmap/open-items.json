@@ -51,6 +51,33 @@
       "status": "open",
       "opened": "2026-11-16",
       "key": "46f5dd0aada00db8"
+    },
+    {
+      "id": "OI-0006",
+      "kind": "not-done",
+      "source": "report:r1-logbook",
+      "text": "PDF export cannot print Arabic characters (standard font); needs an embedded font",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "a0555093b739837f"
+    },
+    {
+      "id": "OI-0007",
+      "kind": "decision",
+      "source": "report:r1-logbook",
+      "text": "The built-in equipment and room logbook definitions are effective from installation: QA reviews them at IQ, or approves changed versions first",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "c739827d989c6b86"
+    },
+    {
+      "id": "OI-0008",
+      "kind": "not-done",
+      "source": "report:r1-mbr",
+      "text": "A recipe cannot be copied into a new master yet",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "ae6471436f8d289f"
     }
   ]
 }

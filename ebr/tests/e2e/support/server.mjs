@@ -16,6 +16,12 @@ const { hashPassword } = await import('../../../dist/server/identity/password.js
   await migrate(c, new URL('../../../migrations', import.meta.url).pathname);
   const pw = await hashPassword('e2e password long enough');
   await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password) VALUES ('e2e-operator', 'E2E Operator', $1, '{operator}', false), ('e2e-new-tablet', 'E2E New tablet', $1, '{operator}', true), ('e2e-new-desktop', 'E2E New desktop', $1, '{operator}', true)", [pw]);
+  // logbooks (r1-logbook): a supervisor, a QA account with a known authenticator secret, and one equipment and one room
+  // logbook per viewport, so the two runs never write into the same logbook
+  await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password, totp_secret, totp_enabled) VALUES ('e2e-supervisor', 'E2E Supervisor', $1, '{supervisor}', false, NULL, false), ('e2e-qa', 'E2E QA', $1, '{qa}', false, 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', true)", [pw]);
+  for (const vp of ['tablet', 'desktop']) {
+    await c.query("INSERT INTO logbooks (type_id, object_kind, object_code, name, location, settings) VALUES ('00000000-0000-4000-8000-000000000e01', 'equipment', $1, $2, 'Granulation', '{\"cleanHoldHours\":72}'), ('00000000-0000-4000-8000-000000000e02', 'room', $3, $4, 'Block B', '{}')", [`MIX-E2E-${vp}`, `Mixer for ${vp}`, `RM-E2E-${vp}`, `Room for ${vp}`]);
+  }
   await c.end();
 }
 const child = spawn(process.execPath, ['dist/server/main.js'], { stdio: 'inherit', env: { ...process.env, DATABASE_URL: url.toString(), PORT: process.env.E2E_PORT ?? '4103', NODE_ENV: 'production' } });

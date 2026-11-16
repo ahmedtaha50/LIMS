@@ -3,7 +3,7 @@
  * user sees ("Not saved"), never something queued or kept in the browser to send later.
  */
 export class ApiError extends Error {
-  constructor(readonly status: number, readonly code: string, message: string, readonly requestId?: string) { super(message); }
+  constructor(readonly status: number, readonly code: string, message: string, readonly requestId?: string, readonly details?: unknown) { super(message); }
 }
 
 export async function api<T>(method: string, path: string, body?: unknown): Promise<T> {
@@ -19,6 +19,6 @@ export async function api<T>(method: string, path: string, body?: unknown): Prom
   }
   const text = await res.text();
   const data = text ? JSON.parse(text) : undefined;
-  if (!res.ok) throw new ApiError(res.status, data?.code ?? 'error', data?.message ?? `The server answered ${res.status}.`, data?.requestId);
+  if (!res.ok) throw new ApiError(res.status, data?.code ?? 'error', data?.message ?? `The server answered ${res.status}.`, data?.requestId, data?.details);
   return data as T;
 }

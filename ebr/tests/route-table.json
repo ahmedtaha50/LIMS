@@ -55,6 +55,144 @@
   },
   {
     "method": "GET",
+    "path": "/api/logbook-types",
+    "permission": "logbook.read",
+    "summary": "Logbook types with their versions"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbook-types",
+    "permission": "logbook.type.design",
+    "summary": "Create a logbook type (version 1, draft)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbook-types/:typeId/versions",
+    "permission": "logbook.type.design",
+    "summary": "Start a new draft version from the effective one"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/logbook-types/:typeId/versions/:versionId",
+    "permission": "logbook.type.design",
+    "summary": "Change a draft version"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbook-types/:typeId/versions/:versionId/approve",
+    "permission": "logbook.type.approve",
+    "summary": "QA approval: the version becomes effective"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbook-types/:typeId/versions/:versionId/reject",
+    "permission": "logbook.type.approve",
+    "summary": "QA sends a version back to draft, with a reason"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbook-types/:typeId/versions/:versionId/submit",
+    "permission": "logbook.type.design",
+    "summary": "Sign a draft as its author and send it to QA"
+  },
+  {
+    "method": "GET",
+    "path": "/api/logbooks",
+    "permission": "logbook.read",
+    "summary": "Logbooks with their derived status"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbooks",
+    "permission": "logbook.manage",
+    "summary": "Create the logbook of an object from an effective type"
+  },
+  {
+    "method": "GET",
+    "path": "/api/logbooks/:id",
+    "permission": "logbook.read",
+    "summary": "A logbook, its entries in time order, and its derived status"
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/logbooks/:id",
+    "permission": "logbook.manage",
+    "summary": "Change the name, location or settings of a logbook (states the version read)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbooks/:id/entries",
+    "permission": "logbook.write",
+    "summary": "Write a signed entry"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbooks/:id/entries/:entryId/correct",
+    "permission": "logbook.write",
+    "summary": "Correct an entry with a new signed entry and a reason"
+  },
+  {
+    "method": "GET",
+    "path": "/api/logbooks/:id/export",
+    "permission": "logbook.read",
+    "summary": "The logbook as a PDF with every entry, signer and meaning"
+  },
+  {
+    "method": "POST",
+    "path": "/api/logbooks/:id/retire",
+    "permission": "logbook.manage",
+    "summary": "Retire a logbook (signed; it stays readable)"
+  },
+  {
+    "method": "GET",
+    "path": "/api/mbrs",
+    "permission": "mbr.read",
+    "summary": "Master batch records with their versions"
+  },
+  {
+    "method": "POST",
+    "path": "/api/mbrs",
+    "permission": "mbr.design",
+    "summary": "Create a master batch record (version 1, draft)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/mbrs/:id/versions",
+    "permission": "mbr.design",
+    "summary": "Start a new draft from the effective version"
+  },
+  {
+    "method": "PUT",
+    "path": "/api/mbrs/:id/versions/:versionId",
+    "permission": "mbr.design",
+    "summary": "Change a draft version (states the version read)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/mbrs/:id/versions/:versionId/approve",
+    "permission": "mbr.approve",
+    "summary": "QA approval of a version in review"
+  },
+  {
+    "method": "POST",
+    "path": "/api/mbrs/:id/versions/:versionId/make-effective",
+    "permission": "mbr.approve",
+    "summary": "Make an approved version the effective one (the previous one retires)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/mbrs/:id/versions/:versionId/reject",
+    "permission": "mbr.approve",
+    "summary": "QA sends a version back to draft, with a reason"
+  },
+  {
+    "method": "POST",
+    "path": "/api/mbrs/:id/versions/:versionId/submit",
+    "permission": "mbr.design",
+    "summary": "Sign a draft as its author and send it to QA"
+  },
+  {
+    "method": "GET",
     "path": "/api/signatures",
     "permission": "signatures.read",
     "summary": "The signatures of one record"
