@@ -79,3 +79,36 @@ jobs:
       - name: Logs when it failed
         if: failure()
         run: docker compose -f deploy/compose/docker-compose.yml --env-file deploy/compose/.env logs --no-color
+
+  windows:
+    # E24: the Windows service installation on a Windows Server runner, with PostgreSQL 16 and the pinned WinSW
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ebr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ebr/package-lock.json
+      - name: PostgreSQL 16 (port 5433, beside the image's own PostgreSQL)
+        run: |
+          choco install postgresql16 --no-progress -y --params '/Password:ebr-ci-windows /Port:5433'
+          & 'C:\Program Files\PostgreSQL\16\bin\psql.exe' 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/postgres' -Atc 'select version()'
+          & 'C:\Program Files\PostgreSQL\16\bin\psql.exe' 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/postgres' -c 'create database ebr'
+      - run: npm ci
+      - run: npm run build
+      - name: WinSW 2.12.0 (its SHA-256 is checked by install-service.ps1)
+        run: Invoke-WebRequest -Uri https://github.com/winsw/winsw/releases/download/v2.12.0/WinSW-x64.exe -OutFile deploy/windows/winsw.exe
+      - name: Install as a service, first administrator, restart keeps the data, uninstall (E24)
+        run: |
+          [System.Environment]::OSVersion.VersionString
+          (Get-CimInstance Win32_OperatingSystem).Caption
+          .\deploy\windows\ci-check.ps1 -DatabaseUrl 'postgres://postgres:ebr-ci-windows@127.0.0.1:5433/ebr' -Psql 'C:\Program Files\PostgreSQL\16\bin\psql.exe'
+      - name: Service logs when it failed
+        if: failure()
+        run: Get-ChildItem deploy/windows -Filter *.log | ForEach-Object { "== $($_.Name)"; Get-Content $_.FullName -Tail 80 }
