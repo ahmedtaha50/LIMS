@@ -120,7 +120,7 @@ export async function certifiedCopy(pool: Pool, batchId: string, by: string) {
     `Disposition: ${rv.disposition ? `${rv.disposition.decision.toUpperCase()} by ${rv.disposition.decidedBy} at ${rv.disposition.decidedAt}${rv.disposition.comment ? ` (${rv.disposition.comment})` : ''}` : 'none yet'}`,
     '', 'AUDIT TRAIL', ...trail.map(t => `${t.at} ${t.actorName} ${t.action}${t.reason ? ` (${t.reason})` : ''}`),
   ];
-  const { pdf } = textPdf(`Certified copy - batch ${d.batchNumber}`, lines);
+  const { pdf } = await textPdf(`Certified copy - batch ${d.batchNumber}`, lines);
   const sha256 = createHash('sha256').update(pdf).digest('hex');
   await pool.query('INSERT INTO certified_copies (batch_id, sha256, bytes, generated_by) VALUES ($1, $2, $3, $4) ON CONFLICT (sha256) DO NOTHING', [batchId, sha256, pdf.length, by]);
   return { pdf, sha256, batchNumber: d.batchNumber };

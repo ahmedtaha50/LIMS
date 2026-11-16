@@ -97,7 +97,7 @@ export const routes = [
           `    Signed: ${e.signedBy}, meaning ${e.meaning}, ${e.signedAt}`,
         ]),
       ];
-      const { pdf, sha256 } = textPdf(`Logbook ${d.objectCode}`, lines);
+      const { pdf, sha256 } = await textPdf(`Logbook ${d.objectCode}`, lines);
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="logbook-${d.objectCode.replace(/[^A-Za-z0-9._-]/g, '_')}.pdf"`);
       res.setHeader('X-Export-SHA256', sha256);
