@@ -19,6 +19,15 @@ const { hashPassword } = await import('../../../dist/server/identity/password.js
   // logbooks (r1-logbook): a supervisor, a QA account with a known authenticator secret, and one equipment and one room
   // logbook per viewport, so the two runs never write into the same logbook
   await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password, totp_secret, totp_enabled) VALUES ('e2e-supervisor', 'E2E Supervisor', $1, '{supervisor}', false, NULL, false), ('e2e-qa', 'E2E QA', $1, '{qa}', false, 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', true)", [pw]);
+  // batches (r2-execution): a second operator for verifications, and one effective recipe per viewport
+  await c.query("INSERT INTO users (username, display_name, password_hash, roles, must_change_password) VALUES ('e2e-operator2', 'E2E Operator Two', $1, '{operator}', false)", [pw]);
+  const steps = [{ key: 'clearance', label: 'Line clearance', type: 'verified', text: 'Room and mixer free of the previous product', critical: false },
+    { key: 'water', label: 'Water added', type: 'data', unit: 'L', min: 10, max: 14, decimals: 1, critical: false },
+    { key: 'ratio', label: 'Water per kg', type: 'calculation', formula: 'water / 60', unit: 'L/kg', min: 0.15, max: 0.25, decimals: 3, critical: false }];
+  for (const vp of ['tablet', 'desktop']) {
+    const m = (await c.query("INSERT INTO mbr_masters (code, product_name) VALUES ($1, $2) RETURNING id", [`E2E-PCM-${vp}`, `Paracetamol E2E ${vp}`])).rows[0].id;
+    await c.query("INSERT INTO mbr_versions (master_id, version_no, status, design, author_id, author_name, approved_by, approved_at, effective_at) VALUES ($1, 1, 'effective', $2, 'e2e', 'e2e', 'e2e', now(), now())", [m, JSON.stringify({ batchSize: { value: 60, unit: 'kg' }, phases: [{ key: 'granulation', label: 'Granulation', steps }] })]);
+  }
   for (const vp of ['tablet', 'desktop']) {
     await c.query("INSERT INTO logbooks (type_id, object_kind, object_code, name, location, settings) VALUES ('00000000-0000-4000-8000-000000000e01', 'equipment', $1, $2, 'Granulation', '{\"cleanHoldHours\":72}'), ('00000000-0000-4000-8000-000000000e02', 'room', $3, $4, 'Block B', '{}')", [`MIX-E2E-${vp}`, `Mixer for ${vp}`, `RM-E2E-${vp}`, `Room for ${vp}`]);
   }

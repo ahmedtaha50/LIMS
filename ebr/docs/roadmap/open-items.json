@@ -78,6 +78,15 @@
       "status": "open",
       "opened": "2026-11-16",
       "key": "ae6471436f8d289f"
+    },
+    {
+      "id": "OI-0009",
+      "kind": "not-done",
+      "source": "report:r2-execution",
+      "text": "Material, equipment and sample steps have no handler yet (r2-materials, r2-interlock, r3-lims-link)",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "bd7f9c066bc970ae"
     }
   ]
 }

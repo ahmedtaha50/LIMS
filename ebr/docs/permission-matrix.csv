@@ -1,10 +1,17 @@
 role,permission,privileged
+operator,batch.execute,false
+operator,batch.read,false
 operator,logbook.read,false
 operator,logbook.write,false
 operator,mbr.read,false
 operator,session,false
 operator,signatures.read,false
 supervisor,audit.read,false
+supervisor,batch.complete,false
+supervisor,batch.create,false
+supervisor,batch.exception,false
+supervisor,batch.execute,false
+supervisor,batch.read,false
 supervisor,logbook.manage,false
 supervisor,logbook.read,false
 supervisor,logbook.type.design,false
@@ -15,6 +22,7 @@ supervisor,session,false
 supervisor,signatures.read,false
 qa,audit.read,true
 qa,audit.verify,true
+qa,batch.read,true
 qa,logbook.read,true
 qa,logbook.type.approve,true
 qa,mbr.approve,true

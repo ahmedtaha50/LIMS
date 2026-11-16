@@ -49,6 +49,54 @@
   },
   {
     "method": "GET",
+    "path": "/api/batches",
+    "permission": "batch.read",
+    "summary": "Batches with their progress and open exceptions"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches",
+    "permission": "batch.create",
+    "summary": "Create a batch from the effective version of a recipe"
+  },
+  {
+    "method": "GET",
+    "path": "/api/batches/:id",
+    "permission": "batch.read",
+    "summary": "A batch: its steps in order, the next step, its exceptions"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/complete",
+    "permission": "batch.complete",
+    "summary": "Close the batch when every step is recorded and verified and no exception is open"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/exceptions/:exceptionId/close",
+    "permission": "batch.exception",
+    "summary": "Close an exception with a signed justification"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/exceptions/:exceptionId/deviation",
+    "permission": "batch.exception",
+    "summary": "Hand an exception to a deviation (its number stays on the batch)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/steps/:stepId/record",
+    "permission": "batch.execute",
+    "summary": "Record and sign the next step (states the version read)"
+  },
+  {
+    "method": "POST",
+    "path": "/api/batches/:id/steps/:stepId/verify",
+    "permission": "batch.execute",
+    "summary": "Verify a step as the second person"
+  },
+  {
+    "method": "GET",
     "path": "/api/health",
     "permission": "public",
     "summary": "Is the server up and can it reach its database"
