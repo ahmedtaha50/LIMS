@@ -57,9 +57,11 @@
       "kind": "not-done",
       "source": "report:r1-logbook",
       "text": "PDF export cannot print Arabic characters (standard font); needs an embedded font",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "a0555093b739837f"
+      "key": "a0555093b739837f",
+      "by": "r4-pdf (E22): embedded Unicode font, Arabic shaping and bidirectional order; tests/api/pdf.test.ts",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0007",
@@ -75,9 +77,11 @@
       "kind": "not-done",
       "source": "report:r1-mbr",
       "text": "A recipe cannot be copied into a new master yet",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "ae6471436f8d289f"
+      "key": "ae6471436f8d289f",
+      "by": "r4-mbr-copy (E23): POST /api/mbrs/:id/versions/:versionId/copy; tests/api/mbr-copy.test.ts (API only; no designer button yet)",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0009",
@@ -104,9 +108,11 @@
       "kind": "not-done",
       "source": "report:r2-review-release",
       "text": "Certified copy PDF prints Arabic as '?' (standard font)",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "54351b3081e2d745"
+      "key": "54351b3081e2d745",
+      "by": "r4-pdf (E22): the certified copy uses the same writer; tests/api/pdf.test.ts",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0012",
