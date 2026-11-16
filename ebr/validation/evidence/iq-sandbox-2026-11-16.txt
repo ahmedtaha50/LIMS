@@ -1,11 +1,11 @@
-# IQ evidence 2026-11-16T09:05:18Z: development sandbox, NOT the plant's server
-git c638795294f4804b8eafafa8782b1e2dfe935267
+# IQ evidence 2026-11-16T13:23:58Z: development sandbox, NOT the plant's server
+git 026053e09bae0cba85e9b74ccf6c7c920f2ffc38
 node v22.23.4
 os Linux 6.18.44-fc-v470
 postgres-client 16.15
 postgres-server 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)
 migrations 13 (last 0210_lims_link.sql)
-routes 62
-sha256-of-server-build ce4bdf9414cfd4fce00fe8f402c94c5ca326675b45f75ff99dc2f4cadaf31e94
+routes 63
+sha256-of-server-build 1dc65fdb6ab9a1d285466b56c6909fbca31485b8d26c413997df0931a53f3d7d
 sha256-of-client-build dad570c9295a97abe766dec62b4884a890e9c4bce2cd67d8d5bbbff0e237e7da
-sha256-package-lock 54228db08d25e1423f1544c54f26cc3059483364747e8fc64f20f0fe5587889b
+sha256-package-lock ee9b5fbd8d95128ff675866dc7e2a3999cc1ab273e39243b9ca44f68e09408be

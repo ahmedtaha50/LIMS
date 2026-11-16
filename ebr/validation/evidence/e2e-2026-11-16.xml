@@ -1,102 +1,102 @@
-<testsuites id="" name="" tests="34" failures="0" skipped="0" errors="0" time="20.773076999999997">
-<testsuite name="batch.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="1" failures="0" skipped="0" time="3.156" errors="0">
-<testcase name="a batch runs on the shop floor: steps in order, a second person verifies, a calculated value comes from the server (E10, E11)" classname="batch.spec.ts" time="3.156">
+<testsuites id="" name="" tests="34" failures="0" skipped="0" errors="0" time="16.857239999999997">
+<testsuite name="batch.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="1" failures="0" skipped="0" time="2.536" errors="0">
+<testcase name="a batch runs on the shop floor: steps in order, a second person verifies, a calculated value comes from the server (E10, E11)" classname="batch.spec.ts" time="2.536">
 </testcase>
 </testsuite>
-<testsuite name="interlock.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.594" errors="0">
-<testcase name="a dirty mixer is refused at the step; once cleaned it is used and its logbook shows it in use (E13)" classname="interlock.spec.ts" time="1.594">
+<testsuite name="interlock.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.273" errors="0">
+<testcase name="a dirty mixer is refused at the step; once cleaned it is used and its logbook shows it in use (E13)" classname="interlock.spec.ts" time="1.273">
 </testcase>
 </testsuite>
-<testsuite name="logbook.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="4" failures="0" skipped="0" time="4.435" errors="0">
-<testcase name="an operator writes a signed cleaning entry and the status follows (E06#2, E07#1)" classname="logbook.spec.ts" time="1.159">
+<testsuite name="logbook.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="4" failures="0" skipped="0" time="3.75" errors="0">
+<testcase name="an operator writes a signed cleaning entry and the status follows (E06#2, E07#1)" classname="logbook.spec.ts" time="0.928">
 </testcase>
-<testcase name="a value outside its limits needs a comment and is shown as outside limits (E21#4)" classname="logbook.spec.ts" time="0.96">
+<testcase name="a value outside its limits needs a comment and is shown as outside limits (E21#4)" classname="logbook.spec.ts" time="0.777">
 </testcase>
-<testcase name="a supervisor creates a new logbook type and QA approves it, without any code (E21#1, E21#2)" classname="logbook.spec.ts" time="1.742">
+<testcase name="a supervisor creates a new logbook type and QA approves it, without any code (E21#1, E21#2)" classname="logbook.spec.ts" time="1.536">
 </testcase>
-<testcase name="the logbook screens fit the screen and keep 44 px targets" classname="logbook.spec.ts" time="0.574">
-</testcase>
-</testsuite>
-<testsuite name="materials.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="1" failures="0" skipped="0" time="2.121" errors="0">
-<testcase name="dispensing on the tablet: an expired lot is refused, the right lot is weighed, then yield and reconciliation (E12)" classname="materials.spec.ts" time="2.121">
+<testcase name="the logbook screens fit the screen and keep 44 px targets" classname="logbook.spec.ts" time="0.509">
 </testcase>
 </testsuite>
-<testsuite name="mbr.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="1" failures="0" skipped="0" time="2.156" errors="0">
-<testcase name="a supervisor designs a recipe, the server refuses a bad formula, QA approves and makes it effective" classname="mbr.spec.ts" time="2.156">
+<testsuite name="materials.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.874" errors="0">
+<testcase name="dispensing on the tablet: an expired lot is refused, the right lot is weighed, then yield and reconciliation (E12)" classname="materials.spec.ts" time="1.874">
 </testcase>
 </testsuite>
-<testsuite name="review.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.99" errors="0">
-<testcase name="QA reviews the exceptions only, completes the review, releases, and gets the certified copy (E14, E15)" classname="review.spec.ts" time="1.99">
+<testsuite name="mbr.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.534" errors="0">
+<testcase name="a supervisor designs a recipe, the server refuses a bad formula, QA approves and makes it effective" classname="mbr.spec.ts" time="1.534">
 </testcase>
 </testsuite>
-<testsuite name="shell-signin.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="3" failures="0" skipped="0" time="1.769" errors="0">
-<testcase name="an operator signs in, sees the shell, and signs out" classname="shell-signin.spec.ts" time="0.563">
-</testcase>
-<testcase name="a wrong password is refused with a message" classname="shell-signin.spec.ts" time="0.397">
-</testcase>
-<testcase name="a first sign-in must choose a new password before anything else" classname="shell-signin.spec.ts" time="0.809">
+<testsuite name="review.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="1" failures="0" skipped="0" time="1.589" errors="0">
+<testcase name="QA reviews the exceptions only, completes the review, releases, and gets the certified copy (E14, E15)" classname="review.spec.ts" time="1.589">
 </testcase>
 </testsuite>
-<testsuite name="shell.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="tablet" tests="5" failures="0" skipped="0" time="0.95" errors="0">
-<testcase name="E05#1: sign-in fits the screen without horizontal scroll" classname="shell.spec.ts" time="0.171">
+<testsuite name="shell-signin.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="3" failures="0" skipped="0" time="1.38" errors="0">
+<testcase name="an operator signs in, sees the shell, and signs out" classname="shell-signin.spec.ts" time="0.417">
 </testcase>
-<testcase name="E05#1: the signed-in shell and its navigation fit the screen" classname="shell.spec.ts" time="0.222">
+<testcase name="a wrong password is refused with a message" classname="shell-signin.spec.ts" time="0.333">
 </testcase>
-<testcase name="E05#2: every control is at least 44 x 44 px and reachable by keyboard" classname="shell.spec.ts" time="0.258">
-</testcase>
-<testcase name="E05#3: installable (manifest), but with the network off a sign-in fails visibly and nothing is stored on the device" classname="shell.spec.ts" time="0.248">
-</testcase>
-<testcase name="the server answers the page for any client route and never caches it" classname="shell.spec.ts" time="0.051">
+<testcase name="a first sign-in must choose a new password before anything else" classname="shell-signin.spec.ts" time="0.63">
 </testcase>
 </testsuite>
-<testsuite name="batch.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="1" failures="0" skipped="0" time="3.331" errors="0">
-<testcase name="a batch runs on the shop floor: steps in order, a second person verifies, a calculated value comes from the server (E10, E11)" classname="batch.spec.ts" time="3.331">
+<testsuite name="shell.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="tablet" tests="5" failures="0" skipped="0" time="0.771" errors="0">
+<testcase name="E05#1: sign-in fits the screen without horizontal scroll" classname="shell.spec.ts" time="0.138">
+</testcase>
+<testcase name="E05#1: the signed-in shell and its navigation fit the screen" classname="shell.spec.ts" time="0.163">
+</testcase>
+<testcase name="E05#2: every control is at least 44 x 44 px and reachable by keyboard" classname="shell.spec.ts" time="0.214">
+</testcase>
+<testcase name="E05#3: installable (manifest), but with the network off a sign-in fails visibly and nothing is stored on the device" classname="shell.spec.ts" time="0.219">
+</testcase>
+<testcase name="the server answers the page for any client route and never caches it" classname="shell.spec.ts" time="0.037">
 </testcase>
 </testsuite>
-<testsuite name="interlock.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="1" failures="0" skipped="0" time="1.518" errors="0">
-<testcase name="a dirty mixer is refused at the step; once cleaned it is used and its logbook shows it in use (E13)" classname="interlock.spec.ts" time="1.518">
+<testsuite name="batch.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="1" failures="0" skipped="0" time="2.543" errors="0">
+<testcase name="a batch runs on the shop floor: steps in order, a second person verifies, a calculated value comes from the server (E10, E11)" classname="batch.spec.ts" time="2.543">
 </testcase>
 </testsuite>
-<testsuite name="logbook.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="4" failures="0" skipped="0" time="4.657" errors="0">
-<testcase name="an operator writes a signed cleaning entry and the status follows (E06#2, E07#1)" classname="logbook.spec.ts" time="1.187">
-</testcase>
-<testcase name="a value outside its limits needs a comment and is shown as outside limits (E21#4)" classname="logbook.spec.ts" time="1.018">
-</testcase>
-<testcase name="a supervisor creates a new logbook type and QA approves it, without any code (E21#1, E21#2)" classname="logbook.spec.ts" time="1.856">
-</testcase>
-<testcase name="the logbook screens fit the screen and keep 44 px targets" classname="logbook.spec.ts" time="0.596">
+<testsuite name="interlock.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="1" failures="0" skipped="0" time="1.267" errors="0">
+<testcase name="a dirty mixer is refused at the step; once cleaned it is used and its logbook shows it in use (E13)" classname="interlock.spec.ts" time="1.267">
 </testcase>
 </testsuite>
-<testsuite name="materials.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="1" failures="0" skipped="0" time="2.148" errors="0">
-<testcase name="dispensing on the tablet: an expired lot is refused, the right lot is weighed, then yield and reconciliation (E12)" classname="materials.spec.ts" time="2.148">
+<testsuite name="logbook.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="4" failures="0" skipped="0" time="3.785" errors="0">
+<testcase name="an operator writes a signed cleaning entry and the status follows (E06#2, E07#1)" classname="logbook.spec.ts" time="0.944">
+</testcase>
+<testcase name="a value outside its limits needs a comment and is shown as outside limits (E21#4)" classname="logbook.spec.ts" time="0.883">
+</testcase>
+<testcase name="a supervisor creates a new logbook type and QA approves it, without any code (E21#1, E21#2)" classname="logbook.spec.ts" time="1.5">
+</testcase>
+<testcase name="the logbook screens fit the screen and keep 44 px targets" classname="logbook.spec.ts" time="0.458">
 </testcase>
 </testsuite>
-<testsuite name="mbr.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="1" failures="0" skipped="0" time="2.146" errors="0">
-<testcase name="a supervisor designs a recipe, the server refuses a bad formula, QA approves and makes it effective" classname="mbr.spec.ts" time="2.146">
+<testsuite name="materials.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="1" failures="0" skipped="0" time="1.557" errors="0">
+<testcase name="dispensing on the tablet: an expired lot is refused, the right lot is weighed, then yield and reconciliation (E12)" classname="materials.spec.ts" time="1.557">
 </testcase>
 </testsuite>
-<testsuite name="review.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="1" failures="0" skipped="0" time="1.936" errors="0">
-<testcase name="QA reviews the exceptions only, completes the review, releases, and gets the certified copy (E14, E15)" classname="review.spec.ts" time="1.936">
+<testsuite name="mbr.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="1" failures="0" skipped="0" time="1.888" errors="0">
+<testcase name="a supervisor designs a recipe, the server refuses a bad formula, QA approves and makes it effective" classname="mbr.spec.ts" time="1.888">
 </testcase>
 </testsuite>
-<testsuite name="shell-signin.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="3" failures="0" skipped="0" time="1.802" errors="0">
-<testcase name="an operator signs in, sees the shell, and signs out" classname="shell-signin.spec.ts" time="0.541">
-</testcase>
-<testcase name="a wrong password is refused with a message" classname="shell-signin.spec.ts" time="0.448">
-</testcase>
-<testcase name="a first sign-in must choose a new password before anything else" classname="shell-signin.spec.ts" time="0.813">
+<testsuite name="review.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="1" failures="0" skipped="0" time="1.554" errors="0">
+<testcase name="QA reviews the exceptions only, completes the review, releases, and gets the certified copy (E14, E15)" classname="review.spec.ts" time="1.554">
 </testcase>
 </testsuite>
-<testsuite name="shell.spec.ts" timestamp="2026-11-16T09:02:39.403Z" hostname="desktop" tests="5" failures="0" skipped="0" time="0.96" errors="0">
-<testcase name="E05#1: sign-in fits the screen without horizontal scroll" classname="shell.spec.ts" time="0.19">
+<testsuite name="shell-signin.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="3" failures="0" skipped="0" time="1.318" errors="0">
+<testcase name="an operator signs in, sees the shell, and signs out" classname="shell-signin.spec.ts" time="0.364">
 </testcase>
-<testcase name="E05#1: the signed-in shell and its navigation fit the screen" classname="shell.spec.ts" time="0.182">
+<testcase name="a wrong password is refused with a message" classname="shell-signin.spec.ts" time="0.326">
 </testcase>
-<testcase name="E05#2: every control is at least 44 x 44 px and reachable by keyboard" classname="shell.spec.ts" time="0.293">
+<testcase name="a first sign-in must choose a new password before anything else" classname="shell-signin.spec.ts" time="0.628">
 </testcase>
-<testcase name="E05#3: installable (manifest), but with the network off a sign-in fails visibly and nothing is stored on the device" classname="shell.spec.ts" time="0.249">
+</testsuite>
+<testsuite name="shell.spec.ts" timestamp="2026-11-16T13:21:31.215Z" hostname="desktop" tests="5" failures="0" skipped="0" time="0.695" errors="0">
+<testcase name="E05#1: sign-in fits the screen without horizontal scroll" classname="shell.spec.ts" time="0.142">
 </testcase>
-<testcase name="the server answers the page for any client route and never caches it" classname="shell.spec.ts" time="0.046">
+<testcase name="E05#1: the signed-in shell and its navigation fit the screen" classname="shell.spec.ts" time="0.119">
+</testcase>
+<testcase name="E05#2: every control is at least 44 x 44 px and reachable by keyboard" classname="shell.spec.ts" time="0.2">
+</testcase>
+<testcase name="E05#3: installable (manifest), but with the network off a sign-in fails visibly and nothing is stored on the device" classname="shell.spec.ts" time="0.199">
+</testcase>
+<testcase name="the server answers the page for any client route and never caches it" classname="shell.spec.ts" time="0.035">
 </testcase>
 </testsuite>
 </testsuites>

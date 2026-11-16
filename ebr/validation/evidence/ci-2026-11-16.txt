@@ -1,0 +1,10 @@
+# CI evidence copied from GitHub Actions: ANOTHER MACHINE, not produced by this package.
+# Workflow ebr.yml, run 43872568098 (run 16), commit 9c65b10, 2026-11-16; job logs read by the author.
+# Job "windows": runner windows-latest, "Microsoft Windows Server 2025 Datacenter", PostgreSQL 16 (Chocolatey), WinSW 2.12.0.
+# Job "compose": runner ubuntu-latest, docker compose up --build on a clean runner, health ok, first administrator signs in.
+PASS E24#1-installed service bpharma-ebr-4101 running (Automatic), 13 migrations applied
+PASS E24#1-signin the first administrator signs in and must change the password
+PASS E24#2-restart after stop and start: same 13 migrations, the administrator still signs in, 2+ audit entries kept
+PASS E24#2-uninstall the service is removed; the database still holds its records
+PASS compose-up docker compose up on a clean runner: migrations applied, health ok, first administrator signs in (mustChangePassword)
+PASS ci-workflow lint, tests on PostgreSQL 16, build, browser tests, capacity test and traceability gate on every push touching ebr/

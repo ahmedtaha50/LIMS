@@ -206,9 +206,11 @@
       "kind": "deviation",
       "source": "deviation:DEV-2026-11-16-01",
       "text": "Part of a requirement is supported by reading the code, not by an executed test of this package (URS-E01-1).",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "469e0fdaf684b706"
+      "key": "469e0fdaf684b706",
+      "by": "DEV-2026-11-16-01 is CLOSED in deviations.csv",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0022",
@@ -233,9 +235,11 @@
       "kind": "deviation",
       "source": "deviation:DEV-2026-11-16-04",
       "text": "The Windows service installer has not been run on a Windows Server (URS-E19-2).",
-      "status": "open",
+      "status": "resolved",
       "opened": "2026-11-16",
-      "key": "06a04c40a46836ad"
+      "key": "06a04c40a46836ad",
+      "by": "DEV-2026-11-16-04 is CLOSED in deviations.csv",
+      "closed": "2026-11-16"
     },
     {
       "id": "OI-0025",
