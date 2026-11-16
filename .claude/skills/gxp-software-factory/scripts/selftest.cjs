@@ -369,6 +369,10 @@ sec('checked-commit');
   rm(p, 'src/b.js'); git(p, 'add', '-A');
   fault('no check configured or given: refused', run('checked-commit.cjs', ['--repo', tmp(), '-m', 'x']), 2, /not a git repository|no check/);
   fault('a bare argument is refused, not ignored', run('checked-commit.cjs', ['--repo', p, 'change', '-m', 'x']), 2, /unexpected argument/);
+  const top = tmp(); git(top, 'init', '-q'); w(top, 'proj/factory.config.json', cfg); w(top, 'proj/a.js', '1\n'); git(top, 'add', '-A');
+  fault('no trailers at the top of the repository: refused, not committed without them', run('checked-commit.cjs', ['--repo', top, '-m', 'x', '--check', 'node -e 0']), 2, /no TRAILERS/);
+  clean('--config reads the project in the subfolder, with its trailers', run('checked-commit.cjs', ['--repo', top, '--config', path.join(top, 'proj/factory.config.json'), '-m', 'x', '--check', 'node -e 0']));
+  is('clean', 'the subfolder project\'s trailer is in the commit', /^Reviewed-By: drill$/m.test(git(top, 'log', '-1', '--format=%B')), true);
   clean('the checks and the guard pass: committed with the trailers', run('checked-commit.cjs', ['--repo', p, '--all', '-m', 'change']));
   is('clean', 'the commit carries the configured trailer', /^Reviewed-By: drill$/m.test(git(p, 'log', '-1', '--format=%B')), true);
 }
