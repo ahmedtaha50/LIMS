@@ -39,7 +39,7 @@ function discover() {
 
 // References for tests whose title does not carry the criterion id: { file, match: a fragment of the title }.
 const EXTRA = {
-  'URS-E01-1': [{ file: 'tests/api/core-migrate.test.ts', match: '' }],
+  'URS-E01-1': [{ file: 'tests/api/core-migrate.test.ts', match: '' }, { file: 'tests/unit/harness.test.ts', match: 'E25#1' }],
   'URS-E08-3': [{ file: 'tests/e2e/mbr.spec.ts', match: '' }],
   'URS-E11-2': [{ file: 'tests/api/batch.test.ts', match: 'E11#1: a value outside its limits' }],   // the same test raises the deviation (line comment E11#2)
   'URS-E16-1': [{ perf: 'verdict' }],
@@ -48,7 +48,6 @@ const EXTRA = {
 
 // Requirements whose evidence is partly not an executed test of this package (P*) or that are not met (GAP), with the deviation.
 const PARTIAL = {
-  'URS-E01-1': { type: 'P*', deviation: 'DEV-2026-11-16-01', note: 'The whole suite ran on a fresh PostgreSQL database (JUnit evidence). That it fails instead of skipping when PostgreSQL is not reachable is shown by reading tests/helpers/global-setup.ts.' },
   'URS-E01-4': { type: 'P*', deviation: 'DEV-2026-11-16-02', note: 'The workflow .github/workflows/ebr.yml runs lint and tests on GitHub Actions; its results are from another machine and are not produced by this package.' },
   'URS-E16-1': { type: 'P*', deviation: 'DEV-2026-11-16-03', note: 'The capacity test passed on a 4-core development machine shared by all parts; the reference server of the plant has not run it.' },
   'URS-E16-2': { type: 'P*', deviation: 'DEV-2026-11-16-03', note: 'Two instances behind a test proxy, one stopped halfway, no step lost; the plant proxy (deploy/proxy/nginx.conf) was not run.' },
@@ -56,7 +55,6 @@ const PARTIAL = {
   'URS-E19-2': { type: 'GAP', deviation: 'DEV-2026-11-16-04', note: 'deploy/windows/install-service.ps1 exists but has not been run on a Windows Server.' },
   'URS-E24-1': { type: 'GAP', deviation: 'DEV-2026-11-16-07', note: 'Release R4 is in progress: not built yet.' },
   'URS-E24-2': { type: 'GAP', deviation: 'DEV-2026-11-16-07', note: 'Release R4 is in progress: not built yet.' },
-  'URS-E25-1': { type: 'GAP', deviation: 'DEV-2026-11-16-07', note: 'Release R4 is in progress: not built yet.' },
 };
 
 // FRS: [id, mechanism (paths are checked to exist), [urs]]
@@ -85,7 +83,7 @@ const FRS = [
   ['FRS-E22', 'Exports and certified copies are written by server/pdf/writer.ts: an embedded Unicode font (DejaVu Sans), Arabic joined by the font, each line in the order of the Unicode bidirectional algorithm, and each line carrying its stored text (ActualText) for copy and search; server/logbook/pdf.ts delegates to it.', all('E22')],
   ['FRS-E23', 'Any version is copied into a new master as version 1 in draft (server/mbr/copy.ts, POST /api/mbrs/:id/versions/:versionId/copy in server/routes/mbr-copy.ts): the design is checked again, based_on points to the source version, the audit entry names the source; the source is only read.', all('E23')],
   ['FRS-E24', 'The Windows service script (deploy/windows/install-service.ps1).', all('E24')],
-  ['FRS-E25', 'The test database helper refuses to continue without PostgreSQL (tests/helpers/db.ts, tests/helpers/global-setup.ts).', all('E25')],
+  ['FRS-E25', 'The global setup stops the run with the reason when PostgreSQL is not reachable (tests/helpers/global-setup.ts), and the helper refuses too (tests/helpers/db.ts); tests/unit/harness.test.ts runs the suite against an unreachable server.', all('E25')],
   ['FRS-E21', 'Logbook types are versioned data with typed fields, approved by a QA signature from someone other than the author; entries are validated on the server against the type version they were written with (server/logbook/definition.ts, server/logbook/service.ts).', all('E21')],
 ];
 
@@ -107,7 +105,7 @@ const GRA = [
 
 // Deviations: [id, description, action, status]
 const DEVIATIONS = [
-  ['DEV-2026-11-16-01', 'Part of a requirement is supported by reading the code, not by an executed test of this package (URS-E01-1).', 'Add a test that runs the suite with PostgreSQL stopped and expects a failure, or accept the reading in writing.', 'OPEN'],
+  ['DEV-2026-11-16-01', 'Part of a requirement is supported by reading the code, not by an executed test of this package (URS-E01-1).', 'Closed by tests/unit/harness.test.ts (E25#1): the suite run against an unreachable PostgreSQL exits non-zero with the reason and runs no test.', 'CLOSED'],
   ['DEV-2026-11-16-02', 'Evidence from GitHub Actions (another machine): the CI workflow and the docker compose job (URS-E01-4, URS-E19-1).', 'Run docker compose up on the plant server during IQ and record it; the CI results stay supporting evidence.', 'OPEN'],
   ['DEV-2026-11-16-03', 'The capacity test ran on a development machine, not on the plant reference server (URS-E16-1, URS-E16-2).', 'Run npm run test:perf on the plant server and behind the plant proxy during OQ; record the numbers.', 'OPEN'],
   ['DEV-2026-11-16-04', 'The Windows service installer has not been run on a Windows Server (URS-E19-2).', 'Run deploy/windows/install-service.ps1 on the target Windows Server during IQ, or choose the Docker installation.', 'OPEN'],
