@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+/* Touch first: every control is at least 44 px (min-h-11 / min-w-11); focus is always visible. */
+@layer base {
+  :focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+  html { -webkit-text-size-adjust: 100%; }
+}

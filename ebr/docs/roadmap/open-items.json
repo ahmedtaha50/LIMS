@@ -22,6 +22,24 @@
       "key": "dd7565f678de4f14",
       "by": "ebr CI run 43821621888 (commit 553043f) read: lint, tests, build and the built server's /api/health all green",
       "closed": "2026-11-16"
+    },
+    {
+      "id": "OI-0003",
+      "kind": "not-done",
+      "source": "report:r1-shell",
+      "text": "Signed-in layout tests stand in for /api/auth/me until r1-identity provides sign-in; then a test signs in for real",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "d259bafe52b66846"
+    },
+    {
+      "id": "OI-0004",
+      "kind": "decision",
+      "source": "report:r1-shell",
+      "text": "The interface is in English. Should it also be in Arabic (right to left) for the shop floor?",
+      "status": "open",
+      "opened": "2026-11-16",
+      "key": "5a3cbf3456138a94"
     }
   ]
 }

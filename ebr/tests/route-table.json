@@ -1,8 +1,32 @@
 [
   {
     "method": "GET",
+    "path": "/api/audit",
+    "permission": "audit.read",
+    "summary": "The audit trail of one record"
+  },
+  {
+    "method": "GET",
+    "path": "/api/audit/verify",
+    "permission": "audit.verify",
+    "summary": "Recompute the hash chain of the whole audit trail"
+  },
+  {
+    "method": "GET",
     "path": "/api/health",
     "permission": "public",
     "summary": "Is the server up and can it reach its database"
+  },
+  {
+    "method": "GET",
+    "path": "/api/signatures",
+    "permission": "signatures.read",
+    "summary": "The signatures of one record"
+  },
+  {
+    "method": "GET",
+    "path": "/api/signatures/meanings",
+    "permission": "session",
+    "summary": "The signature meanings the system knows"
   }
 ]

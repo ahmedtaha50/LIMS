@@ -41,6 +41,10 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+      - name: Browser for the interface tests
+        run: npx playwright install --with-deps chromium
+      - name: Interface tests on the built application (tablet 820x1180 and desktop 1440x900)
+        run: npx playwright test
       - name: The built server starts, migrates and answers
         run: |
           psql "postgres://ebr:ebr@127.0.0.1:5432/postgres" -c "create database ebr_ci"
