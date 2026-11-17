@@ -31,10 +31,24 @@ $pgBin = Get-ChildItem 'C:\Program Files\PostgreSQL' -Directory -ErrorAction Sil
 if (-not $pgBin) { throw 'no PostgreSQL binaries found under C:\Program Files\PostgreSQL' }
 $data = Join-Path $work 'pgdata-iq'
 if (Test-Path $data) { Remove-Item -Recurse -Force $data }
+Write-Host "binaries: $pgBin"
 & "$pgBin\initdb.exe" -D $data -U lims -A trust -E UTF8 | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'initdb failed' }
-& "$pgBin\pg_ctl.exe" start -D $data -w -o "-p $PgPort -c listen_addresses=127.0.0.1" -l (Join-Path $work 'pg-iq.log') | Out-Null
-if ($LASTEXITCODE -ne 0) { throw 'pg_ctl start failed' }
+Write-Host 'initdb done'
+# pg_ctl start, with its output to FILES, waiting for pg_ctl alone. Piped (| Out-Null) the step hung for 8 minutes on the
+# runner: the postgres server pg_ctl leaves running inherits the pipe, and PowerShell waits for a pipe that never closes.
+$pgLog = Join-Path $work 'pg-iq.log'
+$ctl = Start-Process -FilePath "$pgBin\pg_ctl.exe" -NoNewWindow -PassThru `
+  -ArgumentList 'start', '-D', "`"$data`"", '-w', '-t', '60', '-o', "`"-p $PgPort -c listen_addresses=127.0.0.1`"", '-l', "`"$pgLog`"" `
+  -RedirectStandardOutput (Join-Path $work 'pg-ctl.out') -RedirectStandardError (Join-Path $work 'pg-ctl.err')
+if (-not $ctl.WaitForExit(90000)) { $ctl.Kill(); throw 'pg_ctl start did not return within 90 s' }
+$ready = $false
+for ($i = 0; $i -lt 30 -and -not $ready; $i++) { & "$pgBin\pg_isready.exe" -h 127.0.0.1 -p $PgPort -q; $ready = ($LASTEXITCODE -eq 0); if (-not $ready) { Start-Sleep 1 } }
+if (-not $ready) {
+  Get-Content (Join-Path $work 'pg-ctl.err'), $pgLog -ErrorAction SilentlyContinue | Select-Object -Last 30 | ForEach-Object { Write-Host "  $_" }
+  throw "the private PostgreSQL cluster does not answer on port $PgPort (pg_ctl exit $($ctl.ExitCode))"
+}
+Write-Host "PASS private PostgreSQL cluster on port $PgPort"
 
 $failed = $null
 try {
