@@ -48,6 +48,11 @@ Windows database failure was found.
 A green suite outranks environment words in the same log: a test that prints "connection refused" on purpose is not an outage.
 An `ENV_*` verdict is never a reason to edit product code or a test (`references/judgement.md`, section 2).
 
+Read **every workflow** the push started, not only the one of the project you are working on: a red workflow of the
+neighbouring product is still red on your branch, and a skill or a new folder in a shared repository can break that
+product's linters (`.claude/` once failed the LIMS eslint for 25 runs). When a red step is fixed, run the steps that were
+skipped behind it too before saying it is fixed.
+
 Evidence of a run belongs to that run. Each job writes its results to `$RUNNER_TEMP/evidence` and uploads them as an artifact;
 a final job downloads them all and runs the traceability gate (`assets/kits/validation-roadmap/ci/workflows/traceability.yml`).
 Evidence copied into the repository from an earlier run proves nothing about this one.

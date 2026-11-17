@@ -26,7 +26,7 @@ const a11yRules = (level) => Object.fromEntries(Object.entries(jsxA11y.flatConfi
 }));
 
 export default [
-  { ignores: ['dist/**', 'dist-server/**', 'release/**', 'node_modules/**', 'src/server/**', 'src/db/**', 'ebr/**'] },   // ebr/: a separate project with its own checks
+  { ignores: ['dist/**', 'dist-server/**', 'release/**', 'node_modules/**', 'src/server/**', 'src/db/**', 'ebr/**', '.claude/**'] },   // ebr/: a separate project with its own checks; .claude/: the skills, checked by their own selftest
   {
     files: ['src/**/*.tsx'],
     languageOptions: {
