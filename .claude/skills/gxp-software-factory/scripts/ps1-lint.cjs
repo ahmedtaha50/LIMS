@@ -10,6 +10,9 @@
 //   PSQLORDER  a psql call with an option after the connection address: psql on Windows ignores options that follow it
 //              ("extra command-line argument ignored"), so -v ON_ERROR_STOP=1 or -c silently do nothing. Options first.
 //   PSQLSTOP   a psql call that runs SQL (-c or -f) without -v ON_ERROR_STOP=1: a failed statement still exits 0.
+//   PGCTLPIPE  "pg_ctl start" whose output is piped (| Out-Null) or captured ($x = & pg_ctl ...): the server pg_ctl leaves
+//              running inherits the pipe, and PowerShell waits for it forever (an 8-minute hang on the Windows runner).
+//              Start-Process with -RedirectStandardOutput/-RedirectStandardError to files, wait for pg_ctl alone, then pg_isready.
 // Exit 0 clean, 1 findings, 2 usage.
 'use strict';
 const fs = require('fs');
@@ -35,6 +38,9 @@ function lint(text) {
       for (const m of s[1].matchAll(/(?<!`)\$([A-Za-z_][A-Za-z0-9_]*):(?!:)/g)) {
         if (!SCOPES.has(m[1].toLowerCase())) out.push({ line: i + 1, kind: 'VARCOLON', text: `"$${m[1]}:" is read as a scope or drive: write "\${${m[1]}}:"` });
       }
+    }
+    if (/\bpg_ctl(\.exe)?\b[^|]*\bstart\b/i.test(line) && !/Start-Process/i.test(line) && (/\bstart\b.*\|/i.test(line) || /^\s*\$\w+\s*=\s*&/.test(line))) {
+      out.push({ line: i + 1, kind: 'PGCTLPIPE', text: 'pg_ctl start with its output piped or captured: the server keeps the pipe open and the call never returns; redirect to files with Start-Process' });
     }
     if (/\bpsql(\.exe)?\b/i.test(line)) {
       const tokens = [...line.matchAll(/'[^']*'|"[^"]*"|\S+/g)].map(t => t[0]);

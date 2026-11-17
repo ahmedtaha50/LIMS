@@ -425,6 +425,10 @@ sec('ps1-lint');
   fault('psql options after the connection address', run('ps1-lint.cjs', ['--repo', p, 'deploy/bad2.ps1']), 1, /PSQLORDER/);
   w(p, 'deploy/bad3.ps1', "& 'C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe' -c 'create database x' 'postgres://u@h/db'\n");
   fault('psql runs SQL without ON_ERROR_STOP', run('ps1-lint.cjs', ['--repo', p, 'deploy/bad3.ps1']), 1, /PSQLSTOP/);
+  w(p, 'deploy/bad4.ps1', "& \"$pgBin\\pg_ctl.exe\" start -D $data -w -l $log | Out-Null\n");
+  fault('pg_ctl start piped to Out-Null (the server keeps the pipe; the call never returns)', run('ps1-lint.cjs', ['--repo', p, 'deploy/bad4.ps1']), 1, /PGCTLPIPE/);
+  w(p, 'deploy/ok2.ps1', "$ctl = Start-Process -FilePath \"$pgBin\\pg_ctl.exe\" -PassThru -ArgumentList 'start', '-D', $data -RedirectStandardOutput a.out -RedirectStandardError a.err\n& \"$pgBin\\pg_ctl.exe\" stop -D $data -m immediate | Out-Null\n");
+  clean('pg_ctl started with Start-Process to files; a piped stop is fine', run('ps1-lint.cjs', ['--repo', p, 'deploy/ok2.ps1']));
 }
 
 // ---------- 12f. the kit validation-roadmap, copied into an empty project: requirements from the roadmap, tests found by tag

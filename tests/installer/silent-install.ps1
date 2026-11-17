@@ -60,8 +60,19 @@ try {
   $env:PGPORT = "$PgPort"; $env:SQL_HOST = '127.0.0.1'; $env:SQL_USER = 'lims'; $env:SQL_PASSWORD = 'lims'; $env:SQL_DB_NAME = 'lims_iq'
   $bootCheck = Join-Path $PSScriptRoot 'boot-check.cjs'
   Step "integrity check, init-db, server start, /api/ready within $TimeoutSeconds s"
-  & $exe $bootCheck $res --port $Port --timeout $TimeoutSeconds
-  if ($LASTEXITCODE -ne 0) { throw "boot check failed (exit $LASTEXITCODE)" }
+  # The installed program is a Windows GUI program: called with &, PowerShell does not wait for it and $LASTEXITCODE keeps the
+  # value of the previous command (seen: "FAIL init-db" printed after the uninstall had started, and the step said PASS).
+  # So: start it, wait for IT with a limit, and read its own exit code.
+  $bootOut = Join-Path $work 'boot-check.out'; $bootErr = Join-Path $work 'boot-check.err'
+  $boot = Start-Process -FilePath $exe -NoNewWindow -PassThru `
+    -ArgumentList "`"$bootCheck`"", "`"$res`"", '--port', "$Port", '--timeout', "$TimeoutSeconds" `
+    -RedirectStandardOutput $bootOut -RedirectStandardError $bootErr
+  $null = $boot.Handle   # keeps the process handle, so ExitCode can be read after it exits
+  $done = $boot.WaitForExit(($TimeoutSeconds + 60) * 1000)
+  Get-Content $bootOut, $bootErr -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $_" }
+  if (-not $done) { $boot.Kill(); throw "boot check did not finish within $($TimeoutSeconds + 60) s" }
+  if ($boot.ExitCode -ne 0) { throw "boot check failed (exit $($boot.ExitCode))" }
+  Write-Host 'PASS integrity, init-db, server start, /api/ready'
 } catch { $failed = $_ }
 finally {
   & "$pgBin\pg_ctl.exe" stop -D $data -m immediate | Out-Null
